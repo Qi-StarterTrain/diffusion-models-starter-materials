@@ -1,6 +1,6 @@
 # Diffusion Models 科研入门培训 · 教材库
 
-> Repo: `Qi-CVLab/diffusion-models-starter-materials`
+> Repo: `Qi-StarterTrain/diffusion-models-starter-materials`
 
 > 16 周系统课程，从 DDPM 数学基础到 VLA / 具身智能。
 > 本仓库是**课程教材库**（只读），随课程进度持续更新。
@@ -22,7 +22,7 @@
 
 ### 1. 教材库（本仓库）
 
-`Qi-CVLab/diffusion-models-starter-materials` —— 公开只读，所有同学共用一份。
+`Qi-StarterTrain/diffusion-models-starter-materials` —— 公开只读，所有同学共用一份。
 
 包含讲义、推导、Notebook、论文导读、数学前置等学习材料。**你不需要修改它，只需要定期 `git pull` 拿到最新内容。**
 
@@ -113,7 +113,7 @@ Project 脚手架代码、Quiz 题库不在本仓库——分别通过 Classroom
 ### 第一步：克隆教材库
 
 ```bash
-git clone https://github.com/Qi-CVLab/diffusion-models-starter-materials.git
+git clone https://github.com/Qi-StarterTrain/diffusion-models-starter-materials.git
 cd diffusion-models-starter-materials
 ```
 
