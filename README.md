@@ -101,7 +101,8 @@ diffusion-models-starter-materials/
 ├── slides/               ← 各周讲义（随课程发布）
 ├── derivations/          ← 公式推导手稿（随课程发布）
 ├── notebooks/            ← 教学 Notebook（随课程发布）
-└── paper_notes/          ← 论文导读（随课程发布）
+├── paper_notes/          ← 论文导读（随课程发布）
+└── supplementary/        ← 补充阅读材料
 ```
 
 Project 脚手架代码、Quiz 题库不在本仓库——分别通过 Classroom assignment 和助教单独下发。
