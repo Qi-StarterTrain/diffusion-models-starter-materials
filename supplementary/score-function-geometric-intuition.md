@@ -1,11 +1,8 @@
 # Score Function 几何直觉解读
 
-> 来源：飞书补充阅读材料
-> 原文：https://dcniuutn2mjy.feishu.cn/docx/ID1ndM5k1osRQFx5pBUceGQwnKd
-
 可以把 **score function** 理解成：
 
-> 在数据空间中，每一个点 (x) 都有一个箭头，这个箭头告诉你：
+> 在数据空间中，每一个点 $x$ 都有一个箭头，这个箭头告诉你：
 **从当前位置往哪个方向移动，数据概率密度会上升最快。**
 
 ---
@@ -20,50 +17,52 @@ $$
 - latent space 中，哪些 latent 更可能出现；
 - 一维高斯分布中，哪些位置概率更高。
 score function 定义为：
-$s(x)=\nabla_x \log p(x)$
-注意这里是对 **数据变量 (x)** 求导，而不是对模型参数 (\theta) 求导。
+$$s(x)=\nabla_x \log p(x)$$
+注意这里是对 **数据变量 $x$** 求导，而不是对模型参数 $\theta$ 求导。
 也就是说，它问的是：
 
-> 如果我稍微改变当前样本 (x)，那么 (\log p(x)) 会怎么变化？
+> 如果我稍微改变当前样本 $x$，那么 $\log p(x)$ 会怎么变化？
 
 ---
 
-## 为什么是 (\log p(x))，不是 (p(x))？
-因为直接对 (p(x)) 求梯度也可以，但 (\log p(x)) 更方便、更稳定。
+## 为什么是 $\log p(x)$，不是 $p(x)$？
+因为直接对 $p(x)$ 求梯度也可以，但 $\log p(x)$ 更方便、更稳定。
 两者方向其实是一致的：
 
-$\nabla_x \log p(x)=\frac{1}{p(x)} \nabla_x p(x)$
+$$\nabla_x \log p(x)=\frac{1}{p(x)} \nabla_x p(x)$$
 
-由于 (p(x)>0)，所以：
-$\nabla_x \log p(x)$
+由于 $p(x)>0$，所以：
+$$\nabla_x \log p(x)$$
 和
-$\nabla_x p(x)$
+$$\nabla_x p(x)$$
 方向相同，只是尺度不同。
 所以 score function 仍然指向 **概率密度上升最快的方向**。
+
 ---
 
 ## 一个一维高斯例子
 假设数据服从标准高斯分布：
-$p(x)=\mathcal{N}(0,1)$
+$$p(x)=\mathcal{N}(0,1)$$
 它的密度是：
-$p(x)=\frac{1}{\sqrt{2\pi}}\exp\left(-\frac{x^2}{2}\right)$
+$$p(x)=\frac{1}{\sqrt{2\pi}}\exp\left(-\frac{x^2}{2}\right)$$
 取 log：
 
-$\log p(x)=-\frac{x^2}{2}+\text{constant}$
-对 (x) 求导：
-$s(x)=\nabla_x \log p(x)=-x$
+$$\log p(x)=-\frac{x^2}{2}+\text{constant}$$
+对 $x$ 求导：
+$$s(x)=\nabla_x \log p(x)=-x$$
 所以：
-$s(x)=-x$
+$$s(x)=-x$$
 这说明什么？
-- 如果 (x>0)，那么 (s(x)<0)，箭头指向左边；
-- 如果 (x<0)，那么 (s(x)>0)，箭头指向右边；
-- 如果 (x=0)，那么 (s(x)=0)。
-也就是说，score function 总是把你往高斯分布的中心 (0) 拉。
-这很符合直觉：标准高斯的最高密度在 (x=0)，所以无论你在左边还是右边，score 都指向中心。
+- 如果 $x>0$，那么 $s(x)<0$，箭头指向左边；
+- 如果 $x<0$，那么 $s(x)>0$，箭头指向右边；
+- 如果 $x=0$，那么 $s(x)=0$。
+也就是说，score function 总是把你往高斯分布的中心 $0$ 拉。
+这很符合直觉：标准高斯的最高密度在 $x=0$，所以无论你在左边还是右边，score 都指向中心。
+
 ---
 
 ## 几何直觉：score 是“密度地形图”的上坡方向
-可以把 (\log p(x)) 想成一个地形高度：
+可以把 $\log p(x)$ 想成一个地形高度：
 $$
 \text{height}(x)=\log p(x)
 $$
@@ -78,7 +77,7 @@ s(x)=\nabla_x \log p(x)
 $$
 表示：
 
-> 从当前点 (x) 出发，往哪个方向走，样本会变得更“像真实数据”。
+> 从当前点 $x$ 出发，往哪个方向走，样本会变得更“像真实数据”。
 
 ---
 
@@ -137,7 +136,8 @@ F(x)=-\nabla_x E(x)
 =\nabla_x \log p(x)
 =s(x)
 $$
-所以在这个设定下，**力的方向应该是 (s(x))，不是 (-s(x))**。
+所以在这个设定下，**力的方向应该是 $s(x)$，不是 $-s(x)$**。
+
 ---
 
 ## 和 diffusion / score-based model 有什么关系？
@@ -165,6 +165,7 @@ $$
 > 每一步都问网络：当前这个 noisy sample 应该往哪个方向移动，才能更接近真实数据分布？
 
 因此 score function 是 diffusion model 里“去噪方向”的数学本质。
+
 ---
 
 ## 一句话总结
