@@ -11,5 +11,7 @@
 - [朗之万动力学理解](langevin-dynamics.md)
 - [SNR 信噪比的重要性理解](snr-importance.md)
 - [DDPM 方差稳定性推导](ddpm-variance-stability.md)
+- [Continuous Schedule 与 SDE 视角](continuous-schedule-sde-view.md)
+- [EMA 参数平均的作用](ema-for-diffusion.md)
 - [独立随机变量相加方差推导](variance-of-independent-sum.md)
 - [维度灾难理解](curse-of-dimensionality.md)
