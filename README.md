@@ -102,10 +102,18 @@ diffusion-models-starter-materials/
 ├── derivations/          ← 公式推导手稿（随课程发布）
 ├── notebooks/            ← 教学 Notebook（随课程发布）
 ├── paper_notes/          ← 论文导读（随课程发布）
+├── quizzes/              ← 阶段测验与答案
 └── supplementary/        ← 补充阅读材料
 ```
 
-Project 脚手架代码、Quiz 题库不在本仓库——分别通过 Classroom assignment 和助教单独下发。
+目前本仓库已经包含 P0 与 P1 阶段的教材内容（W1-W8），讲义、推导、Notebook、paper notes 与 quizzes 都按主题合并在根目录对应文件夹中。正式作业提交仍以 Classroom 创建的个人仓库为准。
+
+### 当前已入库阶段
+
+- `math_prereq/`、`templates/`、`supplementary/` 是跨阶段共用材料。
+- `slides/`、`derivations/`、`notebooks/`、`paper_notes/`、`quizzes/` 目前已覆盖 W1-W8，也就是 P0 与 P1 的主线内容。
+- Project 对应的 starter code 仍以各自的 Classroom / template 仓库为准，不在本教材库长期维护。
+- 后续 P2 内容也会按课程进度继续整理入库。
 
 ---
 
