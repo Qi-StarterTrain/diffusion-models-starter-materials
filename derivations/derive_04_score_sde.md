@@ -19,6 +19,8 @@ $$\beta_t = \beta(t/T) \cdot \frac{1}{T} = \beta(s) \Delta t, \quad s = t/T$$
 
 其中 $\beta(s)$ 是连续函数（如 linear schedule 对应线性函数）。
 
+> 补充阅读：如果这里对“为什么要写成 $\beta_t = \beta(s)\Delta t$”还没有直觉，可以继续看 [Continuous Schedule 与 SDE 视角：如何理解 $\beta_t = \beta(s)\Delta t$](../supplementary/continuous-schedule-sde-view.md)。
+
 ---
 
 ### 1.2 一阶 Taylor 展开
@@ -42,14 +44,163 @@ $$\boxed{dx = -\frac{1}{2}\beta(t) x \, dt + \sqrt{\beta(t)} \, dW}$$
 
 这就是 **VP-SDE**（Variance Preserving SDE），对应 DDPM。
 
+它可以拆成两部分来看：
+
+- drift 项
+  $$
+  -\frac{1}{2}\beta(t)x\,dt
+  $$
+  表示样本会被逐渐往 0 拉回去，也就是原始信号幅度持续衰减；
+- diffusion 项
+  $$
+  \sqrt{\beta(t)}\,dW
+  $$
+  表示系统同时不断注入高斯噪声。
+
+所以 VP-SDE 的物理图像是：
+
+$$
+\text{信号逐渐缩小} + \text{噪声持续注入}
+$$
+
+这和离散 DDPM 完全一致：每一步先把旧样本乘上一个略小于 1 的系数，再加一点高斯噪声。
+
+如果从边缘分布角度看，VP-SDE 对应的连续解满足
+
+$$
+x(t)\mid x_0 \sim \mathcal N\big(\alpha(t)x_0,\; [1-\alpha^2(t)]I\big)
+$$
+
+其中
+
+$$
+\alpha(t)=\exp\left(-\frac12\int_0^t \beta(\tau)\,d\tau\right)
+$$
+
+这正是离散 DDPM 中
+
+$$
+x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\epsilon
+$$
+
+的连续版本，因为
+
+$$
+\bar\alpha(t)=\exp\left(-\int_0^t \beta(\tau)\,d\tau\right)
+\quad\Longrightarrow\quad
+\sqrt{\bar\alpha(t)}=\alpha(t)
+$$
+
+于是可以读出两件事：
+
+1. 均值会随着时间按 $\alpha(t)$ 衰减到 0；
+2. 方差会从 0 增长到接近 1，但不会无界发散。
+
+这也就是它为什么叫 **variance preserving**：  
+虽然单个样本的“信号部分”在变小，但整个过程的噪声尺度被设计得恰到好处，使得总方差保持在一个有界范围内；当 $t$ 足够大时，终态逼近
+
+$$
+\mathcal N(0, I)
+$$
+
+这正是 DDPM 采样时的起点。
+
+和下一节的 VE-SDE 先对比着记：
+
+- **VP-SDE**：均值被拉向 0，方差有界；
+- **VE-SDE**：均值不收缩，方差不断膨胀。
+
 ---
 
 ### 1.4 VE-SDE（对应 NCSN）
 
-类似地，NCSN 的连续极限是：
-$$dx = \sqrt{\frac{d[\sigma^2(t)]}{dt}} \, dW$$
+要理解 VE-SDE，先回忆 NCSN / DSM 的加噪方式：它不是像 DDPM 那样每一步把旧样本缩小一点再加噪，而是直接在不同噪声尺度下构造边缘分布
 
-drift = 0（没有"收缩"项），方差随 $\sigma(t)$ 增长。
+$$
+x(t) = x_0 + \sigma(t)\epsilon,
+\qquad
+\epsilon \sim \mathcal N(0, I)
+$$
+
+因此在任意时刻 $t$，条件分布满足
+
+$$
+x(t)\mid x_0 \sim \mathcal N(x_0, \sigma^2(t)I)
+$$
+
+也就是说：
+
+- 均值始终是 $x_0$，没有像 VP-SDE 那样逐渐往 0 收缩；
+- 方差则随 $\sigma^2(t)$ 单调增大。
+
+现在我们想找一个连续时间 SDE，使它的边缘分布正好就是上面的高斯。最自然的选择是只保留扩散项、不加 drift：
+
+$$
+dx = g(t)\,dW
+$$
+
+因为这个 SDE 的解是
+
+$$
+x(t) = x_0 + \int_0^t g(\tau)\,dW_\tau
+$$
+
+而 Itô 积分的均值为 0、协方差为
+
+$$
+\mathrm{Var}\left[\int_0^t g(\tau)\,dW_\tau\right]
+=
+\int_0^t g^2(\tau)\,d\tau \cdot I
+$$
+
+所以
+
+$$
+x(t)\mid x_0
+\sim
+\mathcal N\left(x_0,\left[\int_0^t g^2(\tau)\,d\tau\right]I\right)
+$$
+
+要让它与目标边缘分布
+
+$$
+\mathcal N(x_0, \sigma^2(t)I)
+$$
+
+一致，就必须满足
+
+$$
+\int_0^t g^2(\tau)\,d\tau = \sigma^2(t)
+$$
+
+两边对 $t$ 求导，得到
+
+$$
+g^2(t) = \frac{d[\sigma^2(t)]}{dt}
+$$
+
+因此
+
+$$
+\boxed{dx = \sqrt{\frac{d[\sigma^2(t)]}{dt}} \, dW}
+$$
+
+这就是 **VE-SDE**（Variance Exploding SDE）。
+
+之所以叫 *variance exploding*，是因为
+
+$$
+\mathrm{Var}[x(t)\mid x_0] = \sigma^2(t)I
+$$
+
+会随着时间不断增大；若 $\sigma(t)$ 取得很大，终态就是一个方差很大的高斯噪声分布。
+
+和 VP-SDE 对比看，会更清楚：
+
+- **VP-SDE**：均值被 drift 项逐步拉向 0，同时注入噪声，总体方差保持有界；
+- **VE-SDE**：均值不动（drift = 0），只是不停往样本上叠加更大的噪声，因此方差持续膨胀。
+
+所以 VE-SDE 更像是在说：**原始数据点始终作为中心保留着，而噪声球半径 $\sigma(t)$ 不断变大。**
 
 ---
 
