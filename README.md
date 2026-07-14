@@ -75,16 +75,16 @@
 
 ### P2：前沿进阶（W9–W16）
 
-| 周次 | 内容                                             |
-| ---- | ------------------------------------------------ |
-| W9   | ControlNet · LoRA 微调                          |
-| W10  | DiT（Diffusion Transformer）                     |
-| W11  | Flow Matching / Rectified Flow · 启动 Project 4 |
-| W12  | Consistency Models                               |
-| W13  | Video Diffusion                                  |
-| W14  | Sora 解剖 · Quiz 3                              |
-| W15  | World Models                                     |
-| W16  | VLA / 具身智能 · 启动 Project 5 · Quiz 4       |
+| 周次 | 内容                                             | 配套材料                                  |
+| ---- | ------------------------------------------------ | ----------------------------------------- |
+| W9   | ControlNet · LoRA 微调                          | L10 · paper 10, 11                        |
+| W10  | DiT（Diffusion Transformer）                     | L11 · paper 12 · nb08 · derive_09         |
+| W11  | Flow Matching / Rectified Flow · 启动 Project 4 | L12 · paper 13, 14 · nb09 · derive_07     |
+| W12  | Consistency Models                               | L13 · paper 15 · nb10 · derive_08         |
+| W13  | Video Diffusion                                  | L14 · paper 16 · nb11 · derive_10         |
+| W14  | Sora 解剖 · Quiz 3（覆盖 W10–W14）             | L15 · paper 17                            |
+| W15  | World Models                                     | L16                                       |
+| W16  | VLA / 具身智能 · 启动 Project 5 · Quiz 4（覆盖 W15–W16） | L17 · paper 18, 19 · nb12        |
 
 ---
 
@@ -106,14 +106,13 @@ diffusion-models-starter-materials/
 └── supplementary/        ← 补充阅读材料
 ```
 
-目前本仓库已经包含 P0 与 P1 阶段的教材内容（W1-W8），讲义、推导、Notebook、paper notes 与 quizzes 都按主题合并在根目录对应文件夹中。正式作业提交仍以 Classroom 创建的个人仓库为准。
+目前本仓库已经包含 P0、P1、P2 全部三个阶段的教材内容（W1-W16），讲义、推导、Notebook、paper notes 与 quizzes 都按主题合并在根目录对应文件夹中。正式作业提交仍以 Classroom 创建的个人仓库为准。
 
 ### 当前已入库阶段
 
 - `math_prereq/`、`templates/`、`supplementary/` 是跨阶段共用材料。
-- `slides/`、`derivations/`、`notebooks/`、`paper_notes/`、`quizzes/` 目前已覆盖 W1-W8，也就是 P0 与 P1 的主线内容。
-- Project 对应的 starter code 仍以各自的 Classroom / template 仓库为准，不在本教材库长期维护。
-- 后续 P2 内容也会按课程进度继续整理入库。
+- `slides/`（L01–L17）、`derivations/`（derive_01–10）、`notebooks/`（nb01–nb12）、`paper_notes/`（01–19）、`quizzes/`（quiz1–quiz4）已覆盖 W1-W16 全部三个阶段的主线内容。
+- Project 对应的 starter code（含 Project 4 Flow Matching、Project 5 VLA Action Diffusion）仍以各自的 Classroom / template 仓库为准，不在本教材库长期维护。
 
 ---
 
