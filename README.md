@@ -114,6 +114,8 @@ diffusion-models-starter-materials/
 - `slides/`（L01–L17）、`derivations/`（derive_01–10）、`notebooks/`（nb01–nb12）、`paper_notes/`（01–19）、`quizzes/`（quiz1–quiz4）已覆盖 W1-W16 全部三个阶段的主线内容。
 - Project 对应的 starter code（含 Project 4 Flow Matching、Project 5 VLA Action Diffusion）仍以各自的 Classroom / template 仓库为准，不在本教材库长期维护。
 
+补充阅读材料的总入口见 [supplementary/README.md](supplementary/README.md)，其中 L06 Score SDE 相关的数学基础建议按“ODE/SDE 数值方法 → Continuous Schedule → Probability Flow ODE”顺序阅读。
+
 ---
 
 ## 开始之前

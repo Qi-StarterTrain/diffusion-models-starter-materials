@@ -10,6 +10,8 @@
 > **对应论文**：Song et al., *Score-Based Generative Modeling through Stochastic Differential Equations*, ICLR 2021
 
 > **难度警告**：本讲是整个课程的"数学高峰"。建议预留 4 小时阅读 + 配合推导手稿 derive_04 学习。
+>
+> 如果对 ODE/SDE 数值方法、连续极限或 probability flow ODE 的直觉不稳，可以先看 [Score SDE 数学基础建议顺序](../supplementary/README.md#score-sde-数学基础建议顺序)。
 
 ---
 
@@ -161,6 +163,8 @@ $$\boxed{\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \cdot \nabla_x \log p_t(x)
 
 这叫 **probability flow ODE**。
 
+> 补充阅读：这句话最容易卡在“边缘分布相同但轨迹不同”，可参考 [Probability Flow ODE：如何理解“边缘分布完全相同”](../supplementary/probability-flow-ode-marginals.md)。
+
 ---
 
 ### 5.2 为什么这个 ODE 重要？
@@ -172,6 +176,8 @@ $$\boxed{\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \cdot \nabla_x \log p_t(x)
 4. **去随机性**：生成结果可复现（给定初始噪声，输出固定）
 
 > **🔑 这是 DDIM 的数学基础**：DDIM（W6）本质上就是 probability flow ODE 的一阶离散化。
+>
+> 这四点的展开解释见 [Probability Flow ODE 补充阅读 §8](../supplementary/probability-flow-ode-marginals.md#8-为什么这个-ode-重要)。
 
 ---
 
@@ -315,6 +321,8 @@ for t = T, T-Δt, ..., 0:
 | Karras 2022 *Elucidating Design Space* | Score SDE 的简化重写，更易实现 |
 | Yang Song 博客 *Score-Based Models* | 直觉理解 |
 | 推导手稿 `derive_04_score_sde.pdf` | Anderson 公式完整推导 |
+| [ODE 与 SDE 数值方法入门](../supplementary/ode-sde-numerical-methods.md) | Taylor、Euler、Euler-Maruyama 与误差阶 |
+| [Probability Flow ODE 补充阅读](../supplementary/probability-flow-ode-marginals.md) | 边缘分布相同、可逆、likelihood 与 DDIM 关系 |
 | Lu 2022 *DPM-Solver* §2 | 工程化视角下的 ODE 求解 |
 
 ---

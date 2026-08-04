@@ -244,6 +244,8 @@ $$\nabla_{x_t} \log q(x_t | x_0) = -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}$$
 —— **预测 score 和预测 noise 等价**，差一个时间相关的系数。
 
 > **🔑 在扩散模型中**：这是统一 DDPM（noise prediction）和 score-based 模型（score prediction）的关键事实。两条研究线最终在 Score SDE（Song 2021）中合流。
+>
+> **延伸阅读**：完整推导见 [高斯 Score 推导：为什么预测噪声等价于预测 Score](../supplementary/gaussian-score-noise-prediction.md)。
 
 ---
 

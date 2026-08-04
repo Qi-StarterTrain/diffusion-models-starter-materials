@@ -306,6 +306,8 @@ $$\boxed{\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \cdot \nabla_x \log p_t(x)
 
 它**在每个时间 $t$ 的边缘分布 $p_t(x)$ 与原 SDE 完全相同**，但轨迹是确定性的。
 
+> 补充阅读：如果这里对“边缘分布相同但轨迹不同”还没有直觉，可以继续看 [Probability Flow ODE：如何理解“边缘分布完全相同”](../supplementary/probability-flow-ode-marginals.md)。
+
 ---
 
 ### 4.2 证明（FPE 视角）
@@ -332,6 +334,8 @@ $$h(x, t) = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)$$
 2. **可计算精确 likelihood**（instantaneous change of variables）
 3. **可用高阶 ODE 求解器加速**（DDIM, DPM-Solver, EDM 等）
 4. **去随机性**：给定 $x_T$，$x_0$ 唯一
+
+> 补充阅读：这四点的直觉解释见 [Probability Flow ODE：如何理解“边缘分布完全相同” §8](../supplementary/probability-flow-ode-marginals.md#8-为什么这个-ode-重要)。
 
 ---
 
@@ -365,6 +369,8 @@ $$\frac{dx}{dt} = -\frac{1}{2}\beta(t) x - \frac{1}{2}\beta(t) \nabla_x \log p_t
 $$\nabla_x \log p_t(x | x_0) = -\frac{x - \sqrt{\bar\alpha(t)} x_0}{1 - \bar\alpha(t)} = -\frac{\sqrt{1-\bar\alpha(t)} \epsilon}{1-\bar\alpha(t)} = -\frac{\epsilon}{\sqrt{1-\bar\alpha(t)}}$$
 
 —— **预测 $\epsilon$ ≡ 预测 score**（差时间相关系数）。
+
+> 补充阅读：高斯 score 到噪声预测等价的逐步推导见 [高斯 Score 推导：为什么预测噪声等价于预测 Score](../supplementary/gaussian-score-noise-prediction.md)。
 
 ---
 

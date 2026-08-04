@@ -140,6 +140,8 @@ $$\frac{\mathrm{d} x}{\mathrm{d} t} = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log
 
 **意义**：去随机性的扩散等价物。这让我们可以用 ODE 高阶求解器进行确定性、可逆的采样。
 
+> **延伸阅读**：如果想进一步理解 Euler、Taylor 展开、局部/全局误差以及 Euler-Maruyama，可以看 [ODE 与 SDE 数值方法入门](../supplementary/ode-sde-numerical-methods.md)。
+
 ---
 
 ## §5 线性代数速查

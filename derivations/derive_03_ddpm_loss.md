@@ -246,6 +246,8 @@ $$\nabla_{x_t} \log q(x_t | x_0) = -\frac{x_t - \sqrt{\bar\alpha_t} x_0}{1 - \ba
 
 这是 DDPM 与 score matching 在数学上严格等价的证明。
 
+> 补充阅读：如果想看从高斯密度、log density 到 score 的逐步求导，见 [高斯 Score 推导：为什么预测噪声等价于预测 Score](../supplementary/gaussian-score-noise-prediction.md)。
+
 ---
 
 ## §12 自查题
