@@ -1,6 +1,7 @@
 # Lecture 04｜DDPM 下：训练目标、U-Net 架构、采样算法
 
 > **本讲目标**
+>
 > - 完整推导 DDPM 的训练目标，从 ELBO 化简到极简的 MSE
 > - 理解 U-Net 在 DDPM 中的具体设计（timestep embedding、attention、ResBlock）
 > - 写出完整的训练与采样伪代码
@@ -13,11 +14,13 @@
 ## §1 整体回顾与本讲路线图
 
 L03 我们建立了：
+
 - 前向过程：$q(x_t|x_{t-1}) = \mathcal{N}(\sqrt{\alpha_t} x_{t-1}, \beta_t I)$
 - 闭合形式：$q(x_t|x_0) = \mathcal{N}(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I)$
 - 理想反向后验：$q(x_{t-1}|x_t, x_0) = \mathcal{N}(\tilde\mu_t, \tilde\beta_t I)$
 
 本讲要解决：
+
 1. **如何参数化 $p_\theta(x_{t-1}|x_t)$？**（让网络拟合反向过程）
 2. **如何训练这个网络？**（ELBO → MSE）
 3. **U-Net 怎么设计？**（架构细节）
@@ -31,9 +34,12 @@ L03 我们建立了：
 
 DDPM 假设反向过程也是高斯：
 
-$$p_\theta(x_{t-1} | x_t) = \mathcal{N}\bigl(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t, t)\bigr)$$
+$$
+p_\theta(x_{t-1} | x_t) = \mathcal{N}\bigl(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t, t)\bigr)
+$$
 
 **两种简化**：
+
 - DDPM 把方差固定为 $\Sigma_\theta = \sigma_t^2 I$（$\sigma_t^2 = \beta_t$ 或 $\tilde\beta_t$，性能差不多）
 - 网络只预测均值 $\mu_\theta(x_t, t)$
 
@@ -43,12 +49,17 @@ $$p_\theta(x_{t-1} | x_t) = \mathcal{N}\bigl(x_{t-1}; \mu_\theta(x_t, t), \Sigma
 
 ### 2.2 完整生成过程
 
-$$p_\theta(x_{0:T}) = p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} | x_t)$$
+$$
+p_\theta(x_{0:T}) = p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} | x_t)
+$$
 
 其中 $p(x_T) = \mathcal{N}(0, I)$（先验，纯噪声）。
 
 最终生成 $x_0$ 的分布：
-$$p_\theta(x_0) = \int p_\theta(x_{0:T}) \mathrm{d}x_{1:T}$$
+
+$$
+p_\theta(x_0) = \int p_\theta(x_{0:T}) \mathrm{d}x_{1:T}
+$$
 
 —— 我们想最大化这个 likelihood。但和 VAE 一样，直接计算积分不现实。所以转向 ELBO。
 
@@ -78,7 +89,9 @@ $$
 
 直接处理上面的 sum 复杂。**核心 trick** 是把 $q(x_t|x_{t-1})$ 用 Bayes 改写：
 
-$$q(x_t | x_{t-1}) = q(x_t | x_{t-1}, x_0) = \frac{q(x_{t-1} | x_t, x_0) \cdot q(x_t | x_0)}{q(x_{t-1} | x_0)}$$
+$$
+q(x_t | x_{t-1}) = q(x_t | x_{t-1}, x_0) = \frac{q(x_{t-1} | x_t, x_0) \cdot q(x_t | x_0)}{q(x_{t-1} | x_0)}
+$$
 
 代入 ELBO 后，经过一些代数操作（详见 derive_03），可以化简成：
 
@@ -90,11 +103,11 @@ $$
 
 每项的含义：
 
-| 项 | 含义 |
-|----|------|
-| $L_T$ | 终态对齐项（不含 $\theta$，可忽略） |
-| $L_{t-1}$ for $t=2,\dots,T$ | 让 $p_\theta(x_{t-1}\|x_t)$ 逼近 $q(x_{t-1}\|x_t, x_0)$ |
-| $L_0$ | 重构项（最后一步） |
+| 项                              | 含义                                                       |
+| ------------------------------- | ---------------------------------------------------------- |
+| $L_T$                         | 终态对齐项（不含$\theta$，可忽略）                       |
+| $L_{t-1}$ for $t=2,\dots,T$ | 让$p_\theta(x_{t-1}\|x_t)$ 逼近 $q(x_{t-1}\|x_t, x_0)$ |
+| $L_0$                         | 重构项（最后一步）                                         |
 
 **关键观察**：$L_{t-1}$ 是**两个高斯之间的 KL**，可以闭合计算。这就是 DDPM 训练目标极简的根源。
 
@@ -103,14 +116,21 @@ $$
 ### 3.3 高斯 KL 化简
 
 回顾 §L03，
+
 - $q(x_{t-1} | x_t, x_0) = \mathcal{N}(\tilde\mu_t(x_t, x_0), \tilde\beta_t I)$
 - $p_\theta(x_{t-1} | x_t) = \mathcal{N}(\mu_\theta(x_t, t), \sigma_t^2 I)$
 
 两个等方差高斯的 KL：
-$$D_{\mathrm{KL}}(\mathcal{N}(\mu_1, \sigma^2 I) \| \mathcal{N}(\mu_2, \sigma^2 I)) = \frac{\| \mu_1 - \mu_2 \|^2}{2\sigma^2}$$
+
+$$
+D_{\mathrm{KL}}(\mathcal{N}(\mu_1, \sigma^2 I) \| \mathcal{N}(\mu_2, \sigma^2 I)) = \frac{\| \mu_1 - \mu_2 \|^2}{2\sigma^2}
+$$
 
 故：
-$$L_{t-1} = \mathbb{E}_q \left[ \frac{\| \tilde\mu_t(x_t, x_0) - \mu_\theta(x_t, t) \|^2}{2\sigma_t^2} \right]$$
+
+$$
+L_{t-1} = \mathbb{E}_q \left[ \frac{\| \tilde\mu_t(x_t, x_0) - \mu_\theta(x_t, t) \|^2}{2\sigma_t^2} \right]
+$$
 
 —— **训练目标变成了 MSE**！
 
@@ -121,12 +141,18 @@ $$L_{t-1} = \mathbb{E}_q \left[ \frac{\| \tilde\mu_t(x_t, x_0) - \mu_\theta(x_t,
 代入 L03 推出的 $\tilde\mu_t(x_t, x_0) = \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon \right)$，
 
 并把 $\mu_\theta$ **设计为相同的形式**：
-$$\mu_\theta(x_t, t) := \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon_\theta(x_t, t) \right)$$
+
+$$
+\mu_\theta(x_t, t) := \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon_\theta(x_t, t) \right)
+$$
 
 —— 让网络预测 $\epsilon$ 而不是均值。
 
 代入 KL：
-$$L_{t-1} = \mathbb{E}_{x_0, \epsilon} \left[ \frac{\beta_t^2}{2 \sigma_t^2 \alpha_t (1-\bar\alpha_t)} \| \epsilon - \epsilon_\theta(x_t, t) \|^2 \right]$$
+
+$$
+L_{t-1} = \mathbb{E}_{x_0, \epsilon} \left[ \frac{\beta_t^2}{2 \sigma_t^2 \alpha_t (1-\bar\alpha_t)} \| \epsilon - \epsilon_\theta(x_t, t) \|^2 \right]
+$$
 
 —— **核心目标**：噪声的 MSE，加一个时间相关的权重。
 
@@ -138,7 +164,9 @@ DDPM 论文进一步发现：**去掉权重，在所有 $t$ 上等权重训练�
 
 最终极简训练目标：
 
-$$\boxed{\mathcal{L}_{\text{simple}}(\theta) = \mathbb{E}_{t \sim U[1,T], \, x_0, \, \epsilon \sim \mathcal{N}(0,I)} \left[ \| \epsilon - \epsilon_\theta(\sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon, t) \|^2 \right]}$$
+$$
+\boxed{\mathcal{L}_{\text{simple}}(\theta) = \mathbb{E}_{t \sim U[1,T], \, x_0, \, \epsilon \sim \mathcal{N}(0,I)} \left[ \| \epsilon - \epsilon_\theta(\sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon, t) \|^2 \right]}
+$$
 
 **这就是 DDPM 的全部训练算法**。看似简单，背后是 ELBO + 高斯 KL + 重参数化的全套机器。
 
@@ -149,6 +177,7 @@ $$\boxed{\mathcal{L}_{\text{simple}}(\theta) = \mathbb{E}_{t \sim U[1,T], \, x_0
 权重 $\frac{\beta_t^2}{2\sigma_t^2 \alpha_t (1-\bar\alpha_t)}$ 在小 $t$ 时极大、大 $t$ 时较小。
 
 这意味着：
+
 - 加权目标过分关注**已经很简单的小 $t$ 任务**（去除一点点噪声）
 - 忽略了**真正困难的大 $t$ 任务**（从接近纯噪声中恢复结构）
 
@@ -196,6 +225,7 @@ def p_losses(model, x0, t, betas):
 DDPM 的网络要做"去噪"——给定 $x_t$ 和 $t$，输出 $\epsilon$（同 shape 的张量）。
 
 U-Net 天然适合此任务：
+
 - 输入输出同形状
 - 编码器-解码器结构能融合多尺度信息
 - skip connection 保留细节信息（去噪需要这些）
@@ -249,9 +279,12 @@ Time embedding t (B,) → MLP → broadcast 到每个 ResBlock
 
 **Sinusoidal embedding**（Transformer 同款）：
 
-$$\text{PE}(t)_{2k} = \sin\left(\frac{t}{10000^{2k/d}}\right), \quad \text{PE}(t)_{2k+1} = \cos\left(\frac{t}{10000^{2k/d}}\right)$$
+$$
+\text{PE}(t)_{2k} = \sin\left(\frac{t}{10000^{2k/d}}\right), \quad \text{PE}(t)_{2k+1} = \cos\left(\frac{t}{10000^{2k/d}}\right)
+$$
 
 **代码**：
+
 ```python
 def sinusoidal_embedding(t, dim):
     half = dim // 2
@@ -288,6 +321,7 @@ class ResBlock(nn.Module):
 ```
 
 **关键点**：
+
 - 时间 embedding 通过广播加法注入（不是 concat）
 - 用 GroupNorm 而非 BatchNorm（小 batch 训练更稳）
 - 激活用 SiLU（比 ReLU 更平滑，扩散模型中默认）
@@ -297,6 +331,7 @@ class ResBlock(nn.Module):
 ### 5.5 Self-Attention 的位置
 
 Attention 计算量随分辨率平方增长，所以：
+
 - 高分辨率（如 32x32, 16x16）：仅在某些层加 attention
 - 低分辨率（如 8x8）：可以多加 attention 用来建模长程依赖
 
@@ -320,6 +355,7 @@ DDPM Sampling:
 ```
 
 **对应代码**：
+
 ```python
 @torch.no_grad()
 def p_sample(model, x_t, t):
@@ -350,11 +386,13 @@ def sample_loop(model, shape):
 DDPM 论文发现：用 EMA 参数采样比直接用最后 checkpoint 效果显著更好。
 
 **为什么？**
+
 - 训练过程参数有噪声波动
 - EMA 平滑了这些波动，给出"训练全过程的代表"
 - 类似 stochastic averaging 的效果
 
 **代码**：
+
 ```python
 class EMA:
     def __init__(self, model, decay=0.9999):
@@ -380,6 +418,7 @@ class EMA:
 显存需求大概减半，速度提升 30–50%。
 
 **代码模板**：
+
 ```python
 from torch.cuda.amp import autocast, GradScaler
 scaler = GradScaler()
@@ -394,6 +433,7 @@ for batch in loader:
 ```
 
 **踩坑点**：
+
 - GroupNorm 在 fp16 下可能 NaN，可强制 fp32 计算
 - bfloat16（A100/H100）比 fp16 更稳，无需 GradScaler
 
@@ -472,13 +512,12 @@ def train(model, loader, optimizer, schedule, num_steps):
 ### 必做
 
 1. **手推训练目标**：从 ELBO 出发，完整推导到 simplified MSE loss。可参考 derive_03。
-
 2. **代码任务**（Project 1 起步）：
    按照 `starter_code/project1_ddpm/README.md` 完成基础档：
+
    - 实现 `q_sample`、`p_losses`、`p_sample_loop`
    - 实现 sinusoidal time embedding 与 ResBlock
    - 在 MNIST 上训练 50 epoch，生成可辨认数字
-
 3. **思考题**：
    (a) 如果让网络预测 $x_0$ 而非 $\epsilon$，训练目标会是什么？两者数学上等价吗？
    (b) 为什么 $t=1$ 时采样不加随机性？（提示：思考 $L_0$ 项的本质）
@@ -486,20 +525,19 @@ def train(model, loader, optimizer, schedule, num_steps):
 ### 选做
 
 4. **进阶档**：在 CIFAR-10 上训练 200 epoch，生成 5000 样本计算 FID（目标 ≤ 15）。
-
 5. **挑战档**：实现 cosine schedule 与 linear schedule 的对比实验，提交 8 页技术报告分析差异。
 
 ---
 
 ## §11 推荐进一步阅读
 
-| 资源 | 重点 |
-|------|------|
-| DDPM 论文 §3-§4 | 训练目标推导 |
-| Improved DDPM §3 | 详细工程改进 |
-| `lucidrains/denoising-diffusion-pytorch` | 极简参考实现 |
-| HuggingFace Diffusers `DDPMScheduler` | 工业级实现 |
-| 推导手稿 `derive_03_ddpm_loss.pdf` | 完整 ELBO 推导 |
+| 资源                                       | 重点           |
+| ------------------------------------------ | -------------- |
+| DDPM 论文 §3-§4                          | 训练目标推导   |
+| Improved DDPM §3                          | 详细工程改进   |
+| `lucidrains/denoising-diffusion-pytorch` | 极简参考实现   |
+| HuggingFace Diffusers `DDPMScheduler`    | 工业级实现     |
+| 推导手稿 `derive_03_ddpm_loss.pdf`       | 完整 ELBO 推导 |
 
 ---
 
@@ -516,6 +554,7 @@ A: 实践差不多。$\beta_t$（"upper bound"）：噪声更大，可能采样�
 **Q: 为什么 DDPM 训练这么稳定？**
 
 A: 三个原因：
+
 1. 训练目标就是 MSE 回归，本质上和监督学习一样稳定
 2. 加噪过程提供了很强的隐式正则（每个 batch 都看到不同噪声水平）
 3. 没有 GAN 那样的博弈，不存在训练失衡
@@ -527,6 +566,7 @@ A: 代码 0-indexed 是惯例，对应论文的 $t-1$。具体看代码细节。
 **Q: 训练时 loss 一直降不下来怎么办？**
 
 A: 常见问题排查清单：
+
 - ❓ 数据归一化了吗？DDPM 期望 $x_0 \in [-1, 1]$
 - ❓ time embedding 真的注入到每个 ResBlock 了吗？
 - ❓ schedule 张量用 `register_buffer` 注册了吗？（否则 `.to(device)` 不跟着移动）
@@ -538,6 +578,7 @@ A: 常见问题排查清单：
 > **下一讲预告**：L05 我们将进入 *Improved DDPM*，学习 cosine schedule、learned variance、importance sampling 等具体改进。继续往后是 Score SDE、DDIM、CFG 等。
 >
 > **本讲学习达成检查**：
+>
 > - [ ] 能闭眼写出 simplified DDPM loss 公式
 > - [ ] 能完整推导 ELBO → MSE 的化简
 > - [ ] 写出训练算法和采样算法的 PyTorch 代码骨架
