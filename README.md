@@ -2,9 +2,9 @@
 
 > Repo: `Qi-StarterTrain/diffusion-models-starter-materials`
 
-> 16 周系统课程，从 DDPM 数学基础到 VLA / 具身智能。
-> 本仓库是**课程教材库**（只读），随课程进度持续更新。
-> Project 作业仓库通过 GitHub Classroom 单独下发，详见下文。
+> 16 周系统课程，从 DDPM 数学基础到 VLA / 具身智能。W1–W16 全部教材已写完，可跟随直播班级学习，也可直接自学。
+> 本仓库是**课程教材库**（只读），后续视勘误 / 补充阅读需要更新，不再随每周课程节奏发布。
+> Project 作业仓库通过 GitHub Classroom 单独下发（仅正式学员），详见下文。
 
 ---
 
@@ -16,9 +16,17 @@
 
 ---
 
-## 仓库结构：教材 vs. 作业
+## 自学指南
 
-本课程使用**两类仓库**，请先理解它们的区别：
+本仓库已经写完 W1–W16 全部内容，可以完全自学，不必等待固定的开课节奏。建议按 P0 → P1 → P2 的顺序推进（见下方"三阶段结构"），每到一周就把该周对应的 `slides/` 讲义、`derivations/` 推导手稿、`notebooks/` 代码和 `paper_notes/` 论文导读放在一起读——讲义给直觉，推导手稿把公式一步步铺开，notebook 让你动手实现，paper note 帮你把内容接回原始论文，四者配合着看效果最好，尤其不要跳过手推公式的部分。开始之前先花一小时做 [math_prereq/self_assessment_quiz.md](math_prereq/self_assessment_quiz.md) 自测，数学基础不够扎实的话先补一补再回来，后面章节会大量依赖前面推导出的结论，跳读容易在中段卡住。每个阶段结束时用 `quizzes/` 里对应的测验（quiz1–quiz4）检验自己是不是真的掌握了，而不是"看懂了但不会推"。遇到某个点反复卡壳，先查 `supplementary/README.md`，很多课程中常见的理解难点已经被单独写成了补充笔记。至于 Project 1–5，教材库里没有配套的 starter code（那是通过 GitHub Classroom 单独下发给正式学员的），自学时可以把每个 Project 的目标当作阶段性练习，照着对应周的讲义和 notebook 自己从零搭起来。
+
+> 本仓库服务两类读者：跟随直播班级的**正式学员**，以及只用教材库自己推进的**自学读者**。下文涉及 GitHub Classroom、助教、课程群、截止日期、考核占比的部分只对正式学员生效，标题旁会用「（正式学员）」标出；自学读者可以直接跳过这些小节，只看目录结构和分周内容即可。
+
+---
+
+## 仓库结构：教材 vs. 作业（正式学员）
+
+本课程使用**两类仓库**，请先理解它们的区别。自学读者只会用到第 1 类（本仓库），第 2 类作业库需要 GitHub Classroom 邀请，只对正式学员开放。
 
 ### 1. 教材库（本仓库）
 
@@ -26,9 +34,9 @@
 
 包含讲义、推导、Notebook、论文导读、数学前置等学习材料。**你不需要修改它，只需要定期 `git pull` 拿到最新内容。**
 
-### 2. 作业库（每个 Project 一个）
+### 2. 作业库（每个 Project 一个，正式学员）
 
-每个 Project 通过 GitHub Classroom 单独下发，接受 assignment 后会在 `Qi-StarterTrain` 组织下自动创建你的**个人作业仓库**。代码改动、TODO 实现、实验日志、最终报告都提交到该仓库。
+每个 Project 通过 GitHub Classroom 单独下发，接受 assignment 后会在 `Qi-StarterTrain` 组织下自动创建你的**个人作业仓库**。代码改动、TODO 实现、实验日志、最终报告都提交到该仓库。自学读者没有这一步，可参照上面"自学指南"里的建议，照着讲义和 notebook 自己实现 Project 目标。
 
 | Project | Classroom assignment 状态 |
 | ------- | ------------------------- |
@@ -92,27 +100,29 @@
 
 ```
 diffusion-models-starter-materials/
-├── math_prereq/          ← 开课前自测 + 数学速查
-│   ├── self_assessment_quiz.md   （15 题，开课前必做）
-│   ├── prob_review.md            （概率论速查）
-│   ├── calculus_review.md        （微积分 / 线代速查）
-│   └── pytorch_primer.md         （PyTorch 速查）
+├── math_prereq/          ← 自测 + 数学速查
+│   ├── self_assessment_quiz.md     （15 题自测，开始前必做）
+│   ├── self_assessment_answers.md  （自测答案）
+│   ├── prob_review.md              （概率论速查）
+│   ├── calculus_review.md          （微积分 / 线代速查）
+│   └── pytorch_primer.md           （PyTorch 速查）
 │
-├── slides/               ← 各周讲义（随课程发布）
-├── derivations/          ← 公式推导手稿（随课程发布）
-├── notebooks/            ← 教学 Notebook（随课程发布）
-├── paper_notes/          ← 论文导读（随课程发布）
-├── quizzes/              ← 阶段测验与答案
-└── supplementary/        ← 补充阅读材料
+├── slides/               ← 各周讲义（L01–L17，已全部写完）
+├── derivations/          ← 公式推导手稿（derive_01–10，已全部写完）
+├── notebooks/            ← 教学 Notebook（nb01–nb12，已全部写完）
+├── paper_notes/          ← 论文导读（01–19，已全部写完）
+├── quizzes/              ← 阶段测验与答案（quiz1–quiz4，每个含 questions.md / answer_key.md）
+├── supplementary/        ← 补充阅读材料，总入口见 supplementary/README.md
+└── templates/            ← 实验日志 / 论文精读笔记模板，做 Project 或读论文时可直接套用
 ```
 
-目前本仓库已经包含 P0、P1、P2 全部三个阶段的教材内容（W1-W16），讲义、推导、Notebook、paper notes 与 quizzes 都按主题合并在根目录对应文件夹中。正式作业提交仍以 Classroom 创建的个人仓库为准。
+本仓库已经包含 P0、P1、P2 全部三个阶段的教材内容（W1–W16），讲义、推导、Notebook、paper notes 与 quizzes 都按主题合并在根目录对应文件夹中，不再分阶段单独存放。
 
 ### 当前已入库阶段
 
 - `math_prereq/`、`templates/`、`supplementary/` 是跨阶段共用材料。
 - `slides/`（L01–L17）、`derivations/`（derive_01–10）、`notebooks/`（nb01–nb12）、`paper_notes/`（01–19）、`quizzes/`（quiz1–quiz4）已覆盖 W1-W16 全部三个阶段的主线内容。
-- Project 对应的 starter code（含 Project 4 Flow Matching、Project 5 VLA Action Diffusion）仍以各自的 Classroom / template 仓库为准，不在本教材库长期维护。
+- Project 对应的 starter code（含 Project 4 Flow Matching、Project 5 VLA Action Diffusion）仍以各自的 Classroom / template 仓库为准（正式学员），不在本教材库长期维护；自学读者参照"自学指南"自行实现即可。
 
 补充阅读材料的总入口见 [supplementary/README.md](supplementary/README.md)，其中 L06 Score SDE 相关的数学基础建议按“ODE/SDE 数值方法 → Continuous Schedule → Probability Flow ODE”顺序阅读。
 
@@ -127,7 +137,7 @@ git clone https://github.com/Qi-StarterTrain/diffusion-models-starter-materials.
 cd diffusion-models-starter-materials
 ```
 
-之后每周开课前跑一次 `git pull` 即可拿到新讲义、新推导、新 notebook。
+教材已全部写完，`git pull` 主要用于同步后续的勘误和补充阅读更新。
 
 ### 第二步：完成数学自测
 
@@ -146,15 +156,15 @@ pip install torch torchvision diffusers transformers peft accelerate \
 
 建议 Python 3.10+，torch ≥ 2.0。
 
-### 第四步：接受第一个 Project assignment
+### 第四步：接受第一个 Project assignment（正式学员）
 
-W3 课程结束时，助教会在课程群里发 Classroom 邀请链接。点击后会在 `Qi-StarterTrain` 组织下为你自动创建 Project 1 的个人作业仓库。后续 Project 同理。
+W3 课程结束时，助教会在课程群里发 Classroom 邀请链接。点击后会在 `Qi-StarterTrain` 组织下为你自动创建 Project 1 的个人作业仓库。后续 Project 同理。自学读者没有这一步，直接参照上面"自学指南"里的做法，照着讲义和 notebook 自己实现每个 Project 的目标即可。
 
 ---
 
-## 推荐目录布置
+## 推荐目录布置（正式学员）
 
-建议在本地用如下结构组织，避免把两类仓库混在一起：
+建议在本地用如下结构组织，避免把两类仓库混在一起（自学读者只有 `materials/`，不需要 `assignments/`）：
 
 ```
 ~/diffusion-course/
@@ -167,7 +177,9 @@ W3 课程结束时，助教会在课程群里发 Classroom 邀请链接。点击
 
 ---
 
-## 考核方式
+## 考核方式（正式学员）
+
+自学读者没有正式考核，可以把 quiz 当作自我检验：每个阶段学完后限时做一遍，答不上来的地方回去重读对应讲义 / 推导。
 
 | 项目                       | 时间     | 占比（参考） |
 | -------------------------- | -------- | ------------ |
@@ -188,7 +200,7 @@ DDPM · Improved DDPM · Score SDE · DDIM · Diffusion Beats GAN · CFG · LDM/
 
 ## 说明
 
-- 教材内容**每周更新**，请养成开课前 `git pull` 的习惯。
-- 作业仓库由 Classroom 独立创建，**不会**自动同步教材更新；如遇 README 等不一致，以本教材库为准。
+- 教材内容 W1–W16 已全部写完，后续只做勘误和补充阅读更新，请养成定期 `git pull` 的习惯。
+- 作业仓库由 Classroom 独立创建（仅正式学员），**不会**自动同步教材更新；如遇 README 等不一致，以本教材库为准。
 - 发现公式错误或代码 bug 请直接提 Issue 或联系我，优先级最高。
 - 课程设计强调**推导 > 记忆**，所有公式都有完整推导过程，不存在"魔法系数"。
