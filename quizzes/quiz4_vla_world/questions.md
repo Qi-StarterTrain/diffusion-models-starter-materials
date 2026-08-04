@@ -92,7 +92,7 @@ OpenVLA 把 continuous action（7 dim）的每个维度量化为 256 bins，bin 
 
 ---
 
-### 12（15 分）国自然青基级实验设计：基于 FM 的实时 VLA
+### 12（15 分）研究级实验设计：基于 FM 的实时 VLA
 
 题目：**"面向高频控制的 Flow Matching 视觉-语言-动作模型"**
 
