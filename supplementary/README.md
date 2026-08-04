@@ -9,6 +9,7 @@
 1. [ODE 与 SDE 数值方法入门](ode-sde-numerical-methods.md)：先补 Taylor、Euler、误差阶、Euler-Maruyama。
 2. [Continuous Schedule 与 SDE 视角](continuous-schedule-sde-view.md)：理解 $\beta_t=\beta(s)\Delta t$ 和 DDPM 到 VP-SDE 的连续极限。
 3. [Probability Flow ODE：如何理解“边缘分布完全相同”](probability-flow-ode-marginals.md)：理解 SDE 与 ODE 为什么能共享同一组边缘分布，以及 DDIM / DPM-Solver 的 ODE 视角。
+4. [Score SDE 统一图景：如何读懂 §8 那张图](score-sde-unified-picture.md)：把 VP/VE-SDE、DDPM/NCSN、Probability Flow ODE 串成一张图，学会用它定位新论文。
 
 ## 阅读材料
 
@@ -22,6 +23,7 @@
 - [DDPM 方差稳定性推导](ddpm-variance-stability.md)
 - [Continuous Schedule 与 SDE 视角](continuous-schedule-sde-view.md)
 - [Probability Flow ODE：如何理解“边缘分布完全相同”](probability-flow-ode-marginals.md)
+- [Score SDE 统一图景：如何读懂 §8 那张图](score-sde-unified-picture.md)
 - [ODE 与 SDE 数值方法入门](ode-sde-numerical-methods.md)
 - [EMA 参数平均的作用](ema-for-diffusion.md)
 - [独立随机变量相加方差推导](variance-of-independent-sum.md)

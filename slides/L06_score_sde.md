@@ -271,6 +271,8 @@ for t = T, T-Δt, ..., 0:
 
 每个箭头都是某种 reduction 或近似。理解这张图后，看任何新的"diffusion sampler"论文都能立刻定位。
 
+> 补充阅读：这张图的逐层拆解，以及一套"如何用它定位新论文"的读图方法，见 [Score SDE 统一图景：如何读懂 §8 那张图](../supplementary/score-sde-unified-picture.md)。
+
 ---
 
 ## §9 本讲核心要点
@@ -323,6 +325,7 @@ for t = T, T-Δt, ..., 0:
 | 推导手稿 `derive_04_score_sde.pdf` | Anderson 公式完整推导 |
 | [ODE 与 SDE 数值方法入门](../supplementary/ode-sde-numerical-methods.md) | Taylor、Euler、Euler-Maruyama 与误差阶 |
 | [Probability Flow ODE 补充阅读](../supplementary/probability-flow-ode-marginals.md) | 边缘分布相同、可逆、likelihood 与 DDIM 关系 |
+| [Score SDE 统一图景补充阅读](../supplementary/score-sde-unified-picture.md) | §8 那张图的逐层拆解与读图方法 |
 | Lu 2022 *DPM-Solver* §2 | 工程化视角下的 ODE 求解 |
 
 ---
