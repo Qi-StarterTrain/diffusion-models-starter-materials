@@ -18,7 +18,7 @@
 
 ## 自学指南
 
-本仓库已经写完 W1–W16 全部内容，可以完全自学，不必等待固定的开课节奏。建议按 P0 → P1 → P2 的顺序推进（见下方"三阶段结构"），每到一周就把该周对应的 `slides/` 讲义、`derivations/` 推导手稿、`notebooks/` 代码和 `paper_notes/` 论文导读放在一起读——讲义给直觉，推导手稿把公式一步步铺开，notebook 让你动手实现，paper note 帮你把内容接回原始论文，四者配合着看效果最好，尤其不要跳过手推公式的部分。开始之前先花一小时做 [math_prereq/self_assessment_quiz.md](math_prereq/self_assessment_quiz.md) 自测，数学基础不够扎实的话先补一补再回来，后面章节会大量依赖前面推导出的结论，跳读容易在中段卡住。每个阶段结束时用 `quizzes/` 里对应的测验（quiz1–quiz4）检验自己是不是真的掌握了，而不是"看懂了但不会推"。遇到某个点反复卡壳，先查 `supplementary/README.md`，很多课程中常见的理解难点已经被单独写成了补充笔记。至于 Project，教材库里不含 starter code，但 Project 1–4 各有一个公开的 template 仓库（链接见下方"当前已入库阶段"），自学读者可以直接 clone 来做，里面的 TODO 和自查问题与讲义一一对应；Project 5 目前还没有独立仓库，可以把它的目标当作阶段性练习，照着对应周的讲义和 notebook 自己从零搭起来。
+本仓库已经写完 W1–W16 全部内容，可以完全自学，不必等待固定的开课节奏。建议按 P0 → P1 → P2 的顺序推进（见下方"三阶段结构"），每到一周就把该周对应的 `slides/` 讲义、`derivations/` 推导手稿、`notebooks/` 代码和 `paper_notes/` 论文导读放在一起读——讲义给直觉，推导手稿把公式一步步铺开，notebook 让你动手实现，paper note 帮你把内容接回原始论文，四者配合着看效果最好，尤其不要跳过手推公式的部分。开始之前先花一小时做 [math_prereq/self_assessment_quiz.md](math_prereq/self_assessment_quiz.md) 自测，数学基础不够扎实的话先补一补再回来，后面章节会大量依赖前面推导出的结论，跳读容易在中段卡住。每个阶段结束时用 `quizzes/` 里对应的测验（quiz1–quiz4）检验自己是不是真的掌握了，而不是"看懂了但不会推"。遇到某个点反复卡壳，先查 `supplementary/README.md`，很多课程中常见的理解难点已经被单独写成了补充笔记。至于 Project，教材库里不含 starter code，但 Project 1–5 各有一个公开的 template 仓库（链接见下方"当前已入库阶段"），自学读者可以直接 clone 来做，里面的 TODO 和自查问题与讲义一一对应。
 
 > 本仓库服务两类读者：跟随直播班级的**正式学员**，以及只用教材库自己推进的**自学读者**。下文涉及 GitHub Classroom、助教、课程群、截止日期、考核占比的部分只对正式学员生效，标题旁会用「（正式学员）」标出；自学读者可以直接跳过这些小节，只看目录结构和分周内容即可。
 
@@ -141,7 +141,7 @@ diffusion-models-starter-materials/
 | Project 2：采样器对比 | [diffusion-project2-samplers](https://github.com/Qi-StarterTrain/diffusion-project2-samplers) |
 | Project 3：Stable Diffusion 解剖 | [diffusion-project3-stable-diffusion](https://github.com/Qi-StarterTrain/diffusion-project3-stable-diffusion) |
 | Project 4：Flow Matching | [diffusion-project4-flow-matching](https://github.com/Qi-StarterTrain/diffusion-project4-flow-matching) |
-| Project 5：VLA Action Diffusion | 尚未整理成独立仓库 |
+| Project 5：VLA Action Diffusion | [diffusion-project5-vla-action-diffusion](https://github.com/Qi-StarterTrain/diffusion-project5-vla-action-diffusion) |
 
 补充阅读材料的总入口见 [supplementary/README.md](supplementary/README.md)，其中 L06 Score SDE 相关的数学基础建议按“ODE/SDE 数值方法 → Continuous Schedule → Probability Flow ODE”顺序阅读。
 
