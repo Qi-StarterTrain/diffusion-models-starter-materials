@@ -449,4 +449,4 @@ A: SD 1.5 训练于 512×512，直接生成 1024×1024 会有"重复人脸"等�
 
 ---
 
-> **下一讲预告**：L10 我们进入 **DiT (Diffusion Transformer)**——继 U-Net 之后的新一代架构。Sora、SD 3、Flux 都基于 DiT。你将看到 attention is all you need 在 diffusion 上的胜利。
+> **下一讲预告**：L10 进入 P2 阶段的第一讲——**ControlNet 与 LoRA**。前面九讲都在"从零造一个扩散模型"，从这里开始换个思路：在动不了的大模型上**做加法**。这也是工业界真实的工作流。再往后 L11 才是 **DiT (Diffusion Transformer)**——继 U-Net 之后的新一代架构，Sora、SD 3、Flux 都基于它。

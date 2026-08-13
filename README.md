@@ -18,7 +18,7 @@
 
 ## 自学指南
 
-本仓库已经写完 W1–W16 全部内容，可以完全自学，不必等待固定的开课节奏。建议按 P0 → P1 → P2 的顺序推进（见下方"三阶段结构"），每到一周就把该周对应的 `slides/` 讲义、`derivations/` 推导手稿、`notebooks/` 代码和 `paper_notes/` 论文导读放在一起读——讲义给直觉，推导手稿把公式一步步铺开，notebook 让你动手实现，paper note 帮你把内容接回原始论文，四者配合着看效果最好，尤其不要跳过手推公式的部分。开始之前先花一小时做 [math_prereq/self_assessment_quiz.md](math_prereq/self_assessment_quiz.md) 自测，数学基础不够扎实的话先补一补再回来，后面章节会大量依赖前面推导出的结论，跳读容易在中段卡住。每个阶段结束时用 `quizzes/` 里对应的测验（quiz1–quiz4）检验自己是不是真的掌握了，而不是"看懂了但不会推"。遇到某个点反复卡壳，先查 `supplementary/README.md`，很多课程中常见的理解难点已经被单独写成了补充笔记。至于 Project 1–5，教材库里没有配套的 starter code（那是通过 GitHub Classroom 单独下发给正式学员的），自学时可以把每个 Project 的目标当作阶段性练习，照着对应周的讲义和 notebook 自己从零搭起来。
+本仓库已经写完 W1–W16 全部内容，可以完全自学，不必等待固定的开课节奏。建议按 P0 → P1 → P2 的顺序推进（见下方"三阶段结构"），每到一周就把该周对应的 `slides/` 讲义、`derivations/` 推导手稿、`notebooks/` 代码和 `paper_notes/` 论文导读放在一起读——讲义给直觉，推导手稿把公式一步步铺开，notebook 让你动手实现，paper note 帮你把内容接回原始论文，四者配合着看效果最好，尤其不要跳过手推公式的部分。开始之前先花一小时做 [math_prereq/self_assessment_quiz.md](math_prereq/self_assessment_quiz.md) 自测，数学基础不够扎实的话先补一补再回来，后面章节会大量依赖前面推导出的结论，跳读容易在中段卡住。每个阶段结束时用 `quizzes/` 里对应的测验（quiz1–quiz4）检验自己是不是真的掌握了，而不是"看懂了但不会推"。遇到某个点反复卡壳，先查 `supplementary/README.md`，很多课程中常见的理解难点已经被单独写成了补充笔记。至于 Project，教材库里不含 starter code，但 Project 1–4 各有一个公开的 template 仓库（链接见下方"当前已入库阶段"），自学读者可以直接 clone 来做，里面的 TODO 和自查问题与讲义一一对应；Project 5 目前还没有独立仓库，可以把它的目标当作阶段性练习，照着对应周的讲义和 notebook 自己从零搭起来。
 
 > 本仓库服务两类读者：跟随直播班级的**正式学员**，以及只用教材库自己推进的**自学读者**。下文涉及 GitHub Classroom、助教、课程群、截止日期、考核占比的部分只对正式学员生效，标题旁会用「（正式学员）」标出；自学读者可以直接跳过这些小节，只看目录结构和分周内容即可。
 
@@ -133,7 +133,15 @@ diffusion-models-starter-materials/
 
 - `math_prereq/`、`templates/`、`supplementary/` 是跨阶段共用材料。
 - `slides/`（L01–L17）、`derivations/`（derive_01–10）、`notebooks/`（nb01–nb12）、`paper_notes/`（01–19）、`quizzes/`（quiz1–quiz4）已覆盖 W1-W16 全部三个阶段的主线内容。
-- Project 对应的 starter code（含 Project 4 Flow Matching、Project 5 VLA Action Diffusion）仍以各自的 Classroom / template 仓库为准（正式学员），不在本教材库长期维护；自学读者参照"自学指南"自行实现即可。
+- Project 对应的 starter code 不在本教材库维护，各自有独立的公开 template 仓库（正式学员由 Classroom 自动 fork，自学读者可以直接 clone 或 "Use this template"）：
+
+| Project | 仓库 |
+|---------|------|
+| Project 1：从零实现 DDPM | [diffusion-project1-ddpm](https://github.com/Qi-StarterTrain/diffusion-project1-ddpm) |
+| Project 2：采样器对比 | [diffusion-project2-samplers](https://github.com/Qi-StarterTrain/diffusion-project2-samplers) |
+| Project 3：Stable Diffusion 解剖 | [diffusion-project3-stable-diffusion](https://github.com/Qi-StarterTrain/diffusion-project3-stable-diffusion) |
+| Project 4：Flow Matching | [diffusion-project4-flow-matching](https://github.com/Qi-StarterTrain/diffusion-project4-flow-matching) |
+| Project 5：VLA Action Diffusion | 尚未整理成独立仓库 |
 
 补充阅读材料的总入口见 [supplementary/README.md](supplementary/README.md)，其中 L06 Score SDE 相关的数学基础建议按“ODE/SDE 数值方法 → Continuous Schedule → Probability Flow ODE”顺序阅读。
 
@@ -179,12 +187,18 @@ W3 课程结束时，助教会在课程群里发 Classroom 邀请链接。点击
 
 ```
 ~/diffusion-course/
-├── materials/                       ← git clone 本仓库到这里
+├── materials/                        ← git clone 本仓库到这里
 └── assignments/
-    ├── project1-ddpm-<你的用户名>/   ← Classroom 自动创建
-    ├── project2-samplers-<你的用户名>/
+    ├── diffusion-ddpm-<你的用户名>/   ← Classroom 自动创建（Project 1）
+    ├── diffusion-samplers-<你的用户名>/
     └── ...
 ```
+
+仓库名由 Classroom 按每个 assignment 配置的前缀生成，以你收到的邀请链接为准
+（Project 1 的实际前缀是 `diffusion-ddpm-`）。
+
+**把各个 Project 的作业仓库放在同一层**——Project 2 要 import Project 1 的
+`schedule.py` / `model/`，它的 `project1_path.py` 默认就在同级目录里找。
 
 ---
 
