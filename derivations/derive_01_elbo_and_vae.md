@@ -242,6 +242,7 @@ def vae_loss(x, x_recon, mu, log_sigma):
 
 ## §10 参考文献
 
+- ⭐ **首选** [VAE 讲解视频（YouTube）](https://www.youtube.com/watch?v=NlIqjtbjjRE)：讲 VAE 讲得最系统，如果只看一个就看这个
 - Kingma & Welling, *Auto-Encoding Variational Bayes*, ICLR 2014
 - Doersch, *Tutorial on Variational Autoencoders*, 2016
 - Bishop, *Pattern Recognition and Machine Learning*, Ch 10

@@ -296,6 +296,7 @@ $$\mathcal{L}_{\mathrm{DSM}} = \mathbb{E}_{x, \tilde x} \left[ \left\| s_\theta(
 
 | 资源 | 重点 |
 |------|------|
+| ⭐ [VAE 讲解视频（YouTube）](https://www.youtube.com/watch?v=NlIqjtbjjRE) | **首选**：讲 VAE 讲得最系统，如果只看一个就看这个 |
 | Kingma & Welling 2013《Auto-Encoding Variational Bayes》 | VAE 原始论文 |
 | Lilian Weng *From AE to Beta-VAE* | VAE 的另一种讲法 |
 | Yang Song 博客 *Generative Modeling by Estimating Gradients of the Data Distribution* | Score-based 模型权威综述 |
