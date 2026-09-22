@@ -28,3 +28,4 @@
 - [EMA 参数平均的作用](ema-for-diffusion.md)
 - [独立随机变量相加方差推导](variance-of-independent-sum.md)
 - [维度灾难理解](curse-of-dimensionality.md)
+- [Pixel Space vs Latent Space：latent 不是终点](pixel-vs-latent-space.md)（配合 L09 读；§5 之后需要 L11 / L12 / L13 的基础，建议 W13 之后再读）

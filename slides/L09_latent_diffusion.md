@@ -41,6 +41,16 @@ Latent 空间：64×64×4 = 16,384 维     （减少 ~48x）
 
 ---
 
+### 1.3 一个提醒：这是 2022 年的结论
+
+上面这套论证在 2022 年完全成立，今天也仍然是绝大多数开源模型的架构。但**不要把它记成"像素空间是被解决掉的旧问题"**。
+
+LDM 换来 48x 计算量下降，代价是引入了一个 VAE——这笔代价 §8 会展开。到 2025–2026 年，随着采样步数被蒸馏压到个位数，代价的相对权重发生了变化，pixel-space 生成重新成为一个活跃方向（见补充阅读 [Pixel Space vs Latent Space：latent 不是终点](../supplementary/pixel-vs-latent-space.md)）。
+
+本讲先把 LDM 这条主线讲透，但请带着一个问题往下读：**latent space 到底买到了什么，又付出了什么？**
+
+---
+
 ## §2 LDM 总体架构
 
 ### 2.1 三阶段流程
@@ -365,6 +375,21 @@ VAE 不是无损压缩，z → x 解码会丢失细节。特别是：
 
 VAE 和 U-Net 分开训练，可能存在数据流不匹配。SD 3 探索了 end-to-end 训练。
 
+### 8.4 推理时的 decode 开销
+
+VAE decode 是一次**固定成本**：不管采样多少步，最后都要跑一遍 decoder。
+
+$$
+T_{\text{total}} = \text{NFE} \times T_{\text{denoise}} + T_{\text{decode}}
+$$
+
+- **50 步采样**时，这一次 decode 相对于 50 次 U-Net 前向可以忽略；
+- **蒸馏到 4 步**之后（W12 会讲），第一项缩小十几倍而 $T_{\text{decode}}$ 一点没变，于是 **decode 开始占据可观的延迟比例**。
+
+换句话说，**LDM 的计算优势随采样步数下降而缩水**。这正是 2025–2026 年 pixel-space 方法重新受关注的直接动因之一，详见 [Pixel Space vs Latent Space：latent 不是终点](../supplementary/pixel-vs-latent-space.md)。
+
+> §10 进阶档第 6 题就是让你自己量一量这个比例随 NFE 怎么变。
+
 ---
 
 ## §9 本讲核心要点
@@ -376,6 +401,7 @@ VAE 和 U-Net 分开训练，可能存在数据流不匹配。SD 3 探索了 end
 5. **Cross-attention** 是文本条件注入的关键
 6. **CFG** 在 SD 中通过 batch concat 高效实现
 7. **工程优化**（fp16, attention slicing, xformers）让 SD 可在消费级显卡运行
+8. **latent 不是终点**：VAE 带来重构上限与一次固定的 decode 开销，低 NFE 下这笔成本的占比显著上升——见 [Pixel Space vs Latent Space](../supplementary/pixel-vs-latent-space.md)
 
 ---
 
@@ -403,9 +429,11 @@ VAE 和 U-Net 分开训练，可能存在数据流不匹配。SD 3 探索了 end
 
 5. **Cross-attention 可视化**：提取并可视化 cross-attention map（哪个词 attend 到哪个图像区域）
 
+6. **decode 开销占比测量**：固定 prompt 与 seed，分别在 NFE = 50 / 20 / 4 下生成，用 `torch.cuda.synchronize()` 把 denoising loop 与 `vae.decode` 分开计时，画出 decode 占端到端延迟的比例随 NFE 的变化曲线。想清楚这条曲线为什么上升，以及它对"latent space 一定更快"这个说法意味着什么。代码骨架与思考题见 [Pixel Space vs Latent Space §9](../supplementary/pixel-vs-latent-space.md)
+
 ### 挑战档
 
-6. **SDXL inference**：自己组装 SDXL 双模型（base + refiner）推理流水线
+7. **SDXL inference**：自己组装 SDXL 双模型（base + refiner）推理流水线
 
 ---
 
@@ -418,6 +446,7 @@ VAE 和 U-Net 分开训练，可能存在数据流不匹配。SD 3 探索了 end
 | 推导手稿 derive_03_ddpm_loss.pdf | DDPM 训练目标（latent space 不变） |
 | diffusers 源码 | 工业级实现参考 |
 | HuggingFace blog *The Annotated Diffusion Model* | 配合代码学习 |
+| Jiang et al., *An Empirical Study of Training Pixel-Space Text-to-Image Diffusion Models* (arXiv:2608.16887) | 反方向视角：latent 的代价与 pixel-space 的回归。需要 L11/L12/L13 基础，建议 W13 之后读，导读见 [补充材料](../supplementary/pixel-vs-latent-space.md) |
 
 ---
 
@@ -429,7 +458,11 @@ A: Latent 是高维抽象表示（4 channels 编码了图像感知信息），�
 
 **Q: 为什么 SD 训练时不直接在像素上做 diffusion？**
 
-A: 计算开销。在 512×512 像素上训练 LDM 规模的模型需要数千 GPU-days。LDM 的核心贡献就是把这个成本降到几十 GPU-days，让公开训练变得可行。
+A: 主要是计算开销。在 512×512 像素上训练 LDM 规模的模型需要数千 GPU-days，LDM 把这个成本降到几十 GPU-days，让公开训练变得可行。
+
+但这个答案有时效性，2026 年的证据让它需要补两句。Jiang et al. 的对照实验（相同数据、相同算力、只改扩散空间）显示：latent space 确实收敛得明显更快，**所以 LDM 当年的判断至今成立**；但这不只是因为省计算，还因为 VAE 提供了一个感知上有结构、更好学的表示。而一旦模型已在 latent space 预训练好，把它**迁移**到 pixel space 做 post-training，就能在保持质量的同时拿到 3.18–4.75× 的端到端推理加速——省掉了 VAE decode，还能用更大的 patch。
+
+所以更准确的说法是：**latent space 适合预训练，pixel space 可能更适合最终的生成器**。展开见 [Pixel Space vs Latent Space](../supplementary/pixel-vs-latent-space.md)。
 
 **Q: SD 的 0.18215 scaling factor 是怎么算出来的？**
 
