@@ -67,7 +67,7 @@ $$
 \mathrm{Var}(\text{signal})=\bar\alpha_t
 $$
 
-所以 $\bar\alpha_t$ 可以理解为：**第 t 步还保留了多少原始信号方差。**
+所以 $`\bar\alpha_t`$ 可以理解为：**第 t 步还保留了多少原始信号方差。**
 
 ---
 
@@ -97,7 +97,7 @@ $$
 \mathrm{Var}(\sqrt{1-\bar\alpha_t}\epsilon)=(1-\bar\alpha_t)\mathrm{Var}(\epsilon)=1-\bar\alpha_t
 $$
 
-因此 $1-\bar\alpha_t$ 可以理解为：**第 t 步噪声占据的方差比例。**
+因此 $`1-\bar\alpha_t`$ 可以理解为：**第 t 步噪声占据的方差比例。**
 
 ---
 
@@ -231,7 +231,7 @@ $$
 
 ---
 
-## 6. 为什么 SNR 比 $t$ 更本质？
+## 6. 为什么 SNR 比 $`t`$ 更本质？
 
 时间步 (t) 本身只是一个编号。
 例如：
@@ -254,7 +254,7 @@ $$
 $$
 
 也就是 SNR。
-不同 noise schedule 下，同样的 $t=500$ 可能对应完全不同的噪声强度。
+不同 noise schedule 下，同样的 $`t=500`$ 可能对应完全不同的噪声强度。
 比如：
 
 $$
@@ -267,8 +267,8 @@ $$
 \text{cosine schedule}
 $$
 
-在同一个 $t$ 下，$\bar\alpha_t$ 可能差很多。
-所以从模型训练角度看，真正决定任务难度的不是 $t$，而是：
+在同一个 $`t`$ 下，$`\bar\alpha_t`$ 可能差很多。
+所以从模型训练角度看，真正决定任务难度的不是 $`t`$，而是：
 
 $$
 \mathrm{SNR}(t)
@@ -329,11 +329,11 @@ $$
 它们表面上只是模型预测目标不同，但从 SNR 视角看，其实是对不同噪声阶段赋予了不同训练权重。
 例如：
 
-- $\epsilon\text{-prediction}$ 更偏向高噪声阶段；
-- $x_0\text{-prediction}$ 在低 SNR 区域可能会产生较大的梯度压力；
-- $v\text{-prediction}$ 在不同 SNR 区间更平衡。
+- $`\epsilon\text{-prediction}`$ 更偏向高噪声阶段；
+- $`x_0\text{-prediction}`$ 在低 SNR 区域可能会产生较大的梯度压力；
+- $`v\text{-prediction}`$ 在不同 SNR 区间更平衡。
 
-这也是为什么后来很多 diffusion model，尤其是 video diffusion、latent diffusion、大规模 text-to-image diffusion，会采用 $v\text{-prediction}$。它可以让训练在高 SNR 和低 SNR 区域之间更加稳定。
+这也是为什么后来很多 diffusion model，尤其是 video diffusion、latent diffusion、大规模 text-to-image diffusion，会采用 $`v\text{-prediction}`$。它可以让训练在高 SNR 和低 SNR 区域之间更加稳定。
 
 ---
 
@@ -419,7 +419,7 @@ $$
 
 ## 11. 为什么 EDM / Karras 2022 更重视 SNR？
 
-传统 DDPM 以 $t$ 和 $\beta_t$ 为主要设计变量：
+传统 DDPM 以 $`t`$ 和 $`\beta_t`$ 为主要设计变量：
 
 $$
 \beta_1,\beta_2,\ldots,\beta_T
@@ -456,8 +456,8 @@ $$
 \sigma \text{ 越小，SNR 越高}
 $$
 
-所以 EDM 的核心思想之一是：与其纠结离散时间步 $t$，不如直接设计噪声尺度 $\sigma$ 的分布、采样轨迹和 loss 权重。
-这比传统的 $\beta_t$ schedule 更直接。
+所以 EDM 的核心思想之一是：与其纠结离散时间步 $`t`$，不如直接设计噪声尺度 $`\sigma`$ 的分布、采样轨迹和 loss 权重。
+这比传统的 $`\beta_t`$ schedule 更直接。
 
 ---
 
@@ -481,11 +481,11 @@ $$
 \mathrm{SNR}(t)=\frac{\bar\alpha_t}{1-\bar\alpha_t}
 $$
 
-表示第 $t$ 步中，原始信号方差和噪声方差的比例。
+表示第 $`t`$ 步中，原始信号方差和噪声方差的比例。
 这个比例决定了：
 
 $$
 \text{任务难度、loss 权重、采样步长、条件信息强度}
 $$
 
-所以后续很多 diffusion 工作会把 SNR 或噪声尺度 $\sigma$ 当成更本质的设计变量。
+所以后续很多 diffusion 工作会把 SNR 或噪声尺度 $`\sigma`$ 当成更本质的设计变量。

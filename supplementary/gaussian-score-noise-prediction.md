@@ -10,7 +10,7 @@ $$
 
 它说明：
 
-**DDPM 中预测噪声 $\epsilon$，本质上等价于预测 score $\nabla_{x_t}\log q(x_t|x_0)$，只差一个时间相关系数。**
+**DDPM 中预测噪声 $`\epsilon`$，本质上等价于预测 score $`\nabla_{x_t}\log q(x_t|x_0)`$，只差一个时间相关系数。**
 
 ## 1. 先从一般高斯分布开始
 
@@ -20,7 +20,7 @@ $$
 p(x)=\mathcal N(\mu,\sigma^2 I)
 $$
 
-其中 $x\in\mathbb R^d$。
+其中 $`x\in\mathbb R^d`$。
 
 高斯密度是：
 
@@ -49,7 +49,7 @@ $$
 -\frac{d}{2}\log(2\pi\sigma^2)
 $$
 
-与 $x$ 无关，所以对 $x$ 求梯度时为 $0$。
+与 $`x`$ 无关，所以对 $`x`$ 求梯度时为 $`0`$。
 
 真正需要求导的是第二项：
 
@@ -67,7 +67,7 @@ $$
 (x-\mu)^\top(x-\mu)
 $$
 
-对 $x$ 求梯度：
+对 $`x`$ 求梯度：
 
 $$
 \nabla_x \|x-\mu\|^2
@@ -115,20 +115,20 @@ $$
 \frac{\mu-x}{\sigma^2}
 $$
 
-所以 score 指向均值 $\mu$。
+所以 score 指向均值 $`\mu`$。
 
 直觉上：
 
-- 如果 $x$ 在均值右边，score 指向左边；
-- 如果 $x$ 在均值左边，score 指向右边；
-- 离均值越远，$|x-\mu|$ 越大，score 的模长越大；
-- $\sigma^2$ 越大，分布越平，score 越弱。
+- 如果 $`x`$ 在均值右边，score 指向左边；
+- 如果 $`x`$ 在均值左边，score 指向右边；
+- 离均值越远，$`|x-\mu|`$ 越大，score 的模长越大；
+- $`\sigma^2`$ 越大，分布越平，score 越弱。
 
 因此高斯 score 可以理解为：
 
 > 把样本拉回高密度中心的方向。
 
-## 4. 代入 DDPM 的 $q(x_t|x_0)$
+## 4. 代入 DDPM 的 $`q(x_t|x_0)`$
 
 DDPM 前向加噪的闭合形式是：
 
@@ -184,7 +184,7 @@ $$
 -\frac{x_t-\mu_t}{\sigma_t^2}
 $$
 
-代入 $\mu_t$ 和 $\sigma_t^2$：
+代入 $`\mu_t`$ 和 $`\sigma_t^2`$：
 
 $$
 \nabla_{x_t}\log q(x_t|x_0)
@@ -192,7 +192,7 @@ $$
 -\frac{x_t-\sqrt{\bar\alpha_t}x_0}{1-\bar\alpha_t}
 $$
 
-## 5. 用噪声 $\epsilon$ 化简
+## 5. 用噪声 $`\epsilon`$ 化简
 
 由前向加噪公式：
 
@@ -220,7 +220,7 @@ $$
 -\frac{\sqrt{1-\bar\alpha_t}\epsilon}{1-\bar\alpha_t}
 $$
 
-约掉一个 $\sqrt{1-\bar\alpha_t}$：
+约掉一个 $`\sqrt{1-\bar\alpha_t}`$：
 
 $$
 \boxed{
@@ -269,7 +269,7 @@ $$
 }
 $$
 
-两者只差一个依赖时间 $t$ 的缩放因子。
+两者只差一个依赖时间 $`t`$ 的缩放因子。
 
 ## 7. 注意：这里是条件 score
 
@@ -279,7 +279,7 @@ $$
 \nabla_{x_t}\log q(x_t|x_0)
 $$
 
-也就是给定干净样本 $x_0$ 后，带噪样本 $x_t$ 的条件分布 score。
+也就是给定干净样本 $`x_0`$ 后，带噪样本 $`x_t`$ 的条件分布 score。
 
 而反向 SDE / probability flow ODE 里真正需要的是边缘分布的 score：
 
@@ -295,11 +295,11 @@ q_t(x_t)
 \int q(x_t|x_0)p_{\mathrm{data}}(x_0)\,dx_0
 $$
 
-训练时用 denoising score matching 的结论，把条件 score 作为监督信号来学习边缘 score。直觉上，网络看到大量 $(x_0,\epsilon,t)$ 样本后，会学到在每个噪声水平下如何从 $x_t$ 指向更高概率的数据区域。
+训练时用 denoising score matching 的结论，把条件 score 作为监督信号来学习边缘 score。直觉上，网络看到大量 $`(x_0,\epsilon,t)`$ 样本后，会学到在每个噪声水平下如何从 $`x_t`$ 指向更高概率的数据区域。
 
 ## 8. 一句话总结
 
-DDPM 的前向分布 $q(x_t|x_0)$ 是高斯，因此它的 score 可以直接解析求出：
+DDPM 的前向分布 $`q(x_t|x_0)`$ 是高斯，因此它的 score 可以直接解析求出：
 
 $$
 \nabla_{x_t}\log q(x_t|x_0)
@@ -309,4 +309,4 @@ $$
 -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}
 $$
 
-所以训练网络预测噪声 $\epsilon$，等价于训练它预测当前噪声水平下的 score，只是参数化方式更方便、更稳定。
+所以训练网络预测噪声 $`\epsilon`$，等价于训练它预测当前噪声水平下的 score，只是参数化方式更方便、更稳定。

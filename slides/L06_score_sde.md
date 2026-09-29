@@ -17,14 +17,14 @@
 
 ## §1 动机：为什么需要连续时间视角？
 
-L03-L05 我们用的是离散时间扩散：$x_0, x_1, \dots, x_T$，$T=1000$。
+L03-L05 我们用的是离散时间扩散：$`x_0, x_1, \dots, x_T`$，$`T=1000`$。
 
 **问题**：
-- $T$ 是个 magic number，为什么是 1000 而不是 100 或 10000？
+- $`T`$ 是个 magic number，为什么是 1000 而不是 100 或 10000？
 - 离散步骤之间的"间隙"如何理解？
 - DDPM（噪声预测）和 NCSN（score 估计）看起来非常像，但数学关系不清晰
 
-**Score SDE 的洞察**：让 $T \to \infty$，$\Delta t \to 0$，整个过程变成连续 SDE。
+**Score SDE 的洞察**：让 $`T \to \infty`$，$`\Delta t \to 0`$，整个过程变成连续 SDE。
 - 离散步数只是数值离散化的细节
 - DDPM 和 NCSN 是同一连续 SDE 的两种不同离散化
 
@@ -34,14 +34,14 @@ L03-L05 我们用的是离散时间扩散：$x_0, x_1, \dots, x_T$，$T=1000$。
 
 ### 2.1 ODE vs SDE
 
-**ODE**（常微分方程）：$\frac{dx}{dt} = f(x, t)$ — 确定性轨迹
+**ODE**（常微分方程）：$`\frac{dx}{dt} = f(x, t)`$ — 确定性轨迹
 
 **SDE**（随机微分方程）：
 $$dx = f(x, t) \, dt + g(t) \, dW$$
 
-- $f(x, t)$：**drift**（确定性"漂移"方向）
-- $g(t)$：**diffusion coefficient**（噪声强度）
-- $dW$：Wiener 过程的"无穷小增量"
+- $`f(x, t)`$：**drift**（确定性"漂移"方向）
+- $`g(t)`$：**diffusion coefficient**（噪声强度）
+- $`dW`$：Wiener 过程的"无穷小增量"
 
 **数值近似**（Euler-Maruyama）：
 $$x_{t+\Delta t} = x_t + f(x_t, t) \cdot \Delta t + g(t) \cdot \sqrt{\Delta t} \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$$
@@ -50,7 +50,7 @@ $$x_{t+\Delta t} = x_t + f(x_t, t) \cdot \Delta t + g(t) \cdot \sqrt{\Delta t} \
 
 ### 2.2 Fokker-Planck 方程
 
-给定 SDE $dx = f \, dt + g \, dW$，对应的密度 $p_t(x)$ 演化遵循 Fokker-Planck 方程：
+给定 SDE $`dx = f \, dt + g \, dW`$，对应的密度 $`p_t(x)`$ 演化遵循 Fokker-Planck 方程：
 
 $$\frac{\partial p_t}{\partial t} = -\nabla_x \cdot (f \cdot p_t) + \frac{1}{2} g^2 \nabla_x^2 p_t$$
 
@@ -67,9 +67,9 @@ $$\frac{\partial p_t}{\partial t} = -\nabla_x \cdot (f \cdot p_t) + \frac{1}{2} 
 DDPM 单步：
 $$x_{t} = \sqrt{1 - \beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon$$
 
-设 $\beta_t = \beta(t) \Delta t$（密度型参数化），$\Delta t = 1/T$，取极限 $T \to \infty$：
+设 $`\beta_t = \beta(t) \Delta t`$（密度型参数化），$`\Delta t = 1/T`$，取极限 $`T \to \infty`$：
 
-**Taylor 展开** $\sqrt{1 - \beta(t)\Delta t} \approx 1 - \frac{1}{2} \beta(t) \Delta t$：
+**Taylor 展开** $`\sqrt{1 - \beta(t)\Delta t} \approx 1 - \frac{1}{2} \beta(t) \Delta t`$：
 
 $$x_{t} \approx x_{t-1} - \frac{1}{2} \beta(t) \Delta t \cdot x_{t-1} + \sqrt{\beta(t) \Delta t} \cdot \epsilon$$
 
@@ -83,9 +83,9 @@ $$\boxed{dx = -\frac{1}{2} \beta(t) x \, dt + \sqrt{\beta(t)} \, dW}$$
 
 ### 3.2 NCSN 写成 SDE
 
-回忆 NCSN（W1）：用一系列噪声尺度 $\sigma_1 > \sigma_2 > \dots$ 训练 score 网络。
+回忆 NCSN（W1）：用一系列噪声尺度 $`\sigma_1 > \sigma_2 > \dots`$ 训练 score 网络。
 
-把噪声尺度也连续化：$\sigma(t)$。则加噪过程是：
+把噪声尺度也连续化：$`\sigma(t)`$。则加噪过程是：
 $$x_t = x_0 + \sigma(t) \cdot \epsilon$$
 
 对应的 SDE：
@@ -100,12 +100,12 @@ $$\boxed{dx = \sqrt{\frac{d[\sigma^2(t)]}{dt}} \, dW}$$
 
 | 性质 | VP-SDE（DDPM） | VE-SDE（NCSN） |
 |------|----------------|----------------|
-| Drift | $-\frac{1}{2}\beta(t) x$（向原点收缩） | 0 |
-| Diffusion | $\sqrt{\beta(t)}$ | $\sqrt{d\sigma^2/dt}$ |
-| $\text{Var}(x_T)$ | 有界（→ 1） | 无界（→ ∞） |
-| 终态分布 | $\mathcal{N}(0, I)$ | $\mathcal{N}(0, \sigma_T^2 I)$，$\sigma_T$ 极大 |
+| Drift | $`-\frac{1}{2}\beta(t) x`$（向原点收缩） | 0 |
+| Diffusion | $`\sqrt{\beta(t)}`$ | $`\sqrt{d\sigma^2/dt}`$ |
+| $`\text{Var}(x_T)`$ | 有界（→ 1） | 无界（→ ∞） |
+| 终态分布 | $`\mathcal{N}(0, I)`$ | $`\mathcal{N}(0, \sigma_T^2 I)`$，$`\sigma_T`$ 极大 |
 
-**意义**：DDPM 和 NCSN 不是两种独立方法，而是**同一框架下选择不同的 $f, g$**。
+**意义**：DDPM 和 NCSN 不是两种独立方法，而是**同一框架下选择不同的 $`f, g`$**。
 
 ---
 
@@ -113,21 +113,21 @@ $$\boxed{dx = \sqrt{\frac{d[\sigma^2(t)]}{dt}} \, dW}$$
 
 ### 4.1 神奇的事实
 
-**定理（Anderson 1982）**：对任意 forward SDE $dx = f \, dt + g \, dW$，存在一个对应的**反向 SDE**，描述如何从终态采样回初态：
+**定理（Anderson 1982）**：对任意 forward SDE $`dx = f \, dt + g \, dW`$，存在一个对应的**反向 SDE**，描述如何从终态采样回初态：
 
 $$\boxed{dx = \left[ f(x, t) - g(t)^2 \cdot \nabla_x \log p_t(x) \right] dt + g(t) \, d\bar W}$$
 
-其中 $d\bar W$ 是从 $T$ 到 $0$ 反向的 Wiener 过程，$\nabla_x \log p_t(x)$ 是 $t$ 时刻边缘密度的 score。
+其中 $`d\bar W`$ 是从 $`T`$ 到 $`0`$ 反向的 Wiener 过程，$`\nabla_x \log p_t(x)`$ 是 $`t`$ 时刻边缘密度的 score。
 
 ---
 
 ### 4.2 解读
 
 **反向 drift**：
-- 正向的 $f(x, t)$（仍然存在）
-- 减去 $g(t)^2 \cdot s_t(x)$：朝高密度方向"反推"
+- 正向的 $`f(x, t)`$（仍然存在）
+- 减去 $`g(t)^2 \cdot s_t(x)`$：朝高密度方向"反推"
 
-**关键观察**：要做反向采样，**只需要知道 score $\nabla_x \log p_t(x)$**。其他都是 forward SDE 决定的。
+**关键观察**：要做反向采样，**只需要知道 score $`\nabla_x \log p_t(x)`$**。其他都是 forward SDE 决定的。
 
 > **🔑 这就是 Score SDE 的核心洞察**：所有扩散模型最终都归结到"如何估计每个时间点的 score"。
 
@@ -135,19 +135,19 @@ $$\boxed{dx = \left[ f(x, t) - g(t)^2 \cdot \nabla_x \log p_t(x) \right] dt + g(
 
 ### 4.3 训练目标
 
-用 score matching 训练神经网络 $s_\theta(x, t)$ 逼近真实 score：
+用 score matching 训练神经网络 $`s_\theta(x, t)`$ 逼近真实 score：
 
 $$\mathcal{L} = \mathbb{E}_t \left\{ \lambda(t) \mathbb{E}_{x_0} \mathbb{E}_{x_t | x_0} \left[ \| s_\theta(x_t, t) - \nabla_{x_t} \log p(x_t | x_0) \|^2 \right] \right\}$$
 
-由于 $p(x_t | x_0)$ 是闭合高斯（VP-SDE 中等价于 DDPM 的 $q(x_t|x_0)$），$\nabla_{x_t} \log p(x_t|x_0)$ 可解析：
+由于 $`p(x_t | x_0)`$ 是闭合高斯（VP-SDE 中等价于 DDPM 的 $`q(x_t|x_0)`$），$`\nabla_{x_t} \log p(x_t|x_0)`$ 可解析：
 
 $$\nabla_{x_t} \log p(x_t | x_0) = -\frac{x_t - \mu_t}{\sigma_t^2}$$
 
-代入 VP-SDE 中 $x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t}\epsilon$：
+代入 VP-SDE 中 $`x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t}\epsilon`$：
 
 $$\nabla_{x_t} \log p(x_t | x_0) = -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}$$
 
-—— **预测 score 与预测 $\epsilon$ 差一个时间相关系数**！这是 DDPM 与 score-based 完全等价的严格证明。
+—— **预测 score 与预测 $`\epsilon`$ 差一个时间相关系数**！这是 DDPM 与 score-based 完全等价的严格证明。
 
 ---
 
@@ -155,11 +155,11 @@ $$\nabla_{x_t} \log p(x_t | x_0) = -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}$$
 
 ### 5.1 神奇的事实之二
 
-对任意 SDE $dx = f \, dt + g \, dW$，存在一个**确定性 ODE**：
+对任意 SDE $`dx = f \, dt + g \, dW`$，存在一个**确定性 ODE**：
 
 $$\boxed{\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \cdot \nabla_x \log p_t(x)}$$
 
-它在每个时间点 $t$ 的**边缘分布 $p_t(x)$ 与原 SDE 完全相同**，但轨迹是**确定性的**。
+它在每个时间点 $`t`$ 的**边缘分布 $`p_t(x)`$ 与原 SDE 完全相同**，但轨迹是**确定性的**。
 
 这叫 **probability flow ODE**。
 
@@ -170,7 +170,7 @@ $$\boxed{\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \cdot \nabla_x \log p_t(x)
 ### 5.2 为什么这个 ODE 重要？
 
 **优势**：
-1. **可逆**：从 $x_T$ 倒着积分到 $x_0$ 再正着积分回 $x_T$ 应当回到同一点
+1. **可逆**：从 $`x_T`$ 倒着积分到 $`x_0`$ 再正着积分回 $`x_T`$ 应当回到同一点
 2. **可计算精确 likelihood**：通过 instantaneous change of variables 公式
 3. **可用高阶 ODE 求解器**（Runge-Kutta、DPM-Solver）加速采样
 4. **去随机性**：生成结果可复现（给定初始噪声，输出固定）
@@ -209,7 +209,7 @@ W12:   Consistency Models（学一步映射）
 
 **Predictor-Corrector** 思路：
 - **Predictor**：用 SDE 求解器走一步（如 reverse SDE Euler-Maruyama）
-- **Corrector**：用 Langevin MCMC 在当前 $t$ 校正回正确分布
+- **Corrector**：用 Langevin MCMC 在当前 $`t`$ 校正回正确分布
 
 ```
 for t = T, T-Δt, ..., 0:
@@ -277,11 +277,11 @@ for t = T, T-Δt, ..., 0:
 
 ## §9 本讲核心要点
 
-1. **连续时间视角**让我们超越 $T=1000$ 的离散细节
+1. **连续时间视角**让我们超越 $`T=1000`$ 的离散细节
 2. **DDPM 是 VP-SDE 的特殊离散化，NCSN 是 VE-SDE 的特殊离散化**
 3. **Anderson 公式**：反向 SDE 只需 score 即可
 4. **Probability Flow ODE**：确定性的、可逆的、可计算 likelihood 的等价过程
-5. **预测 $\epsilon$ ↔ 预测 score** 在数学上严格等价
+5. **预测 $`\epsilon`$ ↔ 预测 score** 在数学上严格等价
 6. **Predictor-Corrector** 是 SDE 视角下的 SOTA 采样器
 
 ---
@@ -308,10 +308,10 @@ for t = T, T-Δt, ..., 0:
 
 ### 选做
 
-4. **概念题**：DDPM 中 $\beta_t$ 的"linear schedule"对应 VP-SDE 中 $\beta(t) = ?$ 的连续函数？
+4. **概念题**：DDPM 中 $`\beta_t`$ 的"linear schedule"对应 VP-SDE 中 $`\beta(t) = ?`$ 的连续函数？
    写下推导。
 
-5. 阅读 Karras 2022 EDM 论文前 4 节，理解他们如何把 Score SDE 推广到任意 $f, g$ 选择。
+5. 阅读 Karras 2022 EDM 论文前 4 节，理解他们如何把 Score SDE 推广到任意 $`f, g`$ 选择。
 
 ---
 
@@ -340,13 +340,13 @@ A: 短期可以，长期不行。DDIM 看似简单，但若不理解它是 proba
 
 A: 训练目标确实数学等价（差一个时间系数）。但工程上：
 - DDPM 用 VP-SDE 离散化（保持方差 ≈ 1）
-- NCSN 用 VE-SDE 离散化（方差随 $\sigma$ 增长）
+- NCSN 用 VE-SDE 离散化（方差随 $`\sigma`$ 增长）
 
 两种归一化方式让网络看到的输入分布不同，因此网络架构、调参经验都不同。Score SDE 之后大家逐渐统一到 VP 路线（Stable Diffusion 等）。
 
 **Q: Probability flow ODE 真的"确定性"？那为什么不一直用它？**
 
-A: ODE 在采样时确定，**但训练阶段仍然依赖 SDE 视角**（需要 forward 加噪过程提供训练样本）。"确定性"指的是 inference 时给定初始 $x_T$ 输出唯一。这在某些应用中是优势（可复现），但在其他场合是劣势（缺少 sample diversity）。
+A: ODE 在采样时确定，**但训练阶段仍然依赖 SDE 视角**（需要 forward 加噪过程提供训练样本）。"确定性"指的是 inference 时给定初始 $`x_T`$ 输出唯一。这在某些应用中是优势（可复现），但在其他场合是劣势（缺少 sample diversity）。
 
 **Q: 我能不能不学 SDE 视角，只学 DDIM？**
 

@@ -17,39 +17,39 @@ VAE 与 DDPM 在数学结构上**几乎一致**：
 - 都最大化 ELBO
 - 都用重参数化做训练
 
-理解 VAE 后，DDPM 就是"把一个 latent $z$ 替换成 $T$ 个 $z_1, \dots, z_T$"。
+理解 VAE 后，DDPM 就是"把一个 latent $`z`$ 替换成 $`T`$ 个 $`z_1, \dots, z_T`$"。
 
 ---
 
 ### 1.2 隐变量模型设置
 
-引入隐变量 $z$，定义联合分布：
+引入隐变量 $`z`$，定义联合分布：
 $$p_\theta(x, z) = p_\theta(x | z) \cdot p(z)$$
 
 其中：
-- $p(z) = \mathcal{N}(0, I)$：先验，固定
-- $p_\theta(x | z)$：解码器（decoder），由神经网络参数化
+- $`p(z) = \mathcal{N}(0, I)`$：先验，固定
+- $`p_\theta(x | z)`$：解码器（decoder），由神经网络参数化
 
 我们关心的边际似然：
 $$p_\theta(x) = \int p_\theta(x | z) p(z) \mathrm{d}z$$
 
-**问题**：这个积分一般无法解析、也无法高效采样估计（高维 $z$ 上 MC 估计效率极低）。
+**问题**：这个积分一般无法解析、也无法高效采样估计（高维 $`z`$ 上 MC 估计效率极低）。
 
 ---
 
 ### 1.3 引入变分后验
 
-引入近似后验 $q_\phi(z | x)$（编码器，encoder），用神经网络参数化为高斯：
+引入近似后验 $`q_\phi(z | x)`$（编码器，encoder），用神经网络参数化为高斯：
 
 $$q_\phi(z | x) = \mathcal{N}\bigl(z; \mu_\phi(x), \sigma_\phi^2(x) \cdot I\bigr)$$
 
-**关键观察**：用 $q_\phi(z | x)$ 我们可以从 $z$ 的"有意义区域"采样，而不是盲目从 $p(z)$ 采样。
+**关键观察**：用 $`q_\phi(z | x)`$ 我们可以从 $`z`$ 的"有意义区域"采样，而不是盲目从 $`p(z)`$ 采样。
 
 ---
 
 ### 1.4 ELBO 推导（必须会手推）
 
-我们的目标是最大化 $\log p_\theta(x)$。引入 $q_\phi(z|x)$：
+我们的目标是最大化 $`\log p_\theta(x)`$。引入 $`q_\phi(z|x)`$：
 
 $$
 \begin{aligned}
@@ -68,7 +68,7 @@ $$
 $$
 
 **两项的物理含义**：
-- **重构项**：$x$ 经编码—解码后能否重构得好？（让 $q_\phi$ 编码出的 $z$ 能被解码器还原 $x$）
+- **重构项**：$`x`$ 经编码—解码后能否重构得好？（让 $`q_\phi`$ 编码出的 $`z`$ 能被解码器还原 $`x`$）
 - **正则项**：编码器输出的后验是否接近先验？（避免过拟合，保证 latent space 整齐）
 
 ---
@@ -80,25 +80,25 @@ $$\log p_\theta(x) - \mathrm{ELBO}(x) = D_{\mathrm{KL}}(q_\phi(z|x) \| p_\theta(
 
 **意义**：
 - 差距 = 变分后验和真实后验的 KL
-- 当 $q_\phi$ 完全等于真实后验时，ELBO = 真实 likelihood
-- 最大化 ELBO ≡ 同时**最大化对数似然 + 让 $q_\phi$ 逼近真实后验**
+- 当 $`q_\phi`$ 完全等于真实后验时，ELBO = 真实 likelihood
+- 最大化 ELBO ≡ 同时**最大化对数似然 + 让 $`q_\phi`$ 逼近真实后验**
 
 ---
 
 ### 1.6 重参数化让训练可微
 
-ELBO 中含 $\mathbb{E}_{q_\phi(z|x)}[\cdot]$，要计算梯度需对 $\phi$ 求导。但 $z \sim q_\phi$ 是采样操作，不可导。
+ELBO 中含 $`\mathbb{E}_{q_\phi(z|x)}[\cdot]`$，要计算梯度需对 $`\phi`$ 求导。但 $`z \sim q_\phi`$ 是采样操作，不可导。
 
 **重参数化技巧**：
 $$z = \mu_\phi(x) + \sigma_\phi(x) \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$$
 
-把随机性外包给 $\epsilon$，则 $z$ 与 $\phi$ 之间是确定性映射，梯度可以正常流动。
+把随机性外包给 $`\epsilon`$，则 $`z`$ 与 $`\phi`$ 之间是确定性映射，梯度可以正常流动。
 
 ---
 
 ### 1.7 实践中的 VAE 训练目标
 
-设解码器为高斯：$p_\theta(x | z) = \mathcal{N}(\mu_\theta(z), I)$（固定单位方差）。
+设解码器为高斯：$`p_\theta(x | z) = \mathcal{N}(\mu_\theta(z), I)`$（固定单位方差）。
 
 则重构项化简为：
 $$\mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] = -\frac{1}{2} \mathbb{E}_{q_\phi}[\| x - \mu_\theta(z) \|^2] + \text{const}$$
@@ -119,10 +119,10 @@ $$\mathcal{L}_{\mathrm{VAE}} = \frac{1}{2} \| x - \mu_\theta(z) \|^2 + \frac{1}{
 
 | VAE 中 | DDPM 中 |
 |--------|---------|
-| 单一隐变量 $z$ | $T$ 个隐变量 $x_1, \dots, x_T$ |
-| 编码器 $q_\phi(z\|x)$ | **固定**的加噪过程 $q(x_{1:T}\|x_0)$ |
-| 解码器 $p_\theta(x\|z)$ | 学习的去噪过程 $p_\theta(x_{0:T})$ |
-| 一步采样 | $T$ 步采样 |
+| 单一隐变量 $`z`$ | $`T`$ 个隐变量 $`x_1, \dots, x_T`$ |
+| 编码器 $`q_\phi(z\|x)`$ | **固定**的加噪过程 $`q(x_{1:T}\|x_0)`$ |
+| 解码器 $`p_\theta(x\|z)`$ | 学习的去噪过程 $`p_\theta(x_{0:T})`$ |
+| 一步采样 | $`T`$ 步采样 |
 | ELBO 训练 | ELBO 训练（最终化简为 MSE） |
 
 **关键洞察**：DDPM 把 VAE 的"一个隐变量"扩展为"链式多个隐变量"，编码器固定为加噪，解码器学习反向去噪。
@@ -135,18 +135,18 @@ $$\mathcal{L}_{\mathrm{VAE}} = \frac{1}{2} \| x - \mu_\theta(z) \|^2 + \frac{1}{
 
 ### 2.1 Score function 的定义
 
-对密度 $p(x)$，**得分函数**（score function）定义为：
+对密度 $`p(x)`$，**得分函数**（score function）定义为：
 $$s(x) = \nabla_x \log p(x)$$
 
-注意：是对 $x$ 求导，不是对参数求导。
+注意：是对 $`x`$ 求导，不是对参数求导。
 
 ---
 
 ### 2.2 几何直觉
 
-$\nabla_x \log p(x)$ 指向**密度更高的方向**，模长是 log-density 的局部变化率。
+$`\nabla_x \log p(x)`$ 指向**密度更高的方向**，模长是 log-density 的局部变化率。
 
-**类比**：把 $-\log p(x)$ 视为势能，则 $-s(x) = -\nabla_x \log p(x)$ 是力的方向；沿 $s(x)$ 方向走 = 沿"密度梯度"上坡。
+**类比**：把 $`-\log p(x)`$ 视为势能，则 $`-s(x) = -\nabla_x \log p(x)`$ 是力的方向；沿 $`s(x)`$ 方向走 = 沿"密度梯度"上坡。
 
 ---
 
@@ -157,7 +157,7 @@ $\nabla_x \log p(x)$ 指向**密度更高的方向**，模长是 log-density 的
 **可以**。Langevin 动力学迭代：
 $$x_{t+1} = x_t + \frac{\eta}{2} s(x_t) + \sqrt{\eta} \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$$
 
-- $\eta$ 足够小、迭代足够多，$x_t$ 收敛到 $p$ 的样本
+- $`\eta`$ 足够小、迭代足够多，$`x_t`$ 收敛到 $`p`$ 的样本
 - 第一项：朝高密度方向走（drift）
 - 第二项：随机扰动（保证遍历整个分布）
 
@@ -167,9 +167,9 @@ $$x_{t+1} = x_t + \frac{\eta}{2} s(x_t) + \sqrt{\eta} \cdot \epsilon, \quad \eps
 
 ### 2.4 Score Matching：怎么估计未知分布的 score？
 
-我们没有真实分布的 score，但有数据样本 $x_1, \dots, x_N \sim p_{\text{data}}$。
+我们没有真实分布的 score，但有数据样本 $`x_1, \dots, x_N \sim p_{\text{data}}`$。
 
-**目标**：训练一个网络 $s_\theta(x)$ 使其逼近真实的 $\nabla_x \log p_{\text{data}}(x)$。
+**目标**：训练一个网络 $`s_\theta(x)`$ 使其逼近真实的 $`\nabla_x \log p_{\text{data}}(x)`$。
 
 **朴素想法**：最小化
 $$\mathbb{E}_{x \sim p_{\text{data}}} \| s_\theta(x) - \nabla_x \log p_{\text{data}}(x) \|^2$$
@@ -185,7 +185,7 @@ $$\mathbb{E}_{x \sim p_{\text{data}}} \left[ \text{tr}(\nabla_x s_\theta(x)) + \
 
 这个目标**不需要真实 score**，只需要数据样本！
 
-但实际中，$\text{tr}(\nabla_x s_\theta(x))$（雅可比矩阵的迹）在高维下计算极慢。
+但实际中，$`\text{tr}(\nabla_x s_\theta(x))`$（雅可比矩阵的迹）在高维下计算极慢。
 
 ---
 
@@ -193,32 +193,32 @@ $$\mathbb{E}_{x \sim p_{\text{data}}} \left[ \text{tr}(\nabla_x s_\theta(x)) + \
 
 **Vincent (2011)** 给出了一个高效近似：
 
-不直接估计 $p_{\text{data}}$ 的 score，而是估计**加噪后**分布 $p_\sigma(\tilde x)$ 的 score。
+不直接估计 $`p_{\text{data}}`$ 的 score，而是估计**加噪后**分布 $`p_\sigma(\tilde x)`$ 的 score。
 
-设加噪 $\tilde x = x + \sigma \epsilon$，$\epsilon \sim \mathcal{N}(0, I)$，则：
+设加噪 $`\tilde x = x + \sigma \epsilon`$，$`\epsilon \sim \mathcal{N}(0, I)`$，则：
 
 $$\nabla_{\tilde x} \log p_\sigma(\tilde x | x) = -\frac{\tilde x - x}{\sigma^2}$$
 
-—— 已知 $x$ 时，加噪后样本的 score 有解析解！
+—— 已知 $`x`$ 时，加噪后样本的 score 有解析解！
 
 DSM 训练目标：
 $$\mathcal{L}_{\mathrm{DSM}} = \mathbb{E}_{x, \tilde x} \left[ \left\| s_\theta(\tilde x) - \nabla_{\tilde x} \log p_\sigma(\tilde x | x) \right\|^2 \right] = \mathbb{E}_{x, \epsilon} \left[ \left\| s_\theta(\tilde x) + \frac{\epsilon}{\sigma} \right\|^2 \right]$$
 
 —— **本质是预测加进去的噪声**（差一个系数）。
 
-> **🔑 这里就是与 DDPM 的连接点**：DDPM 训练网络预测噪声 $\epsilon$，等价于预测 score，差一个 $\sigma$ 系数。
+> **🔑 这里就是与 DDPM 的连接点**：DDPM 训练网络预测噪声 $`\epsilon`$，等价于预测 score，差一个 $`\sigma`$ 系数。
 
 ---
 
 ### 2.7 多尺度 score matching：NCSN（Song & Ermon 2019）
 
-单一噪声尺度 $\sigma$ 不够：
-- $\sigma$ 太小：score 在低密度区域不准（数据流形外信息少）
-- $\sigma$ 太大：丢失数据细节
+单一噪声尺度 $`\sigma`$ 不够：
+- $`\sigma`$ 太小：score 在低密度区域不准（数据流形外信息少）
+- $`\sigma`$ 太大：丢失数据细节
 
-**解决**：用一系列噪声尺度 $\sigma_1 > \sigma_2 > \cdots > \sigma_L$，训练**条件 score 网络** $s_\theta(x, \sigma)$。
+**解决**：用一系列噪声尺度 $`\sigma_1 > \sigma_2 > \cdots > \sigma_L`$，训练**条件 score 网络** $`s_\theta(x, \sigma)`$。
 
-采样时：从大噪声开始 Langevin 动力学，逐步减小 $\sigma$ 至 0。
+采样时：从大噪声开始 Langevin 动力学，逐步减小 $`\sigma`$ 至 0。
 
 > **🔑 这就是 DDPM 的"另一种血脉"**：从大噪声逐步采样到干净数据，本质上和 DDPM 的反向过程一致。Song 2021 的 Score SDE 论文最终把这两条线统一了。
 
@@ -230,8 +230,8 @@ $$\mathcal{L}_{\mathrm{DSM}} = \mathbb{E}_{x, \tilde x} \left[ \left\| s_\theta(
 
 | 路线 | 起点 | 训练目标推导 | 最终形式 |
 |------|------|------------|----------|
-| **VAE → DDPM** | 最大化 $\log p_\theta(x_0)$ 的 ELBO | KL 化简、参数化技巧 | $\| \epsilon - \epsilon_\theta(x_t, t) \|^2$ |
-| **Score Matching → NCSN** | 估计加噪分布 score | DSM 推导 | $\| \epsilon - \epsilon_\theta(x_t, t) \|^2$ |
+| **VAE → DDPM** | 最大化 $`\log p_\theta(x_0)`$ 的 ELBO | KL 化简、参数化技巧 | $`\| \epsilon - \epsilon_\theta(x_t, t) \|^2`$ |
+| **Score Matching → NCSN** | 估计加噪分布 score | DSM 推导 | $`\| \epsilon - \epsilon_\theta(x_t, t) \|^2`$ |
 
 —— **完全相同的训练目标，不同的推导路径**！
 
@@ -246,10 +246,10 @@ $$\mathcal{L}_{\mathrm{DSM}} = \mathbb{E}_{x, \tilde x} \left[ \left\| s_\theta(
 | 术语 | 含义 | 课程后续用到 |
 |------|------|-------------|
 | ELBO | Evidence Lower Bound，对数似然下界 | DDPM 的 loss 推导 |
-| 重构项 | ELBO 中的似然部分 | DDPM 的 $L_0$ 项 |
-| 正则项 | ELBO 中的 KL 部分 | DDPM 的 $L_T$ 项 |
-| 重参数化 | 把随机性"外包"使梯度可流 | DDPM 的 $x_t$ 闭合采样 |
-| Score function | $\nabla_x \log p(x)$ | Score SDE，sampler 设计 |
+| 重构项 | ELBO 中的似然部分 | DDPM 的 $`L_0`$ 项 |
+| 正则项 | ELBO 中的 KL 部分 | DDPM 的 $`L_T`$ 项 |
+| 重参数化 | 把随机性"外包"使梯度可流 | DDPM 的 $`x_t`$ 闭合采样 |
+| Score function | $`\nabla_x \log p(x)`$ | Score SDE，sampler 设计 |
 | Score matching | 不知 ground truth score 时的估计方法 | NCSN，DSM |
 | Langevin 动力学 | 用 score 采样的 SDE | Predictor-Corrector sampler |
 | DSM | Denoising Score Matching | DDPM 的另一种推导 |
@@ -271,12 +271,12 @@ $$\mathcal{L}_{\mathrm{DSM}} = \mathbb{E}_{x, \tilde x} \left[ \left\| s_\theta(
 ### 必做
 
 1. **手推 ELBO**（提交手写或 LaTeX 推导）：
-   - 从 $\log p_\theta(x) = \log \int p_\theta(x, z) \mathrm{d}z$ 出发
-   - 引入 $q_\phi(z|x)$，使用 Jensen 不等式
+   - 从 $`\log p_\theta(x) = \log \int p_\theta(x, z) \mathrm{d}z`$ 出发
+   - 引入 $`q_\phi(z|x)`$，使用 Jensen 不等式
    - 化简到"重构项 - KL 正则项"形式
    - 标注每一步使用的数学工具
 
-2. **手推差距**：证明 $\log p_\theta(x) - \mathrm{ELBO}(x) = D_{\mathrm{KL}}(q_\phi(z|x) \| p_\theta(z|x))$。
+2. **手推差距**：证明 $`\log p_\theta(x) - \mathrm{ELBO}(x) = D_{\mathrm{KL}}(q_\phi(z|x) \| p_\theta(z|x))`$。
 
 3. **代码任务**：实现一个最小 VAE 在 MNIST 上训练
    - encoder/decoder 各 3 层 MLP

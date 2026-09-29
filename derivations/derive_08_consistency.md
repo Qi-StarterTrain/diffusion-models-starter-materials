@@ -3,7 +3,7 @@
 > 对应 L13 内容。本手稿推导：
 > - Consistency function 的存在性
 > - Boundary condition 的参数化技巧
-> - CD vs CT 的等价性（在 $N \to \infty$ 极限）
+> - CD vs CT 的等价性（在 $`N \to \infty`$ 极限）
 
 ---
 
@@ -12,9 +12,9 @@
 probability flow ODE：
 $$\frac{dx}{dt} = -\sigma(t) \nabla_x \log p_t(x), \quad t \in [\epsilon, T]$$
 
-（VE-SDE 形式，$\epsilon > 0$ 是数值稳定的下界）
+（VE-SDE 形式，$`\epsilon > 0`$ 是数值稳定的下界）
 
-ODE 解轨迹 $\{x_t\}_{t \in [\epsilon, T]}$ 由 $x_T \sim \mathcal{N}(0, \sigma^2(T) I)$ 决定。
+ODE 解轨迹 $`\{x_t\}_{t \in [\epsilon, T]}`$ 由 $`x_T \sim \mathcal{N}(0, \sigma^2(T) I)`$ 决定。
 
 ---
 
@@ -22,7 +22,7 @@ ODE 解轨迹 $\{x_t\}_{t \in [\epsilon, T]}$ 由 $x_T \sim \mathcal{N}(0, \sigm
 
 ### 2.1 形式定义
 
-$f: \mathbb{R}^d \times [\epsilon, T] \to \mathbb{R}^d$ 称为 **consistency function**，如果：
+$`f: \mathbb{R}^d \times [\epsilon, T] \to \mathbb{R}^d`$ 称为 **consistency function**，如果：
 
 **Property 1 (Self-consistency)**：对同一轨迹上的两个点：
 $$f(x_t, t) = f(x_{t'}, t'), \quad \forall (t, t')$$
@@ -36,9 +36,9 @@ $$f(x_\epsilon, \epsilon) = x_\epsilon$$
 
 **定理**：given probability flow ODE，consistency function 唯一存在。
 
-**直觉证明**：定义 $f(x_t, t) = x_\epsilon$（沿轨迹追溯到起点）。这个定义满足两个 properties。
+**直觉证明**：定义 $`f(x_t, t) = x_\epsilon`$（沿轨迹追溯到起点）。这个定义满足两个 properties。
 
-唯一性：两个 consistency function 都满足相同 property，在 $\epsilon$ 处都等于 $x_\epsilon$，由轨迹唯一性必相等。 ∎
+唯一性：两个 consistency function 都满足相同 property，在 $`\epsilon`$ 处都等于 $`x_\epsilon`$，由轨迹唯一性必相等。 ∎
 
 ---
 
@@ -46,9 +46,9 @@ $$f(x_\epsilon, \epsilon) = x_\epsilon$$
 
 ### 3.1 朴素参数化
 
-设 $f_\theta(x, t) = F_\theta(x, t)$（直接神经网络）。
+设 $`f_\theta(x, t) = F_\theta(x, t)`$（直接神经网络）。
 
-**问题**：很难保证 $F_\theta(x_\epsilon, \epsilon) = x_\epsilon$。
+**问题**：很难保证 $`F_\theta(x_\epsilon, \epsilon) = x_\epsilon`$。
 
 ---
 
@@ -58,8 +58,8 @@ Song et al. 2023 采用：
 $$f_\theta(x, t) = c_{\text{skip}}(t) \cdot x + c_{\text{out}}(t) \cdot F_\theta(c_{\text{in}}(t) \cdot x, c_{\text{noise}}(t))$$
 
 设计：
-- $c_{\text{skip}}(\epsilon) = 1, c_{\text{out}}(\epsilon) = 0$ → boundary 自动满足
-- $c_{\text{in}}, c_{\text{noise}}$ 用于输入归一化
+- $`c_{\text{skip}}(\epsilon) = 1, c_{\text{out}}(\epsilon) = 0`$ → boundary 自动满足
+- $`c_{\text{in}}, c_{\text{noise}}`$ 用于输入归一化
 
 具体（VE-SDE 设置）：
 $$c_{\text{skip}}(t) = \frac{\sigma_{\text{data}}^2}{(t - \epsilon)^2 + \sigma_{\text{data}}^2}$$
@@ -69,11 +69,11 @@ $$c_{\text{out}}(t) = \frac{\sigma_{\text{data}} \cdot (t - \epsilon)}{\sqrt{t^2
 
 ### 3.3 验证 boundary
 
-在 $t = \epsilon$ 处：
-- $c_{\text{skip}}(\epsilon) = \sigma_{\text{data}}^2 / (0 + \sigma_{\text{data}}^2) = 1$ ✓
-- $c_{\text{out}}(\epsilon) = \sigma_{\text{data}} \cdot 0 / \dots = 0$ ✓
+在 $`t = \epsilon`$ 处：
+- $`c_{\text{skip}}(\epsilon) = \sigma_{\text{data}}^2 / (0 + \sigma_{\text{data}}^2) = 1`$ ✓
+- $`c_{\text{out}}(\epsilon) = \sigma_{\text{data}} \cdot 0 / \dots = 0`$ ✓
 
-所以 $f_\theta(x, \epsilon) = 1 \cdot x + 0 = x$ ✓
+所以 $`f_\theta(x, \epsilon) = 1 \cdot x + 0 = x`$ ✓
 
 ---
 
@@ -81,29 +81,29 @@ $$c_{\text{out}}(t) = \frac{\sigma_{\text{data}} \cdot (t - \epsilon)}{\sqrt{t^2
 
 ### 4.1 训练目标
 
-设 teacher 模型 $s_\phi$（已训好的 diffusion score）。
+设 teacher 模型 $`s_\phi`$（已训好的 diffusion score）。
 
-在离散化 $\epsilon = t_1 < t_2 < \dots < t_N = T$ 上：
+在离散化 $`\epsilon = t_1 < t_2 < \dots < t_N = T`$ 上：
 
 $$\mathcal{L}_{\text{CD}}(\theta) = \mathbb{E}_{n, x_0, \epsilon}\left[d\bigl(f_\theta(x_{t_{n+1}}, t_{n+1}), f_{\theta_-}(\hat x_{t_n}, t_n)\bigr)\right]$$
 
 其中：
-- $x_{t_{n+1}}$ 由 forward process 加噪 $x_0$ 得到
-- $\hat x_{t_n}$ 由 teacher 走一步 ODE: $\hat x_{t_n} = x_{t_{n+1}} - (t_{n+1} - t_n) \cdot s_\phi(x_{t_{n+1}}, t_{n+1}) \cdot t_{n+1}$
-- $\theta_-$ 是 EMA copy of $\theta$
-- $d$ 是距离函数（L2 或 LPIPS）
+- $`x_{t_{n+1}}`$ 由 forward process 加噪 $`x_0`$ 得到
+- $`\hat x_{t_n}`$ 由 teacher 走一步 ODE: $`\hat x_{t_n} = x_{t_{n+1}} - (t_{n+1} - t_n) \cdot s_\phi(x_{t_{n+1}}, t_{n+1}) \cdot t_{n+1}`$
+- $`\theta_-`$ 是 EMA copy of $`\theta`$
+- $`d`$ 是距离函数（L2 或 LPIPS）
 
 ---
 
 ### 4.2 EMA Teacher 的作用
 
-为什么用 $f_{\theta_-}$ 而不是 $f_\theta$ 本身？
+为什么用 $`f_{\theta_-}`$ 而不是 $`f_\theta`$ 本身？
 
 **直觉**：避免训练不稳定（self-distillation 类似于 BYOL）。
-- $f_\theta$ 更新太快，target 一直在动
-- EMA $\theta_- = \mu \theta_- + (1-\mu) \theta$，target 平滑
+- $`f_\theta`$ 更新太快，target 一直在动
+- EMA $`\theta_- = \mu \theta_- + (1-\mu) \theta`$，target 平滑
 
-实证：$\mu = 0.99$ 左右最优。
+实证：$`\mu = 0.99`$ 左右最优。
 
 ---
 
@@ -147,11 +147,11 @@ CT 不需要 teacher。
 
 Teacher 走一步 ODE 是为了**沿 ODE 轨迹**移动。CT 用一个 trick 模拟：
 
-**同一个 noise**，加到不同的 $t$ 水平上：
+**同一个 noise**，加到不同的 $`t`$ 水平上：
 $$x_{t_n} = x_0 + t_n \cdot \epsilon$$
 $$x_{t_{n+1}} = x_0 + t_{n+1} \cdot \epsilon$$
 
-（注意：同一个 $\epsilon$！）
+（注意：同一个 $`\epsilon`$！）
 
 这两个点**近似在同一 probability flow 轨迹上**——因为 forward SDE 在 VE-SDE 下与 noise injection 是一一对应的。
 
@@ -165,13 +165,13 @@ $$\mathcal{L}_{\text{CT}}(\theta) = \mathbb{E}_{n, x_0, \epsilon}\left[d\bigl(f_
 
 ### 5.3 为什么 CT 等价于 CD（in limit）
 
-**关键定理 (Song et al. 2023, Thm 4)**：在 $N \to \infty$ 的极限下，CT 和 CD 的训练 gradients 重合。
+**关键定理 (Song et al. 2023, Thm 4)**：在 $`N \to \infty`$ 的极限下，CT 和 CD 的训练 gradients 重合。
 
 **直觉证明 sketch**：
-- CD 用 teacher 走 ODE，得到 $\hat x_{t_n}$
-- CT 直接用 $x_0 + t_n \epsilon$ 作为 $x_{t_n}$
-- 当 $\Delta t = t_{n+1} - t_n \to 0$，teacher ODE 步退化为"$x_{t_{n+1}}$ 减去一点 score"
-- 这恰好对应"同一 $\epsilon$ 下的 less noise"——即 $x_0 + t_n \epsilon$
+- CD 用 teacher 走 ODE，得到 $`\hat x_{t_n}`$
+- CT 直接用 $`x_0 + t_n \epsilon`$ 作为 $`x_{t_n}`$
+- 当 $`\Delta t = t_{n+1} - t_n \to 0`$，teacher ODE 步退化为"$`x_{t_{n+1}}`$ 减去一点 score"
+- 这恰好对应"同一 $`\epsilon`$ 下的 less noise"——即 $`x_0 + t_n \epsilon`$
 
 数学细节：见 Song 2023 Appendix B.
 
@@ -181,13 +181,13 @@ $$\mathcal{L}_{\text{CT}}(\theta) = \mathbb{E}_{n, x_0, \epsilon}\left[d\bigl(f_
 
 ### 6.1 L2
 
-最简单：$d(x, y) = \|x - y\|^2$。
+最简单：$`d(x, y) = \|x - y\|^2`$。
 
 但**视觉质量差**：L2 对低频敏感，高频不敏感。
 
 ### 6.2 LPIPS
 
-$d(x, y) = \text{LPIPS}(x, y)$（用 pretrained VGG 抽特征算余弦距离）。
+$`d(x, y) = \text{LPIPS}(x, y)`$（用 pretrained VGG 抽特征算余弦距离）。
 
 **视觉质量好**，但：
 - 慢（每步多一次 VGG forward）
@@ -226,11 +226,11 @@ def cm_sample_multistep(model, n_steps=4):
     return x
 ```
 
-机制：每步 estimate $x_0$，然后**加更少**的 noise 重新进入扩散，再 estimate 一次。
+机制：每步 estimate $`x_0`$，然后**加更少**的 noise 重新进入扩散，再 estimate 一次。
 
 ### 7.2 与 DDIM 的差别
 
-DDIM 每步**前进**（$t \to t-\Delta t$），CM 每步**直接预测 $x_0$**。
+DDIM 每步**前进**（$`t \to t-\Delta t`$），CM 每步**直接预测 $`x_0`$**。
 
 效果：CM 4 步 ≈ DDIM 50 步。
 
@@ -241,9 +241,9 @@ DDIM 每步**前进**（$t \to t-\Delta t$），CM 每步**直接预测 $x_0$**�
 ### 8.1 EMA teacher 的稳定作用
 
 没有 EMA 的话：
-- 一开始 $f_\theta$ 输出随机
-- 让 $f_\theta(x_t)$ 与 $f_\theta(x_{t-\Delta t})$ 一致 = "和自己一致"
-- 模式坍缩到 trivial 解（如 $f_\theta(x) = 0$）
+- 一开始 $`f_\theta`$ 输出随机
+- 让 $`f_\theta(x_t)`$ 与 $`f_\theta(x_{t-\Delta t})`$ 一致 = "和自己一致"
+- 模式坍缩到 trivial 解（如 $`f_\theta(x) = 0`$）
 
 EMA 让 target 滞后于 student，避免这个坍缩。
 
@@ -256,8 +256,8 @@ EMA 让 target 滞后于 student，避免这个坍缩。
 ## §9 自查题
 
 1. 写出 consistency function 的两个 properties
-2. 推导 EDM-style preconditioning 在 $t=\epsilon$ 时退化为 identity
-3. 解释为什么 CT 在 $N \to \infty$ 下等价于 CD
+2. 推导 EDM-style preconditioning 在 $`t=\epsilon`$ 时退化为 identity
+3. 解释为什么 CT 在 $`N \to \infty`$ 下等价于 CD
 4. 比较 L2、LPIPS、Pseudo-Huber 的优缺点
 
 ---

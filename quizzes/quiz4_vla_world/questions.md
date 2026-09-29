@@ -28,13 +28,13 @@
 ### 7（10 分）Flow Matching 在 action 生成上的训练目标
 
 设：
-- $a_{1:H} \in \mathbb{R}^{H \times A}$：未来 $H$ 步 action chunk
-- vision feature $v \in \mathbb{R}^{D_v}$
-- language feature $l \in \mathbb{R}^{D_l}$
-- noise $\epsilon \sim \mathcal{N}(0, I)$，shape $H \times A$
-- $t \in [0, 1]$
+- $`a_{1:H} \in \mathbb{R}^{H \times A}`$：未来 $`H`$ 步 action chunk
+- vision feature $`v \in \mathbb{R}^{D_v}`$
+- language feature $`l \in \mathbb{R}^{D_l}`$
+- noise $`\epsilon \sim \mathcal{N}(0, I)`$，shape $`H \times A`$
+- $`t \in [0, 1]`$
 
-(a)（3 分）写出 linear-path action FM 的训练 loss（参数化为 $v_\theta$）。
+(a)（3 分）写出 linear-path action FM 的训练 loss（参数化为 $`v_\theta`$）。
 
 (b)（4 分）推断时，给定 obs (vision + language)，写出从 noise 到 action chunk 的 Euler ODE 采样代码（伪代码 OK）。
 
@@ -44,11 +44,11 @@
 
 ### 8（10 分）Compound error 在 autoregressive world model 中的累积
 
-设每步预测正确概率为 $p = 0.99$（即每步独立错误率 $1 - p = 0.01$）。
+设每步预测正确概率为 $`p = 0.99`$（即每步独立错误率 $`1 - p = 0.01`$）。
 
 (a)（3 分）假设错误独立，预测 100 步后**全程**正确的概率是多少？
 
-(b)（4 分）实际上误差会**累积**（前步错导致后续 conditional input 错），假设错误率每步增 10%。写出第 $k$ 步的预期错误率公式，并估算第 50 步与第 100 步的错误率。
+(b)（4 分）实际上误差会**累积**（前步错导致后续 conditional input 错），假设错误率每步增 10%。写出第 $`k`$ 步的预期错误率公式，并估算第 50 步与第 100 步的错误率。
 
 (c)（3 分）这说明什么？为什么 Sora 60 秒视频和真正的 world model 之间存在巨大 gap？
 

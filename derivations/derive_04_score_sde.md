@@ -14,18 +14,18 @@
 DDPM 单步：
 $$x_t = \sqrt{1-\beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t$$
 
-设 $T$ 步对应时间区间 $[0, 1]$（即 $\Delta t = 1/T$）。把 $\beta_t$ 写成密度形式：
+设 $`T`$ 步对应时间区间 $`[0, 1]`$（即 $`\Delta t = 1/T`$）。把 $`\beta_t`$ 写成密度形式：
 $$\beta_t = \beta(t/T) \cdot \frac{1}{T} = \beta(s) \Delta t, \quad s = t/T$$
 
-其中 $\beta(s)$ 是连续函数（如 linear schedule 对应线性函数）。
+其中 $`\beta(s)`$ 是连续函数（如 linear schedule 对应线性函数）。
 
-> 补充阅读：如果这里对“为什么要写成 $\beta_t = \beta(s)\Delta t$”还没有直觉，可以继续看 [Continuous Schedule 与 SDE 视角：如何理解 $\beta_t = \beta(s)\Delta t$](../supplementary/continuous-schedule-sde-view.md)。
+> 补充阅读：如果这里对“为什么要写成 $`\beta_t = \beta(s)\Delta t`$”还没有直觉，可以继续看 [Continuous Schedule 与 SDE 视角：如何理解 $`\beta_t = \beta(s)\Delta t`$](../supplementary/continuous-schedule-sde-view.md)。
 
 ---
 
 ### 1.2 一阶 Taylor 展开
 
-当 $\Delta t$ 小时：
+当 $`\Delta t`$ 小时：
 $$\sqrt{1 - \beta(s) \Delta t} \approx 1 - \frac{1}{2} \beta(s) \Delta t$$
 
 代入单步公式：
@@ -38,7 +38,7 @@ $$x(s + \Delta t) - x(s) \approx -\frac{1}{2}\beta(s)\Delta t \cdot x(s) + \sqrt
 
 ### 1.3 取极限：SDE
 
-形式上写成 SDE（用 $dW = \sqrt{dt} \cdot \epsilon$）：
+形式上写成 SDE（用 $`dW = \sqrt{dt} \cdot \epsilon`$）：
 
 $$\boxed{dx = -\frac{1}{2}\beta(t) x \, dt + \sqrt{\beta(t)} \, dW}$$
 
@@ -93,11 +93,11 @@ $$
 
 于是可以读出两件事：
 
-1. 均值会随着时间按 $\alpha(t)$ 衰减到 0；
+1. 均值会随着时间按 $`\alpha(t)`$ 衰减到 0；
 2. 方差会从 0 增长到接近 1，但不会无界发散。
 
 这也就是它为什么叫 **variance preserving**：  
-虽然单个样本的“信号部分”在变小，但整个过程的噪声尺度被设计得恰到好处，使得总方差保持在一个有界范围内；当 $t$ 足够大时，终态逼近
+虽然单个样本的“信号部分”在变小，但整个过程的噪声尺度被设计得恰到好处，使得总方差保持在一个有界范围内；当 $`t`$ 足够大时，终态逼近
 
 $$
 \mathcal N(0, I)
@@ -122,7 +122,7 @@ x(t) = x_0 + \sigma(t)\epsilon,
 \epsilon \sim \mathcal N(0, I)
 $$
 
-因此在任意时刻 $t$，条件分布满足
+因此在任意时刻 $`t`$，条件分布满足
 
 $$
 x(t)\mid x_0 \sim \mathcal N(x_0, \sigma^2(t)I)
@@ -130,8 +130,8 @@ $$
 
 也就是说：
 
-- 均值始终是 $x_0$，没有像 VP-SDE 那样逐渐往 0 收缩；
-- 方差则随 $\sigma^2(t)$ 单调增大。
+- 均值始终是 $`x_0`$，没有像 VP-SDE 那样逐渐往 0 收缩；
+- 方差则随 $`\sigma^2(t)`$ 单调增大。
 
 现在我们想找一个连续时间 SDE，使它的边缘分布正好就是上面的高斯。最自然的选择是只保留扩散项、不加 drift：
 
@@ -173,7 +173,7 @@ $$
 \int_0^t g^2(\tau)\,d\tau = \sigma^2(t)
 $$
 
-两边对 $t$ 求导，得到
+两边对 $`t`$ 求导，得到
 
 $$
 g^2(t) = \frac{d[\sigma^2(t)]}{dt}
@@ -193,14 +193,14 @@ $$
 \mathrm{Var}[x(t)\mid x_0] = \sigma^2(t)I
 $$
 
-会随着时间不断增大；若 $\sigma(t)$ 取得很大，终态就是一个方差很大的高斯噪声分布。
+会随着时间不断增大；若 $`\sigma(t)`$ 取得很大，终态就是一个方差很大的高斯噪声分布。
 
 和 VP-SDE 对比看，会更清楚：
 
 - **VP-SDE**：均值被 drift 项逐步拉向 0，同时注入噪声，总体方差保持有界；
 - **VE-SDE**：均值不动（drift = 0），只是不停往样本上叠加更大的噪声，因此方差持续膨胀。
 
-所以 VE-SDE 更像是在说：**原始数据点始终作为中心保留着，而噪声球半径 $\sigma(t)$ 不断变大。**
+所以 VE-SDE 更像是在说：**原始数据点始终作为中心保留着，而噪声球半径 $`\sigma(t)`$ 不断变大。**
 
 ---
 
@@ -210,7 +210,7 @@ $$
 
 $$dx = f(x, t) \, dt + g(t) \, dW$$
 
-设 $x$ 的边缘密度为 $p_t(x)$。
+设 $`x`$ 的边缘密度为 $`p_t(x)`$。
 
 ---
 
@@ -221,7 +221,7 @@ $$\frac{\partial p_t(x)}{\partial t} = -\sum_i \frac{\partial}{\partial x_i}\lef
 向量形式：
 $$\frac{\partial p_t}{\partial t} = -\nabla \cdot (f \cdot p_t) + \frac{1}{2} g(t)^2 \Delta p_t$$
 
-（$\Delta$ 是 Laplacian，对角的二阶导）
+（$`\Delta`$ 是 Laplacian，对角的二阶导）
 
 **意义**：SDE 描述粒子轨迹，FPE 描述粒子密度的演化。
 
@@ -231,11 +231,11 @@ $$\frac{\partial p_t}{\partial t} = -\nabla \cdot (f \cdot p_t) + \frac{1}{2} g(
 
 ### 3.1 设置
 
-正向 SDE 从 $t=0$ 跑到 $t=T$，密度从 $p_0 = p_{\text{data}}$ 演化到 $p_T \approx \mathcal{N}(0, I)$。
+正向 SDE 从 $`t=0`$ 跑到 $`t=T`$，密度从 $`p_0 = p_{\text{data}}`$ 演化到 $`p_T \approx \mathcal{N}(0, I)`$。
 
-**反向问题**：能否构造一个 SDE，从 $t=T$ 跑到 $t=0$，使其密度演化与正向**完全相同**（但方向相反）？
+**反向问题**：能否构造一个 SDE，从 $`t=T`$ 跑到 $`t=0`$，使其密度演化与正向**完全相同**（但方向相反）？
 
-如果能，从 $x_T \sim p_T$ 出发跑反向 SDE 就能采样到 $p_0 = p_{\text{data}}$！
+如果能，从 $`x_T \sim p_T`$ 出发跑反向 SDE 就能采样到 $`p_0 = p_{\text{data}}`$！
 
 ---
 
@@ -244,13 +244,13 @@ $$\frac{\partial p_t}{\partial t} = -\nabla \cdot (f \cdot p_t) + \frac{1}{2} g(
 **结论**：反向 SDE 形式为
 $$\boxed{dx = \left[f(x, t) - g(t)^2 \cdot \nabla_x \log p_t(x)\right] dt + g(t) \, d\bar W}$$
 
-其中 $d\bar W$ 是反向 Wiener 过程的微元。
+其中 $`d\bar W`$ 是反向 Wiener 过程的微元。
 
 ---
 
 ### 3.3 证明思路
 
-设反向过程是 $dx = \tilde f(x, t) \, dt + \tilde g(t) \, d\bar W$，密度 $\tilde p_t = p_t$（同一密度，只是时间方向相反）。
+设反向过程是 $`dx = \tilde f(x, t) \, dt + \tilde g(t) \, d\bar W`$，密度 $`\tilde p_t = p_t`$（同一密度，只是时间方向相反）。
 
 由于在反向时间下，"反向 FPE" 形式为：
 $$-\frac{\partial \tilde p_t}{\partial t} = -\nabla \cdot (\tilde f \cdot \tilde p_t) + \frac{1}{2} \tilde g^2 \Delta \tilde p_t$$
@@ -276,7 +276,7 @@ $$0 = -\nabla \cdot ((f + \tilde f) p_t) + \frac{1}{2}(g^2 + \tilde g^2) \nabla 
 要恒成立，**括号内项应当抵消**：
 $$f + \tilde f = \frac{1}{2}(g^2 + \tilde g^2) \nabla \log p_t$$
 
-选 $\tilde g = g$（保持同样的"噪声强度"），得：
+选 $`\tilde g = g`$（保持同样的"噪声强度"），得：
 $$\tilde f = -f + g^2 \nabla \log p_t$$
 
 所以反向 SDE 的 drift 是：
@@ -290,7 +290,7 @@ $$\tilde f(x, t) = f(x, t) - g(t)^2 \nabla_x \log p_t(x)$$
 
 ### 3.4 关键洞察
 
-要做反向采样，**只需要知道每个时刻的 score $\nabla_x \log p_t(x)$**。
+要做反向采样，**只需要知道每个时刻的 score $`\nabla_x \log p_t(x)`$**。
 
 这就是为什么 score-based 模型的训练目标是估计 score——**score 是反向 SDE 唯一未知的量**。
 
@@ -300,11 +300,11 @@ $$\tilde f(x, t) = f(x, t) - g(t)^2 \nabla_x \log p_t(x)$$
 
 ### 4.1 神奇的事实
 
-对任意 SDE $dx = f \, dt + g \, dW$，存在**确定性 ODE**：
+对任意 SDE $`dx = f \, dt + g \, dW`$，存在**确定性 ODE**：
 
 $$\boxed{\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \cdot \nabla_x \log p_t(x)}$$
 
-它**在每个时间 $t$ 的边缘分布 $p_t(x)$ 与原 SDE 完全相同**，但轨迹是确定性的。
+它**在每个时间 $`t`$ 的边缘分布 $`p_t(x)`$ 与原 SDE 完全相同**，但轨迹是确定性的。
 
 > 补充阅读：如果这里对“边缘分布相同但轨迹不同”还没有直觉，可以继续看 [Probability Flow ODE：如何理解“边缘分布完全相同”](../supplementary/probability-flow-ode-marginals.md)。
 
@@ -312,13 +312,13 @@ $$\boxed{\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \cdot \nabla_x \log p_t(x)
 
 ### 4.2 证明（FPE 视角）
 
-ODE $dx/dt = h(x, t)$ 对应的"FPE"（实际是 transport equation）是：
+ODE $`dx/dt = h(x, t)`$ 对应的"FPE"（实际是 transport equation）是：
 $$\frac{\partial p_t}{\partial t} = -\nabla \cdot (h \cdot p_t)$$
 
 要使其等于 SDE 的 FPE：
 $$-\nabla \cdot (h \cdot p_t) = -\nabla \cdot (f \cdot p_t) + \frac{1}{2} g^2 \Delta p_t$$
 
-利用 $\Delta p_t = \nabla \cdot (p_t \nabla \log p_t)$：
+利用 $`\Delta p_t = \nabla \cdot (p_t \nabla \log p_t)`$：
 $$-\nabla \cdot (h \cdot p_t) = -\nabla \cdot \left[\left(f - \frac{1}{2} g^2 \nabla \log p_t\right) p_t\right]$$
 
 所以
@@ -330,10 +330,10 @@ $$h(x, t) = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)$$
 
 ### 4.3 为什么这个 ODE 重要？
 
-1. **可逆**：从 $x_T$ 倒积分回 $x_0$ 再正积分到 $x_T$ 应该回到同一点
+1. **可逆**：从 $`x_T`$ 倒积分回 $`x_0`$ 再正积分到 $`x_T`$ 应该回到同一点
 2. **可计算精确 likelihood**（instantaneous change of variables）
 3. **可用高阶 ODE 求解器加速**（DDIM, DPM-Solver, EDM 等）
-4. **去随机性**：给定 $x_T$，$x_0$ 唯一
+4. **去随机性**：给定 $`x_T`$，$`x_0`$ 唯一
 
 > 补充阅读：这四点的直觉解释见 [Probability Flow ODE：如何理解“边缘分布完全相同” §8](../supplementary/probability-flow-ode-marginals.md#8-为什么这个-ode-重要)。
 
@@ -341,7 +341,7 @@ $$h(x, t) = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)$$
 
 ## §5 VP-SDE 的具体形式
 
-代入 $f(x, t) = -\frac{1}{2}\beta(t) x$，$g(t) = \sqrt{\beta(t)}$：
+代入 $`f(x, t) = -\frac{1}{2}\beta(t) x`$，$`g(t) = \sqrt{\beta(t)}`$：
 
 **反向 SDE**：
 $$dx = \left[-\frac{1}{2}\beta(t) x - \beta(t) \nabla_x \log p_t(x)\right] dt + \sqrt{\beta(t)} \, d\bar W$$
@@ -353,13 +353,13 @@ $$\frac{dx}{dt} = -\frac{1}{2}\beta(t) x - \frac{1}{2}\beta(t) \nabla_x \log p_t
 
 ## §6 Score 与 Noise Prediction 的等价
 
-### 6.1 离散 $\to$ 连续
+### 6.1 离散 $`\to`$ 连续
 
-离散 DDPM：$x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon$。
+离散 DDPM：$`x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon`$。
 
-连续 VP-SDE：定义 $\bar\alpha(t) = \exp\left(-\int_0^t \beta(s) ds\right)$（exact 形式）。
+连续 VP-SDE：定义 $`\bar\alpha(t) = \exp\left(-\int_0^t \beta(s) ds\right)`$（exact 形式）。
 
-类似地，$x(t) | x(0) \sim \mathcal{N}(\sqrt{\bar\alpha(t)} x_0, (1-\bar\alpha(t)) I)$。
+类似地，$`x(t) | x(0) \sim \mathcal{N}(\sqrt{\bar\alpha(t)} x_0, (1-\bar\alpha(t)) I)`$。
 
 ---
 
@@ -368,7 +368,7 @@ $$\frac{dx}{dt} = -\frac{1}{2}\beta(t) x - \frac{1}{2}\beta(t) \nabla_x \log p_t
 由 derive_02 的工具：
 $$\nabla_x \log p_t(x | x_0) = -\frac{x - \sqrt{\bar\alpha(t)} x_0}{1 - \bar\alpha(t)} = -\frac{\sqrt{1-\bar\alpha(t)} \epsilon}{1-\bar\alpha(t)} = -\frac{\epsilon}{\sqrt{1-\bar\alpha(t)}}$$
 
-—— **预测 $\epsilon$ ≡ 预测 score**（差时间相关系数）。
+—— **预测 $`\epsilon`$ ≡ 预测 score**（差时间相关系数）。
 
 > 补充阅读：高斯 score 到噪声预测等价的逐步推导见 [高斯 Score 推导：为什么预测噪声等价于预测 Score](../supplementary/gaussian-score-noise-prediction.md)。
 
@@ -379,12 +379,12 @@ $$\nabla_x \log p_t(x | x_0) = -\frac{x - \sqrt{\bar\alpha(t)} x_0}{1 - \bar\alp
 回顾 DDIM 公式：
 $$x_{t-1} = \sqrt{\bar\alpha_{t-1}} \hat x_0(x_t) + \sqrt{1-\bar\alpha_{t-1}} \epsilon_\theta$$
 
-其中 $\hat x_0 = (x_t - \sqrt{1-\bar\alpha_t} \epsilon_\theta) / \sqrt{\bar\alpha_t}$。
+其中 $`\hat x_0 = (x_t - \sqrt{1-\bar\alpha_t} \epsilon_\theta) / \sqrt{\bar\alpha_t}`$。
 
 **断言**：DDIM 等价于 probability flow ODE 的某种一阶离散化（在适当参数变换下）。
 
 证明思路（粗略）：
-1. 把 ODE 改写成关于"参数化变量" $\lambda(t) = \log(\sqrt{\bar\alpha_t}/\sqrt{1-\bar\alpha_t})$ 的形式
+1. 把 ODE 改写成关于"参数化变量" $`\lambda(t) = \log(\sqrt{\bar\alpha_t}/\sqrt{1-\bar\alpha_t})`$ 的形式
 2. 做 Euler 离散化
 3. 化简后得到 DDIM 公式
 
@@ -399,14 +399,14 @@ Karras 2022 EDM 进一步推广：
 把扩散过程写成：
 $$x_t = x_0 + \sigma(t) \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$$
 
-（这是 VE-style 形式，$\sigma(t)$ 是单调增的 noise schedule）
+（这是 VE-style 形式，$`\sigma(t)`$ 是单调增的 noise schedule）
 
 对应 ODE（不带任何系数变换）：
 $$\frac{dx}{dt} = -\dot\sigma(t) \cdot \sigma(t) \cdot \nabla_x \log p_t(x)$$
 
 **好处**：
 - 形式极简
-- $\sigma(t)$ 直接对应 SNR
+- $`\sigma(t)`$ 直接对应 SNR
 - 离散化、采样器都更容易设计
 
 EDM 的训练 loss、采样器 schedule 都基于这个统一形式。**如果你要训自己的 SOTA 扩散模型，强烈推荐用 EDM 形式**。
@@ -471,7 +471,7 @@ def ode_sample(model, n=1000, num_steps=1000):
 
 1. 写出 VP-SDE 和 VE-SDE 的形式
 2. 用 FPE 推导 Anderson 公式（不查资料）
-3. 解释为什么 probability flow ODE 在每个 $t$ 的边缘分布与原 SDE 相同
+3. 解释为什么 probability flow ODE 在每个 $`t`$ 的边缘分布与原 SDE 相同
 4. 写出 noise prediction 与 score prediction 之间的换算系数
 
 ---

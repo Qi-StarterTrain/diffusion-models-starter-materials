@@ -24,7 +24,7 @@ $$p_\theta(x_0) \approx p_{\text{data}}(x_0)$$
 
 ### 1.2 条件生成
 
-引入条件 $y$（标签、文本、图像、动作等）：
+引入条件 $`y`$（标签、文本、图像、动作等）：
 $$p_\theta(x_0 | y) \approx p_{\text{data}}(x_0 | y)$$
 
 **应用**：
@@ -37,7 +37,7 @@ $$p_\theta(x_0 | y) \approx p_{\text{data}}(x_0 | y)$$
 
 ## §2 朴素方法：直接训练条件模型
 
-最直接做法：把条件 $y$ 作为额外输入，训练 $\epsilon_\theta(x_t, t, y)$。
+最直接做法：把条件 $`y`$ 作为额外输入，训练 $`\epsilon_\theta(x_t, t, y)`$。
 
 ```python
 def p_losses_conditional(model, x0, y, t, schedule):
@@ -61,30 +61,30 @@ def p_losses_conditional(model, x0, y, t, schedule):
 $$\nabla_x \log p(x | y) = \nabla_x \log p(x) + \nabla_x \log p(y | x)$$
 
 其中：
-- $\nabla_x \log p(x)$：无条件 score（普通 DDPM）
-- $\nabla_x \log p(y | x)$：分类器对 $x$ 给出"$y$ 类"概率的梯度
+- $`\nabla_x \log p(x)`$：无条件 score（普通 DDPM）
+- $`\nabla_x \log p(y | x)`$：分类器对 $`x`$ 给出"$`y`$ 类"概率的梯度
 
-**思路**：训一个独立的分类器 $p_\phi(y | x)$，把它的梯度加到 score 上。
+**思路**：训一个独立的分类器 $`p_\phi(y | x)`$，把它的梯度加到 score 上。
 
 ---
 
 ### 3.2 加强版：带 scale 的 CG
 
-实际操作中，加一个 scaling factor $w$ 控制 guidance 强度：
+实际操作中，加一个 scaling factor $`w`$ 控制 guidance 强度：
 
 $$\hat\epsilon_\theta(x_t, t, y) = \epsilon_\theta(x_t, t) - w \cdot \sqrt{1-\bar\alpha_t} \cdot \nabla_x \log p_\phi(y | x_t)$$
 
-- $w = 0$：无条件
-- $w = 1$：等价于条件分布
-- $w > 1$：放大条件信息（"超条件化"）
+- $`w = 0`$：无条件
+- $`w = 1`$：等价于条件分布
+- $`w > 1`$：放大条件信息（"超条件化"）
 
-**Dhariwal & Nichol 发现**：$w > 1$ 时质量显著提升（但多样性下降）。
+**Dhariwal & Nichol 发现**：$`w > 1`$ 时质量显著提升（但多样性下降）。
 
 ---
 
 ### 3.3 CG 的代价
 
-要训练一个**专门的、能处理带噪图像的分类器** $p_\phi(y | x_t, t)$：
+要训练一个**专门的、能处理带噪图像的分类器** $`p_\phi(y | x_t, t)`$：
 - 不能用 ImageNet 预训练分类器（它们在干净图像上训的）
 - 要单独训练，工作量大
 - 分类器的质量直接影响 guidance 效果
@@ -100,20 +100,20 @@ $$\hat\epsilon_\theta(x_t, t, y) = \epsilon_\theta(x_t, t) - w \cdot \sqrt{1-\ba
 Ho & Salimans 的精妙发现：**用同一个网络兼任条件与无条件预测**。
 
 训练时：
-- 大部分 batch 用条件 $y$（如 90%）
-- 小部分 batch 用"空"条件 $\emptyset$（如 10%）
-- 网络同时学到 $\epsilon_\theta(x_t, t, y)$ 和 $\epsilon_\theta(x_t, t, \emptyset)$
+- 大部分 batch 用条件 $`y`$（如 90%）
+- 小部分 batch 用"空"条件 $`\emptyset`$（如 10%）
+- 网络同时学到 $`\epsilon_\theta(x_t, t, y)`$ 和 $`\epsilon_\theta(x_t, t, \emptyset)`$
 
 推理时，把两者**线性组合**（外推）：
 
 $$\boxed{\hat\epsilon_\theta(x_t, t, y) = (1 + w) \cdot \epsilon_\theta(x_t, t, y) - w \cdot \epsilon_\theta(x_t, t, \emptyset)}$$
 
-或等价写法（$s = w + 1$）：
+或等价写法（$`s = w + 1`$）：
 $$\hat\epsilon = \epsilon_{\text{uncond}} + s \cdot (\epsilon_{\text{cond}} - \epsilon_{\text{uncond}})$$
 
-- $s = 0$：无条件
-- $s = 1$：条件
-- $s > 1$：放大条件方向
+- $`s = 0`$：无条件
+- $`s = 1`$：条件
+- $`s > 1`$：放大条件方向
 
 ---
 
@@ -134,8 +134,8 @@ def p_losses_cfg(model, x0, y, t, schedule, p_uncond=0.1):
 ```
 
 **关键点**：
-- $p_{\text{uncond}}$ 取 10-20%（论文用 0.1，SD 用 0.1）
-- 空条件 $\emptyset$ 在 text 中通常是空 string ""
+- $`p_{\text{uncond}}`$ 取 10-20%（论文用 0.1，SD 用 0.1）
+- 空条件 $`\emptyset`$ 在 text 中通常是空 string ""
 - 也可以用专门的"null embedding"
 
 ---
@@ -180,7 +180,7 @@ CFG 形式上看起来"凭空"，实际上有严格数学含义。
 由贝叶斯：
 $$\log p(y | x) = \log p(x | y) - \log p(x) + \text{const}$$
 
-对 $x$ 求梯度：
+对 $`x`$ 求梯度：
 $$\nabla_x \log p(y | x) = \nabla_x \log p(x | y) - \nabla_x \log p(x)$$
 
 —— **隐式分类器**！它的梯度就是"条件 score 减无条件 score"。
@@ -191,7 +191,7 @@ $$\nabla_x \log p(y | x) = \nabla_x \log p(x | y) - \nabla_x \log p(x)$$
 
 ### 5.2 几何直觉
 
-把 score $\nabla_x \log p$ 想成"指向高密度方向"的向量场。
+把 score $`\nabla_x \log p`$ 想成"指向高密度方向"的向量场。
 
 ```
               (高密度区，类别 y 数据)
@@ -206,7 +206,7 @@ $$\nabla_x \log p(y | x) = \nabla_x \log p(x | y) - \nabla_x \log p(x)$$
               *  (高密度区，所有类数据)
 ```
 
-CFG 的 $s \cdot (\epsilon_{\text{cond}} - \epsilon_{\text{uncond}})$ 是这两个方向的**差分**，乘 $s$ 后**强化条件方向**。
+CFG 的 $`s \cdot (\epsilon_{\text{cond}} - \epsilon_{\text{uncond}})`$ 是这两个方向的**差分**，乘 $`s`$ 后**强化条件方向**。
 
 ---
 
@@ -216,7 +216,7 @@ CFG 的 $s \cdot (\epsilon_{\text{cond}} - \epsilon_{\text{uncond}})$ 是这两�
 
 CFG 是 Stable Diffusion 用户最熟悉的旋钮。
 
-| Guidance Scale ($s$) | 现象 |
+| Guidance Scale ($`s`$) | 现象 |
 |----------------------|------|
 | 1.0 | 等价于纯条件采样，质量平庸，多样性高 |
 | 3.0 | 略改进，更符合 prompt |
@@ -226,11 +226,11 @@ CFG 是 Stable Diffusion 用户最熟悉的旋钮。
 
 ### 6.2 为什么大 scale 会有伪影？
 
-直觉：$s$ 大时，$\hat\epsilon$ 远超出训练分布中观察到的范围。模型在外推区域行为未知，产生 artifact。
+直觉：$`s`$ 大时，$`\hat\epsilon`$ 远超出训练分布中观察到的范围。模型在外推区域行为未知，产生 artifact。
 
 **缓解方法**：
-- Dynamic thresholding（Imagen）：把预测的 $\hat x_0$ clip 到合理范围
-- Rescaling CFG（SD 2.1+）：保持 $\|\hat\epsilon\| \approx \|\epsilon\|$
+- Dynamic thresholding（Imagen）：把预测的 $`\hat x_0`$ clip 到合理范围
+- Rescaling CFG（SD 2.1+）：保持 $`\|\hat\epsilon\| \approx \|\epsilon\|`$
 
 ---
 
@@ -298,13 +298,13 @@ class CrossAttention(nn.Module):
 
 SD 用户都用过 negative prompt（"low quality, blurry"）。它的数学含义？
 
-**Negative prompt 是把 $\emptyset$ 替换为 $y_{\text{neg}}$**：
+**Negative prompt 是把 $`\emptyset`$ 替换为 $`y_{\text{neg}}`$**：
 
 $$\hat\epsilon = \epsilon_\theta(x, t, y_{\text{neg}}) + s \cdot (\epsilon_\theta(x, t, y_{\text{pos}}) - \epsilon_\theta(x, t, y_{\text{neg}}))$$
 
-不再是"放大条件方向"，而是"放大从 $y_{\text{neg}}$ 到 $y_{\text{pos}}$ 的方向"。
+不再是"放大条件方向"，而是"放大从 $`y_{\text{neg}}`$ 到 $`y_{\text{pos}}`$ 的方向"。
 
-**直觉**：告诉模型"不仅要像 $y_{\text{pos}}$，还要远离 $y_{\text{neg}}$"。
+**直觉**：告诉模型"不仅要像 $`y_{\text{pos}}`$，还要远离 $`y_{\text{neg}}`$"。
 
 效果：可以减少特定不想要的特征（伪影、低质量、特定风格）。
 
@@ -324,10 +324,10 @@ $$\hat\epsilon = \epsilon_\theta(x, t, y_{\text{neg}}) + s \cdot (\epsilon_\thet
 
 ### 9.2 静态 scale 不一定最优
 
-固定 $s$ 整个采样过程不是最优——某些时间步需要更强 guidance，某些需要更弱。
+固定 $`s`$ 整个采样过程不是最优——某些时间步需要更强 guidance，某些需要更弱。
 
 **研究方向**：
-- **CFG schedule**：让 $s$ 随 $t$ 变化
+- **CFG schedule**：让 $`s`$ 随 $`t`$ 变化
 - **Adaptive CFG**
 
 ---
@@ -337,7 +337,7 @@ $$\hat\epsilon = \epsilon_\theta(x, t, y_{\text{neg}}) + s \cdot (\epsilon_\thet
 1. **条件生成需要 guidance**：单纯训条件模型不够"听话"
 2. **Classifier Guidance** 用独立分类器的梯度，代价是要训分类器
 3. **CFG** 用同一网络同时学条件与无条件，**推理时两次前向 + 线性外推**
-4. **CFG 公式**：$\hat\epsilon = \epsilon_{\text{uncond}} + s \cdot (\epsilon_{\text{cond}} - \epsilon_{\text{uncond}})$
+4. **CFG 公式**：$`\hat\epsilon = \epsilon_{\text{uncond}} + s \cdot (\epsilon_{\text{cond}} - \epsilon_{\text{uncond}})`$
 5. **CFG ≡ classifier guidance**（用隐式分类器）
 6. **Guidance scale** 是质量-多样性 trade-off 的旋钮，SD 默认 7.5
 7. **Cross-Attention** 是文本条件注入的标准方式
@@ -349,7 +349,7 @@ $$\hat\epsilon = \epsilon_\theta(x, t, y_{\text{neg}}) + s \cdot (\epsilon_\thet
 
 ### 必做
 
-1. **公式推导**：从 $\log p(y | x) = \log p(x | y) - \log p(x) + \text{const}$ 出发，推出 CFG 的 score 等价形式。
+1. **公式推导**：从 $`\log p(y | x) = \log p(x | y) - \log p(x) + \text{const}`$ 出发，推出 CFG 的 score 等价形式。
 
 2. **代码任务**：在 Project 1 的 DDPM 基础上添加类别条件（MNIST 数字 0-9）
    - 修改 U-Net 接受 `class_label`
@@ -391,7 +391,7 @@ A: 对 text-to-image：把 caption 替换为空字符串 ""。对 class-conditio
 
 **Q: 为什么 CFG 公式形式是"外推"（extrapolation）而非"插值"？**
 
-A: $w + 1 > 1$ 意味着我们走出"条件 score - 无条件 score" 这段向量的终点。**外推强化条件方向**，符合"超条件化"的物理需求。如果用 $w \in [0, 1]$ 插值，相当于"软化条件"，与 guidance 的目的相反。
+A: $`w + 1 > 1`$ 意味着我们走出"条件 score - 无条件 score" 这段向量的终点。**外推强化条件方向**，符合"超条件化"的物理需求。如果用 $`w \in [0, 1]`$ 插值，相当于"软化条件"，与 guidance 的目的相反。
 
 **Q: 训练时 conditional dropout 用 0.5 比 0.1 好吗？**
 

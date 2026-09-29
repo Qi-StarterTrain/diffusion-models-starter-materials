@@ -8,11 +8,11 @@
 普通 Autoencoder 是：
 $$x \rightarrow z \rightarrow \hat{x}$$
 也就是：
-原始图像 $x$ 经过 Encoder 得到隐变量 $z$，再经过 Decoder 重建出 $\hat{x}$。
-但普通 Autoencoder 的问题是：它只会学“重建”，不一定能学到一个适合生成的隐空间。比如你随机采样一个 $z$，Decoder 可能生成很差的图像，因为隐空间不一定是连续、规则的。
+原始图像 $`x`$ 经过 Encoder 得到隐变量 $`z`$，再经过 Decoder 重建出 $`\hat{x}`$。
+但普通 Autoencoder 的问题是：它只会学“重建”，不一定能学到一个适合生成的隐空间。比如你随机采样一个 $`z`$，Decoder 可能生成很差的图像，因为隐空间不一定是连续、规则的。
 VAE 的目标是：
 
-> 学一个规则的隐空间，使得我们可以从中随机采样 $z$，再生成合理的图像 $x$。
+> 学一个规则的隐空间，使得我们可以从中随机采样 $`z`$，再生成合理的图像 $`x`$。
 
 ---
 
@@ -23,7 +23,7 @@ $$z \sim p(z), \quad x \sim p_\theta(x|z)$$
 $$p(z)$$
 通常是标准高斯分布：
 $$p(z)=\mathcal{N}(0,I)$$
-也就是说，我们先从一个简单的高斯分布中采样一个隐变量 $z$，然后用 Decoder 生成图像：
+也就是说，我们先从一个简单的高斯分布中采样一个隐变量 $`z`$，然后用 Decoder 生成图像：
 $$z \rightarrow x$$
 所以 VAE 的生成流程是：
 ```plaintext
@@ -39,7 +39,7 @@ generate image x
 ## 3. 为什么需要 Encoder？
 理论上，我们想最大化数据似然：
 $$\log p_\theta(x)$$
-也就是：模型生成真实图像 $x$ 的概率越大越好。
+也就是：模型生成真实图像 $`x`$ 的概率越大越好。
 但是：
 
 $$p_\theta(x)=\int p_\theta(x|z)p(z)dz$$
@@ -63,17 +63,17 @@ $$\mathcal{L}_{\mathrm{ELBO}} = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] - D
 它包含两项。
 第一项：
 $$\mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)]$$
-叫 **重建项**。它希望 Decoder 能够根据 $z$ 尽可能重建原始图像 $x$。
+叫 **重建项**。它希望 Decoder 能够根据 $`z`$ 尽可能重建原始图像 $`x`$。
 可以理解为：
 
 > 生成出来的图像要像原图。
 
 第二项：
 $$D_{\mathrm{KL}}(q_\phi(z|x) \| p(z))$$
-叫 **KL 正则项**。它希望 Encoder 预测出来的隐变量分布 $q_\phi(z|x)$ 不要偏离标准高斯先验 $p(z)$ 太远。
+叫 **KL 正则项**。它希望 Encoder 预测出来的隐变量分布 $`q_\phi(z|x)`$ 不要偏离标准高斯先验 $`p(z)`$ 太远。
 可以理解为：
 
-> 每张图像编码出来的隐变量分布，都要尽量贴近 $\mathcal{N}(0,I)$，这样以后随机采样 $z$ 时才能生成合理图像。
+> 每张图像编码出来的隐变量分布，都要尽量贴近 $`\mathcal{N}(0,I)`$，这样以后随机采样 $`z`$ 时才能生成合理图像。
 
 ---
 
@@ -101,7 +101,7 @@ $$
 ---
 
 ## 6. Reparameterization Trick 是关键
-VAE 的 Encoder 不直接输出一个确定的 $z$，而是输出一个高斯分布的参数：
+VAE 的 Encoder 不直接输出一个确定的 $`z`$，而是输出一个高斯分布的参数：
 $$
 q_\phi(z|x)=\mathcal{N}(\mu_\phi(x), \sigma_\phi^2(x))
 $$
@@ -114,7 +114,7 @@ $$
 $$
 z = \mu + \sigma \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0,I)
 $$
-这样随机性被转移到了 $\epsilon$，而 $\mu$ 和 $\sigma$ 仍然可以通过梯度学习。
+这样随机性被转移到了 $`\epsilon`$，而 $`\mu`$ 和 $`\sigma`$ 仍然可以通过梯度学习。
 流程是：
 ```plaintext
 x
@@ -176,8 +176,8 @@ Posterior collapse，即后验坍塌，指的是：
 $$
 q_\phi(z|x) \approx p(z)
 $$
-也就是说，Encoder 输出的后验分布几乎退化成先验分布，隐变量 $z$ 不再包含输入 $x$ 的有效信息。
-此时 Decoder 几乎不依赖 $z$，而是自己学会生成数据。
+也就是说，Encoder 输出的后验分布几乎退化成先验分布，隐变量 $`z`$ 不再包含输入 $`x`$ 的有效信息。
+此时 Decoder 几乎不依赖 $`z`$，而是自己学会生成数据。
 这在强 Decoder 中尤其常见，比如文本生成模型或自回归 Decoder。
 直观解释：
 ```plaintext

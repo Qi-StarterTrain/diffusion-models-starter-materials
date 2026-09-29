@@ -24,21 +24,21 @@ Flow Matching (FM) 是 2023 年开始爆火、2024 年成为主流的新范式�
 ### 2.1 最简单的生成问题
 
 我们有：
-- 源分布 $p_0$（标准高斯，能采样）
-- 目标分布 $p_1$（数据，能采样）
+- 源分布 $`p_0`$（标准高斯，能采样）
+- 目标分布 $`p_1`$（数据，能采样）
 
-任务：学一个从 $p_0$ 到 $p_1$ 的映射。
+任务：学一个从 $`p_0`$ 到 $`p_1`$ 的映射。
 
 ---
 
 ### 2.2 用 ODE 表示
 
-时间 $t \in [0, 1]$，定义路径 $x_t$ 满足 ODE：
+时间 $`t \in [0, 1]`$，定义路径 $`x_t`$ 满足 ODE：
 $$\frac{dx}{dt} = v_\theta(x, t)$$
 
-初值 $x_0 \sim p_0$，目标 $x_1 \sim p_1$。
+初值 $`x_0 \sim p_0`$，目标 $`x_1 \sim p_1`$。
 
-如果学到正确的**向量场** $v(x, t)$，从任意 $x_0$ 走 ODE 到 $t=1$ 就到目标分布。
+如果学到正确的**向量场** $`v(x, t)`$，从任意 $`x_0`$ 走 ODE 到 $`t=1`$ 就到目标分布。
 
 **问题**：怎么定义"正确的"向量场？
 
@@ -59,29 +59,29 @@ Flow Matching 说：**为什么要绑定到 SDE？直接选一个简洁的向量
 
 ### 3.1 概率路径
 
-定义一族**概率分布** $p_t$（$t \in [0, 1]$），其中 $p_0$ 是先验，$p_1$ 是数据。
+定义一族**概率分布** $`p_t`$（$`t \in [0, 1]`$），其中 $`p_0`$ 是先验，$`p_1`$ 是数据。
 
-**路径性质**：$p_t$ 随 $t$ 连续变化。
+**路径性质**：$`p_t`$ 随 $`t`$ 连续变化。
 
 ---
 
 ### 3.2 生成向量场
 
-给定路径 $\{p_t\}$，能"生成"它的 ODE 向量场是什么？
+给定路径 $`\{p_t\}`$，能"生成"它的 ODE 向量场是什么？
 
 满足 **continuity equation**：
 $$\frac{\partial p_t}{\partial t} + \nabla \cdot (p_t \cdot v_t) = 0$$
 
-如果 $v_t$ 满足这方程，ODE $dx/dt = v_t(x)$ 的解 $x_t$ 服从 $p_t$。
+如果 $`v_t`$ 满足这方程，ODE $`dx/dt = v_t(x)`$ 的解 $`x_t`$ 服从 $`p_t`$。
 
 ---
 
-### 3.3 直接学 $v$？
+### 3.3 直接学 $`v`$？
 
 最朴素的损失：
 $$\mathcal{L}_{\text{FM}} = \mathbb{E}_{t, x \sim p_t}\left[\|v_\theta(x, t) - v_t(x)\|^2\right]$$
 
-**但**：$v_t(x)$ 我们不知道（continuity equation 给的是约束，不是闭合形式）。
+**但**：$`v_t(x)`$ 我们不知道（continuity equation 给的是约束，不是闭合形式）。
 
 ---
 
@@ -89,11 +89,11 @@ $$\mathcal{L}_{\text{FM}} = \mathbb{E}_{t, x \sim p_t}\left[\|v_\theta(x, t) - v
 
 ### 4.1 条件化思想
 
-定义**条件路径** $p_t(x | x_1)$：从一个具体的数据点 $x_1$ 出发的路径。
+定义**条件路径** $`p_t(x | x_1)`$：从一个具体的数据点 $`x_1`$ 出发的路径。
 
 **Trick**：
-- 条件路径的向量场 $u_t(x | x_1)$ 我们可以**显式定义**
-- 边缘化：$p_t(x) = \int p_t(x | x_1) p_{\text{data}}(x_1) dx_1$
+- 条件路径的向量场 $`u_t(x | x_1)`$ 我们可以**显式定义**
+- 边缘化：$`p_t(x) = \int p_t(x | x_1) p_{\text{data}}(x_1) dx_1`$
 - 关键定理（Lipman et al. 2023）：**学习条件向量场等价于学习边缘向量场**
 
 ---
@@ -102,12 +102,12 @@ $$\mathcal{L}_{\text{FM}} = \mathbb{E}_{t, x \sim p_t}\left[\|v_\theta(x, t) - v
 
 $$\mathcal{L}_{\text{CFM}} = \mathbb{E}_{t, x_1 \sim p_{\text{data}}, x \sim p_t(\cdot | x_1)} \left[\|v_\theta(x, t) - u_t(x | x_1)\|^2\right]$$
 
-**梯度上等价于** $\mathcal{L}_{\text{FM}}$（关于 $\theta$）。
+**梯度上等价于** $`\mathcal{L}_{\text{FM}}`$（关于 $`\theta`$）。
 
 证明思路（Lipman 论文 §3.2）：
-- 展开两个 loss 对 $\theta$ 的梯度
+- 展开两个 loss 对 $`\theta`$ 的梯度
 - 用条件期望恒等式 + Tonelli 定理
-- 多余的项与 $\theta$ 无关，gradient 一致
+- 多余的项与 $`\theta`$ 无关，gradient 一致
 
 ---
 
@@ -115,7 +115,7 @@ $$\mathcal{L}_{\text{CFM}} = \mathbb{E}_{t, x_1 \sim p_{\text{data}}, x \sim p_t
 
 ### 5.1 直线路径
 
-定义条件路径为 $x_0$ 到 $x_1$ 的**直线**：
+定义条件路径为 $`x_0`$ 到 $`x_1`$ 的**直线**：
 $$x_t = (1-t) x_0 + t x_1, \quad x_0 \sim \mathcal{N}(0, I), \quad x_1 \sim p_{\text{data}}$$
 
 **对应的条件向量场**：
@@ -141,7 +141,7 @@ def rectified_flow_loss(model, x_1, t):
     return F.mse_loss(v_pred, target)
 ```
 
-简洁到爆。**没有 schedule、没有 $\bar\alpha_t$、没有复杂参数化**。
+简洁到爆。**没有 schedule、没有 $`\bar\alpha_t`$、没有复杂参数化**。
 
 ---
 
@@ -168,9 +168,9 @@ def sample(model, n_steps=20):
 
 | | DDPM | Flow Matching (Rectified) |
 |---|------|----------------------------|
-| 训练目标 | $\|\epsilon - \epsilon_\theta\|^2$ | $\|v_\theta - (x_1-x_0)\|^2$ |
+| 训练目标 | $`\|\epsilon - \epsilon_\theta\|^2`$ | $`\|v_\theta - (x_1-x_0)\|^2`$ |
 | 时间 | T to 0 | 0 to 1 |
-| Schedule | $\beta_t$ 复杂 | 无（线性路径） |
+| Schedule | $`\beta_t`$ 复杂 | 无（线性路径） |
 | 反向 | 加噪+去噪 SDE | 直接 ODE |
 
 ---
@@ -179,11 +179,11 @@ def sample(model, n_steps=20):
 
 DDPM 的 noise prediction 可以**重写成**一种 flow matching：
 
-对 VP-SDE，定义 $v(x, t) = \dots$（详见 derive_07），可以证明 noise prediction 和 velocity prediction 是同一物的不同参数化。
+对 VP-SDE，定义 $`v(x, t) = \dots`$（详见 derive_07），可以证明 noise prediction 和 velocity prediction 是同一物的不同参数化。
 
 **关键差别在 schedule**：
-- DDPM 用 $\bar\alpha_t$（凸函数）
-- Rectified flow 用 $t$（线性）
+- DDPM 用 $`\bar\alpha_t`$（凸函数）
+- Rectified flow 用 $`t`$（线性）
 
 **实验显示**：linear path 在多步生成时**更直**——直线意味着 ODE 数值积分更精确（少步采样质量好）。
 
@@ -208,15 +208,15 @@ Rectified flow 用直线，但 FM 框架允许**任意路径**。
 ### 7.1 设计 desideratum
 
 好的路径满足：
-1. **闭合**：$p_t(x|x_1)$ 解析可采样
-2. **平滑**：$u_t$ 容易学
+1. **闭合**：$`p_t(x|x_1)`$ 解析可采样
+2. **平滑**：$`u_t`$ 容易学
 3. **直线性**：少步积分精确
 
 ---
 
 ### 7.2 OT 路径
 
-最优传输路径：在 $p_0$ 和 $p_1$ 间走 Wasserstein 最短路径。
+最优传输路径：在 $`p_0`$ 和 $`p_1`$ 间走 Wasserstein 最短路径。
 
 对高斯先验，OT 路径恰好是**线性插值**（在某些情况下）—— 这是 rectified flow 选 linear 的理论支持。
 
@@ -226,8 +226,8 @@ Rectified flow 用直线，但 FM 框架允许**任意路径**。
 
 | 路径 | 公式 | 用在 |
 |------|------|------|
-| Linear (Rectified) | $x_t = (1-t)x_0 + t x_1$ | SD 3, Pi-0 |
-| VP-like | $x_t = \alpha_t x_1 + \sigma_t \epsilon$ | DDPM 等价 |
+| Linear (Rectified) | $`x_t = (1-t)x_0 + t x_1`$ | SD 3, Pi-0 |
+| VP-like | $`x_t = \alpha_t x_1 + \sigma_t \epsilon`$ | DDPM 等价 |
 | OT (Brenier map) | 最优 | 计算上昂贵 |
 
 实践中 linear 用得最多。
@@ -236,7 +236,7 @@ Rectified flow 用直线，但 FM 框架允许**任意路径**。
 
 ## §8 SD 3 用的 sigmoid schedule
 
-SD 3 (Esser et al., 2024) 对训练时的 $t$ 采样用了非均匀分布：
+SD 3 (Esser et al., 2024) 对训练时的 $`t`$ 采样用了非均匀分布：
 
 ```python
 def sd3_t_sampler(batch_size):
@@ -246,7 +246,7 @@ def sd3_t_sampler(batch_size):
     return t
 ```
 
-**动机**：FM 的中等 $t$（$t \approx 0.5$）训练最有挑战，logit-normal 给中间 $t$ 更高采样权重。
+**动机**：FM 的中等 $`t`$（$`t \approx 0.5`$）训练最有挑战，logit-normal 给中间 $`t`$ 更高采样权重。
 
 类比 DDPM Importance Sampling，但在 FM 框架里实现更简单。
 
@@ -273,7 +273,7 @@ Action Flow Matching Head → trajectory of robot actions
 
 ### 9.2 Action chunking
 
-Pi-0 把"未来 50 步 action"作为一个 trajectory $\mathbf{a}_{1:50} \in \mathbb{R}^{50 \times 7}$，用 FM 一次性生成。
+Pi-0 把"未来 50 步 action"作为一个 trajectory $`\mathbf{a}_{1:50} \in \mathbb{R}^{50 \times 7}`$，用 FM 一次性生成。
 
 ```python
 loss = F.mse_loss(v_pred, action_chunk - noise)
@@ -345,7 +345,7 @@ v = v_uncond + s * (v_cond - v_uncond)
 ### 必做
 1. 跑通 nb09（2D Flow Matching 玩具实验）
 2. 用同一数据集训 DDPM 和 Rectified Flow，比较 NFE-FID Pareto
-3. 推导 Linear path 的 $u_t$ = $x_1 - x_0$（不要看讲义）
+3. 推导 Linear path 的 $`u_t`$ = $`x_1 - x_0`$（不要看讲义）
 
 ### 进阶
 4. 实现 Heun's method for FM，与 Euler 比较

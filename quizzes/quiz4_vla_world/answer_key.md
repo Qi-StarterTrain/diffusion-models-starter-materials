@@ -11,7 +11,7 @@
 **核心区别**：world model 必须有 **action 输入**接口。
 
 - Video generation: 输入 text → 输出视频
-- World model: 输入 $(s_{t-1}, a_{t-1}) \to s_t$，可被 agent 用于 planning
+- World model: 输入 $`(s_{t-1}, a_{t-1}) \to s_t`$，可被 agent 用于 planning
 
 **Sora 不是 world model**：
 - 无 action 接口
@@ -40,7 +40,7 @@ OpenAI 的 "world simulator" 标签属于 marketing claim。
 
 至少 3 点：
 1. **少步采样**：FM 4-10 步 vs DDPM 50 步，让 50-100 Hz 控制可行
-2. **简洁实现**：linear path + MSE，没有 $\beta$ schedule、$\bar\alpha$ 等复杂数学
+2. **简洁实现**：linear path + MSE，没有 $`\beta`$ schedule、$`\bar\alpha`$ 等复杂数学
 3. **连续 action 自然适配**：FM 对连续 trajectory 直接处理，DDPM 通常需要离散化或额外 reparameterization
 4. **多模态分布保留**：FM 与 DDPM 都能；但 FM 在 trajectory level 更直观
 5. **SD 3 已验证**：image gen 上 FM 优于 DDPM，迁移到 action 风险低
@@ -65,7 +65,7 @@ OpenAI 的 "world simulator" 标签属于 marketing claim。
 
 ### 5. Action chunking
 
-把"未来 $H$ 步 actions"作为一个整体 chunk $\mathbf{a}_{1:H} \in \mathbb{R}^{H \times A}$ 生成（如 H=32-50）。
+把"未来 $`H`$ 步 actions"作为一个整体 chunk $`\mathbf{a}_{1:H} \in \mathbb{R}^{H \times A}`$ 生成（如 H=32-50）。
 
 **为什么不单步**：
 1. **Long-horizon planning**：单步预测 myopic；chunking 让模型 "think ahead"
@@ -104,7 +104,7 @@ Diffusion Policy 通过 stochastic noise 自然给出"要么 vertical 要么 hor
 
 $$\mathcal{L} = \mathbb{E}_{t, a_{1:H}, \epsilon, v, l}\left[\|v_\theta(a_t, t, v, l) - (a_{1:H} - \epsilon)\|^2\right]$$
 
-其中 $a_t = (1-t) \epsilon + t \cdot a_{1:H}$，$v$ 是 vision feature，$l$ 是 language。
+其中 $`a_t = (1-t) \epsilon + t \cdot a_{1:H}`$，$`v`$ 是 vision feature，$`l`$ 是 language。
 
 ---
 
@@ -129,7 +129,7 @@ def sample_action(model, obs, n_steps=4):
 
 - 50 Hz = 20 ms 控制周期
 - Single forward: 4 ms
-- 最多 $20 / 4 = 5$ steps
+- 最多 $`20 / 4 = 5`$ steps
 - Pi-0 实际用 4 步（留 margin）
 
 ---
@@ -146,12 +146,12 @@ $$P(\text{all correct}) = 0.99^{100} \approx 0.366$$
 
 **(b) 累积错误模型**：
 
-设第 $k$ 步的错误率 $\epsilon_k$ 满足 $\epsilon_k = \epsilon_{k-1} \cdot 1.1$（指数累积）：
+设第 $`k`$ 步的错误率 $`\epsilon_k`$ 满足 $`\epsilon_k = \epsilon_{k-1} \cdot 1.1`$（指数累积）：
 $$\epsilon_k = \epsilon_0 \cdot 1.1^k = 0.01 \cdot 1.1^k$$
 
-第 50 步：$\epsilon_{50} = 0.01 \cdot 1.1^{50} \approx 0.01 \cdot 117.4 = 1.174$ → 严重错误（饱和到 1）
+第 50 步：$`\epsilon_{50} = 0.01 \cdot 1.1^{50} \approx 0.01 \cdot 117.4 = 1.174`$ → 严重错误（饱和到 1）
 
-第 100 步：$\epsilon_{100} \approx 0.01 \cdot 1.1^{100} = 0.01 \cdot 13780 \approx 138$ → 完全无意义
+第 100 步：$`\epsilon_{100} \approx 0.01 \cdot 1.1^{100} = 0.01 \cdot 13780 \approx 138`$ → 完全无意义
 
 实际系统会饱和（错误率 cap 在 1），但说明：**100 步后预测几乎完全错**。
 
@@ -174,9 +174,9 @@ $$\epsilon_k = \epsilon_0 \cdot 1.1^k = 0.01 \cdot 1.1^k$$
 
 **(a) 均匀分布下 RMS 量化误差**：
 
-每 bin 宽度 $\Delta = 2 / 256 = 1/128$。量化误差均匀分布在 $[-\Delta/2, \Delta/2]$。
+每 bin 宽度 $`\Delta = 2 / 256 = 1/128`$。量化误差均匀分布在 $`[-\Delta/2, \Delta/2]`$。
 
-RMS = $\Delta / \sqrt{12} = (1/128) / \sqrt{12} \approx 2.26 \times 10^{-3}$
+RMS = $`\Delta / \sqrt{12} = (1/128) / \sqrt{12} \approx 2.26 \times 10^{-3}`$
 
 —— 每 dim 误差约 0.2%。
 
@@ -196,9 +196,9 @@ Quantile-based 使每 bin 覆盖**相同 mass**——常用 action 周围 bin �
 
 **(c) 256 → 64 bins**：
 
-RMS 误差与 bin 数成反比（$\Delta \propto 1/N$）：
-- 256 bins: 误差 $\approx 2.26 \times 10^{-3}$
-- 64 bins: 误差 $\approx 9 \times 10^{-3}$ (~4× 大)
+RMS 误差与 bin 数成反比（$`\Delta \propto 1/N`$）：
+- 256 bins: 误差 $`\approx 2.26 \times 10^{-3}`$
+- 64 bins: 误差 $`\approx 9 \times 10^{-3}`$ (~4× 大)
 
 对实时控制：
 - 7-DoF arm 操纵：误差 0.1° 量级通常 OK，但 0.9° 在精细 task（如插针）就不可接受

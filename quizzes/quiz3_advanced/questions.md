@@ -27,14 +27,14 @@
 
 ### 7（10 分）Linear-path Flow Matching loss 推导
 
-设 $x_0 \sim \mathcal{N}(0, I)$，$x_1 \sim p_{\text{data}}$。定义 linear path：
+设 $`x_0 \sim \mathcal{N}(0, I)`$，$`x_1 \sim p_{\text{data}}`$。定义 linear path：
 $$x_t = (1-t) x_0 + t x_1, \quad t \in [0, 1]$$
 
-(a)（3 分）证明 $u_t(x_t | x_1) = x_1 - x_0$。
+(a)（3 分）证明 $`u_t(x_t | x_1) = x_1 - x_0`$。
 
-(b)（4 分）写出 Conditional Flow Matching loss $\mathcal{L}_{\text{CFM}}$ 的具体表达。
+(b)（4 分）写出 Conditional Flow Matching loss $`\mathcal{L}_{\text{CFM}}`$ 的具体表达。
 
-(c)（3 分）解释为什么 $\nabla_\theta \mathcal{L}_{\text{CFM}} = \nabla_\theta \mathcal{L}_{\text{FM}}$（直觉论证即可，不需要严格证明）。
+(c)（3 分）解释为什么 $`\nabla_\theta \mathcal{L}_{\text{CFM}} = \nabla_\theta \mathcal{L}_{\text{FM}}`$（直觉论证即可，不需要严格证明）。
 
 ---
 
@@ -43,9 +43,9 @@ $$x_t = (1-t) x_0 + t x_1, \quad t \in [0, 1]$$
 Consistency function 形如：
 $$f_\theta(x, t) = c_{\text{skip}}(t) \cdot x + c_{\text{out}}(t) \cdot F_\theta\bigl(c_{\text{in}}(t) \cdot x, c_{\text{noise}}(t)\bigr)$$
 
-(a)（4 分）说明每个 $c$ 函数的作用，特别是 $c_{\text{skip}}, c_{\text{out}}$ 在 $t = \epsilon$ 处必须满足什么条件？
+(a)（4 分）说明每个 $`c`$ 函数的作用，特别是 $`c_{\text{skip}}, c_{\text{out}}`$ 在 $`t = \epsilon`$ 处必须满足什么条件？
 
-(b)（3 分）写出 CD（Consistency Distillation）loss 的形式。说明 EMA teacher $\theta^-$ 的作用。
+(b)（3 分）写出 CD（Consistency Distillation）loss 的形式。说明 EMA teacher $`\theta^-`$ 的作用。
 
 (c)（3 分）CT（Consistency Training）不用 teacher，依赖什么 trick？
 
@@ -53,9 +53,9 @@ $$f_\theta(x, t) = c_{\text{skip}}(t) \cdot x + c_{\text{out}}(t) \cdot F_\theta
 
 ### 9（10 分）DiT 计算复杂度
 
-假设 DiT 输入 $z \in \mathbb{R}^{4 \times 32 \times 32}$，patch size $p = 2$，embedding dim $d = 1152$，深度 $L = 28$，head 数 16。
+假设 DiT 输入 $`z \in \mathbb{R}^{4 \times 32 \times 32}`$，patch size $`p = 2`$，embedding dim $`d = 1152`$，深度 $`L = 28`$，head 数 16。
 
-(a)（3 分）算出 token 数 $N$ 与每个 transformer block 的 self-attention FLOPs（忽略 softmax 与 mask）。
+(a)（3 分）算出 token 数 $`N`$ 与每个 transformer block 的 self-attention FLOPs（忽略 softmax 与 mask）。
 
 (b)（3 分）算出每个 block 的 FFN（GeLU，hidden 4d）FLOPs。
 
@@ -65,13 +65,13 @@ $$f_\theta(x, t) = c_{\text{skip}}(t) \cdot x + c_{\text{out}}(t) \cdot F_\theta
 
 ### 10（10 分）视频 Attention factorization
 
-假设 video latent shape $(T, H, W) = (32, 32, 32)$，token 数 $N = T \cdot H \cdot W = 32768$。
+假设 video latent shape $`(T, H, W) = (32, 32, 32)`$，token 数 $`N = T \cdot H \cdot W = 32768`$。
 
 (a)（3 分）计算"完整 3D self-attention" 的 attention matrix 大小（以 GB 为单位，fp16）。
 
-(b)（3 分）若改为 "spatial + temporal factorized"：spatial 在每帧内做 $(HW)^2$，temporal 在每空间位置做 $T^2$。计算总 attention matrix 大小。
+(b)（3 分）若改为 "spatial + temporal factorized"：spatial 在每帧内做 $`(HW)^2`$，temporal 在每空间位置做 $`T^2`$。计算总 attention matrix 大小。
 
-(c)（4 分）若再加 window attention（window 大小 $w_t \times w_h \times w_w = 4 \times 8 \times 8$），attention matrix 总大小？比 full 3D 节省多少倍？
+(c)（4 分）若再加 window attention（window 大小 $`w_t \times w_h \times w_w = 4 \times 8 \times 8`$），attention matrix 总大小？比 full 3D 节省多少倍？
 
 ---
 

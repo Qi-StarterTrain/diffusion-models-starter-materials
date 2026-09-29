@@ -34,19 +34,19 @@
 ### Non-Markovian Forward
 $$q_\sigma(x_{t-1} | x_t, x_0) = \mathcal{N}(\sqrt{\bar\alpha_{t-1}} x_0 + \sqrt{1-\bar\alpha_{t-1}-\sigma_t^2} \cdot \epsilon, \sigma_t^2 I)$$
 
-其中 $\epsilon$ 由 $x_t, x_0$ 决定。
+其中 $`\epsilon`$ 由 $`x_t, x_0`$ 决定。
 
-### DDIM Update（$\sigma=0$）
+### DDIM Update（$`\sigma=0`$）
 $$x_{t-1} = \sqrt{\bar\alpha_{t-1}} \hat x_0(x_t) + \sqrt{1-\bar\alpha_{t-1}} \epsilon_\theta(x_t, t)$$
 
-其中 $\hat x_0(x_t) = (x_t - \sqrt{1-\bar\alpha_t} \epsilon_\theta) / \sqrt{\bar\alpha_t}$。
+其中 $`\hat x_0(x_t) = (x_t - \sqrt{1-\bar\alpha_t} \epsilon_\theta) / \sqrt{\bar\alpha_t}`$。
 
 ---
 
 ## 四、关键洞察
 
-1. **训练目标只依赖 $q(x_t|x_0)$**：所以可改 forward 链而不影响训练（**核心 trick**）
-2. **$\sigma_t = 0$ 得到确定性 DDIM**：可逆 ODE
+1. **训练目标只依赖 $`q(x_t|x_0)`$**：所以可改 forward 链而不影响训练（**核心 trick**）
+2. **$`\sigma_t = 0`$ 得到确定性 DDIM**：可逆 ODE
 3. **跳步采样自由**：选任意时间步子序列即可，无需重训
 
 ---
@@ -55,16 +55,16 @@ $$x_{t-1} = \sqrt{\bar\alpha_{t-1}} \hat x_0(x_t) + \sqrt{1-\bar\alpha_{t-1}} \e
 
 ### 1. "DDIM 是模型还是 sampler？"
 
-**是 sampler**。"DDIM 模型"其实就是 DDPM 模型——同一个 $\epsilon_\theta$ 网络。
+**是 sampler**。"DDIM 模型"其实就是 DDPM 模型——同一个 $`\epsilon_\theta`$ 网络。
 
 ---
 
 ### 2. "DDIM 严格快于 DDPM 吗？"
 
 **FID 上不一定**。在同样的 NFE 下：
-- $N \geq 100$：DDIM ≈ DDPM
-- $N \leq 50$：DDIM 显著好（因为可跳步）
-- $N = 1000$：DDPM 更好（DDIM 失去随机性优势）
+- $`N \geq 100`$：DDIM ≈ DDPM
+- $`N \leq 50`$：DDIM 显著好（因为可跳步）
+- $`N = 1000`$：DDPM 更好（DDIM 失去随机性优势）
 
 DDIM 的优势在**少步数**，不是绝对优。
 
@@ -72,14 +72,14 @@ DDIM 的优势在**少步数**，不是绝对优。
 
 ### 3. "DDIM Inversion 能 100% 还原图像？"
 
-**不能**。Inversion 用了**一阶近似**（$\epsilon_\theta(x_{t-1}, t-1)$ 替代 $\epsilon_\theta(x_t, t)$），有累积误差。50 步典型重构误差 1-3% PSNR。
+**不能**。Inversion 用了**一阶近似**（$`\epsilon_\theta(x_{t-1}, t-1)`$ 替代 $`\epsilon_\theta(x_t, t)`$），有累积误差。50 步典型重构误差 1-3% PSNR。
 
 ---
 
-### 4. "$\sigma_t$ 在 DDPM 和 DDIM 之间任意插值？"
+### 4. "$`\sigma_t`$ 在 DDPM 和 DDIM 之间任意插值？"
 
-**理论上**：是的（$\sigma_t^2 = \eta \tilde\beta_t$，$\eta \in [0, 1]$）。
-**实践上**：要么 $\eta=0$（DDIM），要么 $\eta=1$（DDPM）。中间值用得不多。
+**理论上**：是的（$`\sigma_t^2 = \eta \tilde\beta_t`$，$`\eta \in [0, 1]`$）。
+**实践上**：要么 $`\eta=0`$（DDIM），要么 $`\eta=1`$（DDPM）。中间值用得不多。
 
 ---
 
@@ -109,9 +109,9 @@ DDIM 的优势在**少步数**，不是绝对优。
 
 ## 八、思考题
 
-1. DDIM 公式有个对应的"确定性 ODE"：$\frac{dy}{d\tau} = \epsilon_\theta$（参数化变量替换后）。这个 ODE 对应 probability flow ODE 在什么变量替换下的形式？
+1. DDIM 公式有个对应的"确定性 ODE"：$`\frac{dy}{d\tau} = \epsilon_\theta`$（参数化变量替换后）。这个 ODE 对应 probability flow ODE 在什么变量替换下的形式？
 2. 为什么 DDIM 步数从 50 降到 20，质量损失就突然变大？画 SNR 曲线分析
-3. DDIM 的 $\sigma_t = 0$ 与 $\sigma_t = \tilde\beta_t$ 之间，理论上是否存在"最佳"$\sigma$？
+3. DDIM 的 $`\sigma_t = 0`$ 与 $`\sigma_t = \tilde\beta_t`$ 之间，理论上是否存在"最佳"$`\sigma`$？
 
 ---
 

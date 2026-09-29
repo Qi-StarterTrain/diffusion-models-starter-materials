@@ -32,10 +32,10 @@
 
 **Patchify** → **N × DiT blocks** → **Linear + Unpatchify**
 
-1. Latent $z \in \mathbb{R}^{4 \times 32 \times 32}$ patchify 成 256 tokens
+1. Latent $`z \in \mathbb{R}^{4 \times 32 \times 32}`$ patchify 成 256 tokens
 2. 加 2D sinusoidal positional embedding
 3. 通过 N 层 Transformer blocks（每层用 AdaLN-Zero）
-4. Linear projection 输出 $\epsilon$（含均值 + 协方差）
+4. Linear projection 输出 $`\epsilon`$（含均值 + 协方差）
 5. Unpatchify 回 latent space
 
 ---
@@ -90,7 +90,7 @@ AdaLN-Zero 胜出**因为 zero init 让训练稳定**，不只是 AdaLN 本身�
 | **2** | **256** | **2.27** |
 | 1 | 1024 | 不可行（OOM） |
 
-$p=2$ 是性价比甜点。
+$`p=2`$ 是性价比甜点。
 
 ---
 
@@ -103,7 +103,7 @@ $p=2$ 是性价比甜点。
 **不必须**，但实证最好。SD 3 用 MMDiT（dual-stream self-attn）取代纯 AdaLN-Zero。
 
 ### 3. "DiT 比 UNet 一定快？"
-**否**。同等 FID 下，DiT 在大模型规模占优；UNet 在小模型规模仍可比。计算上 attention $O(N^2)$ 在长序列贵。
+**否**。同等 FID 下，DiT 在大模型规模占优；UNet 在小模型规模仍可比。计算上 attention $`O(N^2)`$ 在长序列贵。
 
 ---
 

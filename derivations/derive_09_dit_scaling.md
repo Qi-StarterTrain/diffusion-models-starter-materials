@@ -13,11 +13,11 @@
 
 $$\text{LN}(x) = \gamma \odot \frac{x - \mu}{\sigma} + \beta$$
 
-其中 $\gamma, \beta \in \mathbb{R}^D$ 是可学参数。
+其中 $`\gamma, \beta \in \mathbb{R}^D`$ 是可学参数。
 
 ### 1.2 AdaLN（Adaptive LayerNorm）
 
-让 $\gamma, \beta$ 依赖于 condition $c$：
+让 $`\gamma, \beta`$ 依赖于 condition $`c`$：
 $$\gamma(c) = W_\gamma c + b_\gamma$$
 $$\beta(c) = W_\beta c + b_\beta$$
 
@@ -31,7 +31,7 @@ DiT 论文的关键创新：**zero-initialized AdaLN**。
 
 ### 2.1 增强版 AdaLN
 
-每个 DiT block 内有 attn 与 mlp 两段。对每段引入 6 个标量函数 $\gamma_i, \beta_i, \alpha_i$：
+每个 DiT block 内有 attn 与 mlp 两段。对每段引入 6 个标量函数 $`\gamma_i, \beta_i, \alpha_i`$：
 
 ```
 # Attention 分支
@@ -43,7 +43,7 @@ h = (1 + γ_2) ⊙ LN(x) + β_2   # AdaLN before mlp
 x = x + α_2 ⊙ MLP(h)          # Scaled residual
 ```
 
-$\alpha$ 是**残差缩放因子**。
+$`\alpha`$ 是**残差缩放因子**。
 
 ### 2.2 Zero init
 
@@ -53,15 +53,15 @@ nn.init.zeros_(self.adaLN_modulation.weight)
 nn.init.zeros_(self.adaLN_modulation.bias)
 ```
 
-所有 $\gamma, \beta, \alpha$ 初始为 0。
+所有 $`\gamma, \beta, \alpha`$ 初始为 0。
 
 ---
 
 ### 2.3 初始等价 identity
 
-代入 $\gamma = 0, \beta = 0, \alpha = 0$：
-- $h = (1+0) \cdot \text{LN}(x) + 0 = \text{LN}(x)$
-- $x = x + 0 \cdot \text{Attn}(h) = x$
+代入 $`\gamma = 0, \beta = 0, \alpha = 0`$：
+- $`h = (1+0) \cdot \text{LN}(x) + 0 = \text{LN}(x)`$
+- $`x = x + 0 \cdot \text{Attn}(h) = x`$
 
 整个 block 变成 identity！每个 layer 初始都是 identity，整个网络初始等价于 identity。
 
@@ -172,12 +172,12 @@ Esser et al. 2024 (SD 3) 训了 4 个尺寸：
 ### 6.1 Attention 复杂度
 
 DiT-XL/2 在 256×256 → 16×16 = 256 tokens。
-Attention: $O(N^2 d) = O(256^2 \cdot 1152) = 7.5 \times 10^7$ ops。
+Attention: $`O(N^2 d) = O(256^2 \cdot 1152) = 7.5 \times 10^7`$ ops。
 
 但 Sora 在 60s × 1080p：
-$N = (60 \cdot 30 \cdot 540 \cdot 960) / (4 \cdot 16 \cdot 16) \approx 9 \times 10^5$
+$`N = (60 \cdot 30 \cdot 540 \cdot 960) / (4 \cdot 16 \cdot 16) \approx 9 \times 10^5`$
 
-Attention: $O(9 \times 10^5)^2 \cdot d \approx 10^{12+}$ ops/layer！**完全不可行**。
+Attention: $`O(9 \times 10^5)^2 \cdot d \approx 10^{12+}`$ ops/layer！**完全不可行**。
 
 → Sora 必然用 sparse / window attention。
 
@@ -185,16 +185,16 @@ Attention: $O(9 \times 10^5)^2 \cdot d \approx 10^{12+}$ ops/layer！**完全不
 
 ### 6.2 FFN 复杂度
 
-每个 token 的 FFN: $O(d^2)$（用 GEGLU 等 hidden expansion）。
-N tokens 总共 $O(N d^2)$。
+每个 token 的 FFN: $`O(d^2)`$（用 GEGLU 等 hidden expansion）。
+N tokens 总共 $`O(N d^2)`$。
 
 在 large model 下 FFN 主导，不是 attention。
 
 ### 6.3 与 UNet 的对比
 
-UNet：spatial conv，复杂度 $O(N \cdot k^2 \cdot c^2)$
-- $k$ kernel size（如 3）
-- $c$ channels
+UNet：spatial conv，复杂度 $`O(N \cdot k^2 \cdot c^2)`$
+- $`k`$ kernel size（如 3）
+- $`c`$ channels
 
 在小 N、大 c 下 UNet 更高效；大 N、小 c 下 DiT 更高效。
 
@@ -207,15 +207,15 @@ UNet：spatial conv，复杂度 $O(N \cdot k^2 \cdot c^2)$
 ### 7.1 Trade-off
 
 - Smaller patch → 更多 tokens → 更精细但更贵
-- DiT 默认 $p=2$ (在 SD latent 32×32 上 → 16×16=256 tokens)
+- DiT 默认 $`p=2`$ (在 SD latent 32×32 上 → 16×16=256 tokens)
 
 ### 7.2 数学
 
-设 latent shape $L \times L$，patch size $p$。
-- N tokens = $(L/p)^2$
-- Attention compute: $O(N^2) = O(L^4 / p^4)$
+设 latent shape $`L \times L`$，patch size $`p`$。
+- N tokens = $`(L/p)^2`$
+- Attention compute: $`O(N^2) = O(L^4 / p^4)`$
 
-把 $p$ 从 2 变 1：compute × 16。**性价比通常不划算**。
+把 $`p`$ 从 2 变 1：compute × 16。**性价比通常不划算**。
 
 ### 7.3 SDXL / SD 3 选择
 
@@ -251,7 +251,7 @@ DiT + 一些 conv stem → 处理高分辨率时的低层特征。
 ### 9.1 Identity init 验证
 
 实验：让 DiT 模型在训练 0 步时 forward，看输出。
-预期：$\text{output} \approx \text{noisy input}$（identity）。
+预期：$`\text{output} \approx \text{noisy input}`$（identity）。
 
 代码：
 ```python

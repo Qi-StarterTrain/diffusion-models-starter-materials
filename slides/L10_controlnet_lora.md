@@ -141,13 +141,13 @@ LoRA：用极小（几 MB）的 adapter 实现微调。
 
 ### 3.2 数学核心
 
-对任意线性层 $W \in \mathbb{R}^{d \times k}$，LoRA 把更新参数化为低秩矩阵：
+对任意线性层 $`W \in \mathbb{R}^{d \times k}`$，LoRA 把更新参数化为低秩矩阵：
 
 $$W_{\text{new}} = W + \Delta W = W + B A$$
 
-其中 $B \in \mathbb{R}^{d \times r}$，$A \in \mathbb{R}^{r \times k}$，**rank $r$ 远小于 $\min(d, k)$**。
+其中 $`B \in \mathbb{R}^{d \times r}`$，$`A \in \mathbb{R}^{r \times k}`$，**rank $`r`$ 远小于 $`\min(d, k)`$**。
 
-参数量从 $d \times k$ 降到 $r(d + k)$。例如 $d = k = 1024, r = 8$：从 1M → 16K（**减少 60 倍**）。
+参数量从 $`d \times k`$ 降到 $`r(d + k)`$。例如 $`d = k = 1024, r = 8`$：从 1M → 16K（**减少 60 倍**）。
 
 ---
 
@@ -155,9 +155,9 @@ $$W_{\text{new}} = W + \Delta W = W + B A$$
 
 $$A \sim \mathcal{N}(0, \sigma^2), \quad B = 0$$
 
-所以 $\Delta W = BA = 0$，初始等价于原模型（与 zero conv 同思路）。
+所以 $`\Delta W = BA = 0`$，初始等价于原模型（与 zero conv 同思路）。
 
-训练时：原 $W$ 冻结，只训 $A, B$。
+训练时：原 $`W`$ 冻结，只训 $`A, B`$。
 
 ---
 

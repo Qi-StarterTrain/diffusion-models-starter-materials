@@ -55,7 +55,7 @@ $$\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)$$
 
 ## 四、关键洞察（必背）
 
-1. **DDPM ↔ VP-SDE 离散化**：$T \to \infty$ 极限下 DDPM 就是 VP-SDE
+1. **DDPM ↔ VP-SDE 离散化**：$`T \to \infty`$ 极限下 DDPM 就是 VP-SDE
 2. **NCSN ↔ VE-SDE 离散化**：同上
 3. **Score 是反向 SDE 唯一未知量**：所以所有扩散模型本质上都在学 score
 4. **Probability flow ODE**：一个**确定性 ODE**给出与 SDE 相同的边缘分布
@@ -67,7 +67,7 @@ $$\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)$$
 ### 1. "SDE 视角是不是只是 DDPM 的数学包装？"
 
 **不是**。SDE 视角实质性扩展了模型能力：
-- 允许在连续时间任意 step（不只是 $T$ 个整数 step）
+- 允许在连续时间任意 step（不只是 $`T`$ 个整数 step）
 - 允许更高阶的 sampler（DPM-Solver, EDM 等都依赖 ODE 视角）
 - 允许严格的 likelihood 计算
 
@@ -77,7 +77,7 @@ $$\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)$$
 
 **没有统一答案**。
 - VP-SDE：方差保持 ≈ 1，工程上数值稳定（SD、Imagen 等都用 VP）
-- VE-SDE：理论上简洁（drift = 0），但 $\sigma$ 可以非常大，数值上要小心
+- VE-SDE：理论上简洁（drift = 0），但 $`\sigma`$ 可以非常大，数值上要小心
 
 EDM (Karras 2022) 论文论证：**两者都不是最优**，应该重新设计 schedule（EDM 公式）。
 
@@ -85,7 +85,7 @@ EDM (Karras 2022) 论文论证：**两者都不是最优**，应该重新设计 
 
 ### 3. "Probability flow ODE = SDE 的近似？"
 
-**不是近似，是精确等价**。两者在每个时间 $t$ 的边缘分布完全相同，只是轨迹不同（SDE 随机、ODE 确定）。
+**不是近似，是精确等价**。两者在每个时间 $`t`$ 的边缘分布完全相同，只是轨迹不同（SDE 随机、ODE 确定）。
 
 ---
 
@@ -104,10 +104,10 @@ EDM (Karras 2022) 论文论证：**两者都不是最优**，应该重新设计 
 
 第一次读会觉得"凭空冒出来"。其实推导思路是：
 1. 写出正向 FPE
-2. 假设反向 SDE $dx = \tilde f dt + \tilde g d\bar W$
+2. 假设反向 SDE $`dx = \tilde f dt + \tilde g d\bar W`$
 3. 要求反向 FPE 与正向 FPE 一致
-4. 用 $\Delta p = \nabla \cdot (p \nabla \log p)$ 这个**关键恒等式**做整理
-5. 得到 $\tilde f = f - g^2 \nabla \log p$
+4. 用 $`\Delta p = \nabla \cdot (p \nabla \log p)`$ 这个**关键恒等式**做整理
+5. 得到 $`\tilde f = f - g^2 \nabla \log p`$
 
 如果卡住，看本课程 derive_04 §3。
 
@@ -116,9 +116,9 @@ EDM (Karras 2022) 论文论证：**两者都不是最优**，应该重新设计 
 ### Probability flow ODE（§3.3）
 
 类似思路：
-- ODE $dx/dt = h(x, t)$ 对应 transport equation
+- ODE $`dx/dt = h(x, t)`$ 对应 transport equation
 - 要求 transport equation 等于 FPE
-- 同样用上面恒等式，得 $h = f - \frac{1}{2} g^2 \nabla \log p$
+- 同样用上面恒等式，得 $`h = f - \frac{1}{2} g^2 \nabla \log p`$
 
 ---
 
@@ -126,7 +126,7 @@ EDM (Karras 2022) 论文论证：**两者都不是最优**，应该重新设计 
 
 简单理解：
 - **Predictor**：用 reverse SDE 走一步
-- **Corrector**：用 Langevin MCMC 在当前 $t$ "矫正"
+- **Corrector**：用 Langevin MCMC 在当前 $`t`$ "矫正"
 - 一步预测 + K 步矫正
 
 效果：FID 在 CIFAR-10 上 2.41（碾压当时所有方法）。
@@ -140,7 +140,7 @@ EDM (Karras 2022) 论文论证：**两者都不是最优**，应该重新设计 
 
 ## 九、思考题
 
-1. 为什么 $T$（时间步数）在 SDE 视角下"不重要"？这给我们什么启示？
+1. 为什么 $`T`$（时间步数）在 SDE 视角下"不重要"？这给我们什么启示？
 2. 如果用 BDF（backward differentiation formula）等高阶隐式求解器解反向 SDE，会比 PC sampler 更快吗？
 3. 论文 Figure 1 给出 SDE-based 模型的整体框架图。请用自己的话复述每个箭头的含义。
 

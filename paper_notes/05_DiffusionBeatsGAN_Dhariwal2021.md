@@ -52,9 +52,9 @@ $$\hat\epsilon = \epsilon_\theta(x_t, t) - w \sqrt{1-\bar\alpha_t} \cdot \nabla_
 
 ### 4.2 工程关键
 
-1. 需要训一个**专用分类器** $p_\phi(y|x_t, t)$，能处理任意噪声水平的输入
-2. 训练分类器在所有 $t$ 的样本上（不只是干净图）
-3. $w$ 是 guidance scale，论文用 1.0-10.0
+1. 需要训一个**专用分类器** $`p_\phi(y|x_t, t)`$，能处理任意噪声水平的输入
+2. 训练分类器在所有 $`t`$ 的样本上（不只是干净图）
+3. $`w`$ 是 guidance scale，论文用 1.0-10.0
 
 ### 4.3 实验结果
 
@@ -83,7 +83,7 @@ $$\hat\epsilon = \epsilon_\theta(x_t, t) - w \sqrt{1-\bar\alpha_t} \cdot \nabla_
 
 ### 2. "Adaptive Group Norm 是什么？"
 
-文中称 AdaGN：把时间 embedding 通过线性层映射为 GroupNorm 的 $\gamma, \beta$ 参数：
+文中称 AdaGN：把时间 embedding 通过线性层映射为 GroupNorm 的 $`\gamma, \beta`$ 参数：
 ```python
 gamma, beta = self.proj(t_emb).chunk(2, dim=-1)
 x = (1 + gamma) * self.norm(x) + beta
@@ -117,7 +117,7 @@ def forward(self, x):
 ## 七、思考题
 
 1. 为什么训 robust 分类器（adv-training）会让 classifier guidance 效果变差？（提示：robust 分类器的 logit 梯度更"平"）
-2. 实验显示在 ImageNet 上 $w \approx 1$ 就足够，但 SD 用 $w \approx 7.5$。差异从何而来？（提示：文本条件 vs 类别条件，guidance 难度不同）
+2. 实验显示在 ImageNet 上 $`w \approx 1`$ 就足够，但 SD 用 $`w \approx 7.5`$。差异从何而来？（提示：文本条件 vs 类别条件，guidance 难度不同）
 3. 如果用 CLIP 作为"分类器"（CLIP guidance），相比类别分类器的优势？
 
 ---

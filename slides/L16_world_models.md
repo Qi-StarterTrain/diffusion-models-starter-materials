@@ -25,15 +25,15 @@
 
 ### 2.1 数学接口
 
-World model = 一个函数 $W$：
+World model = 一个函数 $`W`$：
 $$W: (o_{<t}, a_{<t}) \to p(o_t | o_{<t}, a_{<t})$$
 
-含义：给定历史 observation $o$ 和 action $a$，预测当前 observation 的**分布**。
+含义：给定历史 observation $`o`$ 和 action $`a`$，预测当前 observation 的**分布**。
 
 或更紧凑：
 $$W: (s_{t-1}, a_{t-1}) \to s_t$$
 
-其中 $s$ 是**latent state**。
+其中 $`s`$ 是**latent state**。
 
 ---
 
@@ -146,7 +146,7 @@ Wayve 自己的驾驶数据：4700 小时 video + action labels。
 **Latent action**：从 unlabeled video 自学 action 表征。
 - 任意 video（YouTube 游戏录像）
 - 没有显式 action label
-- Genie 学一个 "latent action" 编码：从 $o_t \to o_{t+1}$ 的差异
+- Genie 学一个 "latent action" 编码：从 $`o_t \to o_{t+1}`$ 的差异
 
 ### 6.2 架构
 
@@ -212,7 +212,7 @@ Humanoid robot world model。
 
 Autoregressive rollout 中误差累积：
 - 单步预测 99% 准确
-- 100 步后误差 $1 - 0.99^{100} = 63\%$
+- 100 步后误差 $`1 - 0.99^{100} = 63\%`$
 
 → 长时序 world model 必然走偏。
 

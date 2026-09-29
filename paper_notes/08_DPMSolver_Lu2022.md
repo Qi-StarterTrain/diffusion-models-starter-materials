@@ -42,9 +42,9 @@ DDIM 是一阶 Euler 离散化的 probability flow ODE。如果用**高阶 ODE �
 把 ODE 写成：
 $$\frac{dx}{dt} = f(t) \cdot x + g(t) \cdot \epsilon_\theta(x, t)$$
 
-**线性部分** $f(t) \cdot x$ **解析可积**。只对非线性部分做数值积分。
+**线性部分** $`f(t) \cdot x`$ **解析可积**。只对非线性部分做数值积分。
 
-最终得到（在参数变换 $\lambda = \log(\alpha/\sigma)$ 下）：
+最终得到（在参数变换 $`\lambda = \log(\alpha/\sigma)`$ 下）：
 
 $$x_{\lambda_{i+1}} = \frac{\alpha_{\lambda_{i+1}}}{\alpha_{\lambda_i}} x_{\lambda_i} - \alpha_{\lambda_{i+1}} \int_{\lambda_i}^{\lambda_{i+1}} e^{-\lambda} \epsilon_\theta(\hat x_\lambda, t_\lambda) \, d\lambda$$
 
@@ -58,7 +58,7 @@ $$x_{\lambda_{i+1}} = \frac{\alpha_{\lambda_{i+1}}}{\alpha_{\lambda_i}} x_{\lamb
 一阶近似积分项。每步 NFE=1。
 
 ### DPM-Solver-2（midpoint method）
-在中点 $\lambda_{\text{mid}} = (\lambda_i + \lambda_{i+1})/2$ 处再评估一次。每步 NFE=2。
+在中点 $`\lambda_{\text{mid}} = (\lambda_i + \lambda_{i+1})/2`$ 处再评估一次。每步 NFE=2。
 
 ### DPM-Solver-3
 更高阶，每步 NFE=3。
@@ -137,7 +137,7 @@ pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
 
 ## 九、思考题
 
-1. 为什么参数化 $\lambda = \log(\alpha/\sigma)$ 而非 $t$ 直接？这种变换的几何含义？
+1. 为什么参数化 $`\lambda = \log(\alpha/\sigma)`$ 而非 $`t`$ 直接？这种变换的几何含义？
 2. DPM-Solver-2 与 RK2 的区别是什么？为什么不直接用 RK2？
 3. CFG 与 DPM-Solver 结合时，每步需要 NFE=2×k（k 是 solver 阶数）。这是否抵消了 DPM-Solver 的速度优势？
 

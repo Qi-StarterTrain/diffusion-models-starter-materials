@@ -33,30 +33,30 @@
 ## 三、核心公式
 
 ### Consistency Function
-$f: \mathbb{R}^d \times [\epsilon, T] \to \mathbb{R}^d$，满足：
-- **Self-consistency**：$f(x_t, t) = f(x_{t'}, t')$ 对同一 ODE 轨迹的点
-- **Boundary**：$f(x_\epsilon, \epsilon) = x_\epsilon$
+$`f: \mathbb{R}^d \times [\epsilon, T] \to \mathbb{R}^d`$，满足：
+- **Self-consistency**：$`f(x_t, t) = f(x_{t'}, t')`$ 对同一 ODE 轨迹的点
+- **Boundary**：$`f(x_\epsilon, \epsilon) = x_\epsilon`$
 
 ### EDM-style Preconditioning
 $$f_\theta(x, t) = c_{\text{skip}}(t) x + c_{\text{out}}(t) F_\theta(c_{\text{in}}(t) x, c_{\text{noise}}(t))$$
 
-设计 $c$ 函数让 $f_\theta(x, \epsilon) = x$ 自动满足。
+设计 $`c`$ 函数让 $`f_\theta(x, \epsilon) = x`$ 自动满足。
 
 ### CD Loss
 $$\mathcal{L}_{\text{CD}} = \mathbb{E}_n\left[d(f_\theta(x_{t_{n+1}}, t_{n+1}), f_{\theta^-}(\hat x_{t_n}, t_n))\right]$$
 
-其中 $\hat x_{t_n}$ 由 teacher 走一步 ODE 得到。
+其中 $`\hat x_{t_n}`$ 由 teacher 走一步 ODE 得到。
 
 ### CT Loss
 $$\mathcal{L}_{\text{CT}} = \mathbb{E}_n\left[d(f_\theta(x_0 + t_{n+1} \epsilon, t_{n+1}), f_{\theta^-}(x_0 + t_n \epsilon, t_n))\right]$$
 
-没有 teacher，用同一 $\epsilon$ 加到不同噪声水平。
+没有 teacher，用同一 $`\epsilon`$ 加到不同噪声水平。
 
 ---
 
 ## 四、CD vs CT 等价性
 
-定理：$N \to \infty$ 极限下 CD 与 CT gradient 重合。
+定理：$`N \to \infty`$ 极限下 CD 与 CT gradient 重合。
 
 实践：
 - CD 训得更稳（用 teacher 作监督）

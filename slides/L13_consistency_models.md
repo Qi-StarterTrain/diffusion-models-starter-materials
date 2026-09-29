@@ -43,9 +43,9 @@ x_T (noise) ────ODE────→ x_0 (data)
        从这里出发        到这里
 ```
 
-ODE 是确定性的——给定 $x_T$，存在唯一 $x_0$。
+ODE 是确定性的——给定 $`x_T`$，存在唯一 $`x_0`$。
 
-**一步生成的等价问题**：能否学一个函数 $f_\theta(x_T) \approx x_0$？
+**一步生成的等价问题**：能否学一个函数 $`f_\theta(x_T) \approx x_0`$？
 
 ---
 
@@ -53,13 +53,13 @@ ODE 是确定性的——给定 $x_T$，存在唯一 $x_0$。
 
 ### 3.1 关键定义
 
-设 $\{x_t\}$ 是 probability flow ODE 在 $[\epsilon, T]$ 上的解轨迹。**Consistency function** $f$ 满足：
+设 $`\{x_t\}`$ 是 probability flow ODE 在 $`[\epsilon, T]`$ 上的解轨迹。**Consistency function** $`f`$ 满足：
 
 $$f(x_t, t) = f(x_{t'}, t'), \quad \forall t, t' \in [\epsilon, T]$$
 
 —— **同一条 ODE 轨迹上的所有点都映射到同一目标**。
 
-特别地：$f(x_t, t) = x_\epsilon$（轨迹起点附近）。
+特别地：$`f(x_t, t) = x_\epsilon`$（轨迹起点附近）。
 
 ---
 
@@ -67,7 +67,7 @@ $$f(x_t, t) = f(x_{t'}, t'), \quad \forall t, t' \in [\epsilon, T]$$
 
 $$f(x_\epsilon, \epsilon) = x_\epsilon$$
 
-（在 $t = \epsilon$ 处是 identity）
+（在 $`t = \epsilon`$ 处是 identity）
 
 这是 self-consistency 的基线。
 
@@ -75,15 +75,15 @@ $$f(x_\epsilon, \epsilon) = x_\epsilon$$
 
 ### 3.3 参数化技巧
 
-直接学 $f_\theta(x, t) \approx x_\epsilon$ 会忽略 $t = \epsilon$ 的边界条件。Song et al. 提出：
+直接学 $`f_\theta(x, t) \approx x_\epsilon`$ 会忽略 $`t = \epsilon`$ 的边界条件。Song et al. 提出：
 
 $$f_\theta(x, t) = c_{\text{skip}}(t) \cdot x + c_{\text{out}}(t) \cdot F_\theta(x, t)$$
 
-其中 $c_{\text{skip}}(\epsilon) = 1, c_{\text{out}}(\epsilon) = 0$，保证 $f_\theta(x, \epsilon) = x$。
+其中 $`c_{\text{skip}}(\epsilon) = 1, c_{\text{out}}(\epsilon) = 0`$，保证 $`f_\theta(x, \epsilon) = x`$。
 
 EDM 风格的 preconditioning（参考 L11）：
-- $c_{\text{skip}}(t) = \sigma_{\text{data}}^2 / (\sigma_{\text{data}}^2 + t^2)$
-- $c_{\text{out}}(t) = \sigma_{\text{data}} \cdot t / \sqrt{\sigma_{\text{data}}^2 + t^2}$
+- $`c_{\text{skip}}(t) = \sigma_{\text{data}}^2 / (\sigma_{\text{data}}^2 + t^2)`$
+- $`c_{\text{out}}(t) = \sigma_{\text{data}} \cdot t / \sqrt{\sigma_{\text{data}}^2 + t^2}`$
 
 ---
 
@@ -91,7 +91,7 @@ EDM 风格的 preconditioning（参考 L11）：
 
 ### 4.1 思路
 
-已有训好的 diffusion model $s_\phi$（teacher）。让 $f_\theta$（student）"复制"它的 ODE 行为，但能一步到位。
+已有训好的 diffusion model $`s_\phi`$（teacher）。让 $`f_\theta`$（student）"复制"它的 ODE 行为，但能一步到位。
 
 ---
 
@@ -105,10 +105,10 @@ EDM 风格的 preconditioning（参考 L11）：
 ```
 
 **关键**：
-- $f_\theta$ 与 $f_{\theta_{\text{EMA}}}$ 是同一个网络（EMA 副本）
-- 让 $f_\theta(x_{t_{n+1}}, t_{n+1})$ 与 $f_\theta(x_{t_n}, t_n)$ 一致 ——**self-consistency!**
+- $`f_\theta`$ 与 $`f_{\theta_{\text{EMA}}}`$ 是同一个网络（EMA 副本）
+- 让 $`f_\theta(x_{t_{n+1}}, t_{n+1})`$ 与 $`f_\theta(x_{t_n}, t_n)`$ 一致 ——**self-consistency!**
 
-距离函数 $d$：LPIPS 或 L2。
+距离函数 $`d`$：LPIPS 或 L2。
 
 ---
 
@@ -158,7 +158,7 @@ CD 需要预训好的 teacher，CT **不需要**——从头训。
 3. Loss = d(f_theta(x_{t_{n+1}}, t_{n+1}), f_theta_EMA(x_{t_n}, t_n))
 ```
 
-直觉：两个噪声水平的样本来自同一 $x_0$，consistency function 应该给同样结果。
+直觉：两个噪声水平的样本来自同一 $`x_0`$，consistency function 应该给同样结果。
 
 ---
 
@@ -201,8 +201,8 @@ Luo et al. 2023 把 CD 应用到 **latent diffusion**（SD）：
 Song et al. 2024 后续（**Improved Techniques for CT**）提出：
 
 ### 7.1 Schedule 改进
-- $N$ 步数从 18 → 1280（更精细）
-- 自定义 $\sigma$ schedule（不再用 EDM 默认）
+- $`N`$ 步数从 18 → 1280（更精细）
+- 自定义 $`\sigma`$ schedule（不再用 EDM 默认）
 
 ### 7.2 Pseudo-Huber Loss
 $$d(x, y) = \sqrt{\|x-y\|^2 + c^2} - c$$

@@ -7,56 +7,56 @@
 ## 第一部分：概念题
 
 ### Q1
-- $q(x_t|x_0)$：从干净数据**直接**加噪到 $t$ 时刻，闭合高斯
-- $q(x_t|x_{t-1})$：单步加噪（forward 过程的定义）
-- $q(x_{t-1}|x_t, x_0)$：**真实反向后验**（贝叶斯反推，闭合高斯）
+- $`q(x_t|x_0)`$：从干净数据**直接**加噪到 $`t`$ 时刻，闭合高斯
+- $`q(x_t|x_{t-1})`$：单步加噪（forward 过程的定义）
+- $`q(x_{t-1}|x_t, x_0)`$：**真实反向后验**（贝叶斯反推，闭合高斯）
 
-DDPM 训练用 $q(x_t|x_0)$。原因：
-1. 闭合形式让我们能直接对任意 $t$ 采样 $x_t$，无需逐步加噪
-2. simplified loss 只依赖 $q(x_t|x_0)$ 不依赖完整链——这是后续 DDIM 能用同一模型的根基
+DDPM 训练用 $`q(x_t|x_0)`$。原因：
+1. 闭合形式让我们能直接对任意 $`t`$ 采样 $`x_t`$，无需逐步加噪
+2. simplified loss 只依赖 $`q(x_t|x_0)`$ 不依赖完整链——这是后续 DDIM 能用同一模型的根基
 
 ---
 
 ### Q2
-$\mathcal{L}_{\text{simple}}$ = ELBO 推出的 loss 但**去掉了时间相关权重 $w_t$**。
+$`\mathcal{L}_{\text{simple}}`$ = ELBO 推出的 loss 但**去掉了时间相关权重 $`w_t`$**。
 
 DDPM 用前者原因：
 - 实验上 FID 更好
-- 等权重让大 $t$ 的"困难时间步"得到充分训练，避免被小 $t$ 主导
+- 等权重让大 $`t`$ 的"困难时间步"得到充分训练，避免被小 $`t`$ 主导
 - 简洁、稳定
 
 ---
 
 ### Q3
-**错**。DDPM 标准 ancestral sampling 在每步中加入噪声 $z \sim \mathcal{N}(0, I)$，所以输出**随机**。即使固定初始 $x_T$，每次结果也不同。
+**错**。DDPM 标准 ancestral sampling 在每步中加入噪声 $`z \sim \mathcal{N}(0, I)`$，所以输出**随机**。即使固定初始 $`x_T`$，每次结果也不同。
 
-确定性采样要用 DDIM ($\sigma = 0$) 或 probability flow ODE。
+确定性采样要用 DDIM ($`\sigma = 0`$) 或 probability flow ODE。
 
 ---
 
 ### Q4
-1. $\tilde\mu_t$ 自然形式中显含 $\epsilon$，预测 $\epsilon$ 给出**简洁的 loss 形式**（MSE）
-2. $\epsilon$ 的数值范围（标准正态 $[-3, 3]$）天然适配神经网络回归
-3. 预测 $\epsilon$ 等价于预测 score（用于 SDE/ODE 视角）
-4. 实验上 FID 比预测 $x_0$ 或 $\mu$ 都好
+1. $`\tilde\mu_t`$ 自然形式中显含 $`\epsilon`$，预测 $`\epsilon`$ 给出**简洁的 loss 形式**（MSE）
+2. $`\epsilon`$ 的数值范围（标准正态 $`[-3, 3]`$）天然适配神经网络回归
+3. 预测 $`\epsilon`$ 等价于预测 score（用于 SDE/ODE 视角）
+4. 实验上 FID 比预测 $`x_0`$ 或 $`\mu`$ 都好
 
 ---
 
 ### Q5
-Linear schedule 下 $\beta_t \in [10^{-4}, 0.02]$。
+Linear schedule 下 $`\beta_t \in [10^{-4}, 0.02]`$。
 
-如果 $\beta_{\max} = 0.5$：
-- 单步加噪过强，$\bar\alpha_t$ 在很少几步内就接近 0
-- 前向过程"信号丢失太快"，绝大部分 $t$ 都在"接近纯噪声"区域
-- 训练时大部分 $t$ 的样本 $x_t \approx \epsilon$，网络很难学到有意义的去噪
+如果 $`\beta_{\max} = 0.5`$：
+- 单步加噪过强，$`\bar\alpha_t`$ 在很少几步内就接近 0
+- 前向过程"信号丢失太快"，绝大部分 $`t`$ 都在"接近纯噪声"区域
+- 训练时大部分 $`t`$ 的样本 $`x_t \approx \epsilon`$，网络很难学到有意义的去噪
 - FID 显著恶化
 
 ---
 
 ### Q6
 原因：
-1. 每个 sample 只在一个随机 $t$ 上贡献 loss——大 batch 让所有 $t$ 都被"覆盖"得更均匀
-2. Loss 的方差天然大（不同 $t$ 的难度差异），大 batch 减小梯度方差
+1. 每个 sample 只在一个随机 $`t`$ 上贡献 loss——大 batch 让所有 $`t`$ 都被"覆盖"得更均匀
+2. Loss 的方差天然大（不同 $`t`$ 的难度差异），大 batch 减小梯度方差
 3. EMA + AdamW 在大 batch 下更稳定
 4. 大 batch 让 BatchNorm 替代品（GroupNorm）的统计更准确
 
@@ -65,19 +65,19 @@ Linear schedule 下 $\beta_t \in [10^{-4}, 0.02]$。
 ## 第二部分：推导题
 
 ### Q7
-**Base case ($t=1$)**：$x_1 = \sqrt{\alpha_1} x_0 + \sqrt{1-\alpha_1} \epsilon_1$，由 $\bar\alpha_1 = \alpha_1$ 命题成立。
+**Base case ($`t=1`$)**：$`x_1 = \sqrt{\alpha_1} x_0 + \sqrt{1-\alpha_1} \epsilon_1`$，由 $`\bar\alpha_1 = \alpha_1`$ 命题成立。
 
 **Inductive step**：设
 $$x_{t-1} = \sqrt{\bar\alpha_{t-1}} x_0 + \sqrt{1-\bar\alpha_{t-1}} \tilde\epsilon$$
 
-代入 $x_t = \sqrt{\alpha_t} x_{t-1} + \sqrt{1-\alpha_t} \epsilon_t$：
+代入 $`x_t = \sqrt{\alpha_t} x_{t-1} + \sqrt{1-\alpha_t} \epsilon_t`$：
 
 $$x_t = \sqrt{\alpha_t \bar\alpha_{t-1}} x_0 + \sqrt{\alpha_t(1-\bar\alpha_{t-1})} \tilde\epsilon + \sqrt{1-\alpha_t} \epsilon_t$$
 
-注意 $\alpha_t \bar\alpha_{t-1} = \bar\alpha_t$。两个独立高斯之和：方差相加：
+注意 $`\alpha_t \bar\alpha_{t-1} = \bar\alpha_t`$。两个独立高斯之和：方差相加：
 $$\alpha_t(1-\bar\alpha_{t-1}) + (1-\alpha_t) = 1 - \bar\alpha_t$$
 
-所以 $x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon$（$\epsilon \sim \mathcal{N}(0, I)$）。∎
+所以 $`x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon`$（$`\epsilon \sim \mathcal{N}(0, I)`$）。∎
 
 （参考 derive_02 §2 完整版本）
 
@@ -87,11 +87,11 @@ $$\alpha_t(1-\bar\alpha_{t-1}) + (1-\alpha_t) = 1 - \bar\alpha_t$$
 由贝叶斯：
 $$q(x_{t-1} | x_t, x_0) = \frac{q(x_t | x_{t-1}) q(x_{t-1} | x_0)}{q(x_t | x_0)}$$
 
-三个分子分母都是高斯。在指数里把所有含 $x_{t-1}$ 的项取出：
+三个分子分母都是高斯。在指数里把所有含 $`x_{t-1}`$ 的项取出：
 
-二次项系数：$-\frac{1}{2}\left[\frac{\alpha_t}{\beta_t} + \frac{1}{1-\bar\alpha_{t-1}}\right] \|x_{t-1}\|^2$
+二次项系数：$`-\frac{1}{2}\left[\frac{\alpha_t}{\beta_t} + \frac{1}{1-\bar\alpha_{t-1}}\right] \|x_{t-1}\|^2`$
 
-化简该系数 = $-\frac{1-\bar\alpha_t}{2\beta_t(1-\bar\alpha_{t-1})}$，即逆方差：
+化简该系数 = $`-\frac{1-\bar\alpha_t}{2\beta_t(1-\bar\alpha_{t-1})}`$，即逆方差：
 $$\tilde\beta_t = \frac{\beta_t(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}$$
 
 一次项配方法给出：
@@ -102,32 +102,32 @@ $$\tilde\mu_t = \frac{\sqrt{\bar\alpha_{t-1}}\beta_t}{1-\bar\alpha_t} x_0 + \fra
 ---
 
 ### Q9
-由 derive_02 §3.3，$\tilde\mu_t$ 用 $\epsilon$ 写成：
+由 derive_02 §3.3，$`\tilde\mu_t`$ 用 $`\epsilon`$ 写成：
 $$\tilde\mu_t = \frac{1}{\sqrt{\alpha_t}}\left(x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon\right)$$
 
-$\mu_\theta$ 同样形式但 $\epsilon \to \epsilon_\theta$。所以：
+$`\mu_\theta`$ 同样形式但 $`\epsilon \to \epsilon_\theta`$。所以：
 $$\tilde\mu_t - \mu_\theta = \frac{1}{\sqrt{\alpha_t}} \cdot \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \cdot (\epsilon_\theta - \epsilon)$$
 
 模长平方：
 $$\|\tilde\mu_t - \mu_\theta\|^2 = \frac{\beta_t^2}{\alpha_t(1-\bar\alpha_t)} \cdot \|\epsilon - \epsilon_\theta\|^2$$
 
-**系数**：$\dfrac{\beta_t^2}{\alpha_t(1-\bar\alpha_t)}$，只依赖 $t$。
+**系数**：$`\dfrac{\beta_t^2}{\alpha_t(1-\bar\alpha_t)}`$，只依赖 $`t`$。
 
 ---
 
 ### Q10
-(a) 由 $q(x_t|x_0) = \mathcal{N}(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I)$：
+(a) 由 $`q(x_t|x_0) = \mathcal{N}(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I)`$：
 $$\nabla_{x_t} \log q(x_t|x_0) = -\frac{x_t - \sqrt{\bar\alpha_t} x_0}{1-\bar\alpha_t}$$
 
-(b) 用 $x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon$ 反推：
+(b) 用 $`x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon`$ 反推：
 $$x_t - \sqrt{\bar\alpha_t} x_0 = \sqrt{1-\bar\alpha_t} \epsilon$$
 
 代入：
 $$\nabla_{x_t} \log q(x_t|x_0) = -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}$$
 
-所以 $s_\theta = -\epsilon_\theta / \sqrt{1-\bar\alpha_t}$，**两者训练目标只差一个时间相关常数**。
+所以 $`s_\theta = -\epsilon_\theta / \sqrt{1-\bar\alpha_t}`$，**两者训练目标只差一个时间相关常数**。
 
-(c) 转换系数：$s_\theta(x_t, t) = -\frac{\epsilon_\theta(x_t, t)}{\sqrt{1-\bar\alpha_t}}$
+(c) 转换系数：$`s_\theta(x_t, t) = -\frac{\epsilon_\theta(x_t, t)}{\sqrt{1-\bar\alpha_t}}`$
 
 ---
 
@@ -156,7 +156,7 @@ $$\nabla_{x_t} \log q(x_t|x_0) = -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}$$
 
 ### Q12
 (a) Schedule 相关：
-1. **改用 cosine schedule**：在 64×64+ 上经验上更好（中等 $t$ 区域信号保留更多）
+1. **改用 cosine schedule**：在 64×64+ 上经验上更好（中等 $`t`$ 区域信号保留更多）
 2. **延长 T**：从 1000 → 4000 步，给模型更细的时间网格
 
 (b) 训练目标：

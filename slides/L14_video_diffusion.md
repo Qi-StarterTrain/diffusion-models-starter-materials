@@ -85,7 +85,7 @@ x = x + temporal_attn(x)  # T 内 attend (每个 spatial location 独立)
 
 **3. 时间位置编码**
 
-把 frame index $t \in [0, T-1]$ 用 sinusoidal embedding 加到 feature。
+把 frame index $`t \in [0, T-1]`$ 用 sinusoidal embedding 加到 feature。
 
 ---
 
@@ -113,9 +113,9 @@ Sora 等放弃 UNet，用 DiT-3D。
 
 输入：(B, C, T, H, W)
 patch size: (p_t, p_h, p_w)
-tokens 数：$N = (T/p_t) \cdot (H/p_h) \cdot (W/p_w)$
+tokens 数：$`N = (T/p_t) \cdot (H/p_h) \cdot (W/p_w)`$
 
-例：$T=32, H=W=64, p_t=p_h=p_w=2 \to N = 16 \cdot 32 \cdot 32 = 16384$ tokens。
+例：$`T=32, H=W=64, p_t=p_h=p_w=2 \to N = 16 \cdot 32 \cdot 32 = 16384`$ tokens。
 
 > 比 2D 多得多！这是 video DiT 的算力瓶颈。
 
@@ -123,7 +123,7 @@ tokens 数：$N = (T/p_t) \cdot (H/p_h) \cdot (W/p_w)$
 
 DiT-3D 让所有 token 间做 attention：
 - 一个 frame 的 token 既看自己 frame 也看其他 frame 的所有 token
-- 时空建模自然，但 $O(N^2)$ 巨贵
+- 时空建模自然，但 $`O(N^2)`$ 巨贵
 
 Sora 的工程优化：window attention + sparse attention。
 
@@ -159,7 +159,7 @@ Imagen Video 与 SVD 都用：
 ### 6.3 Image-to-Video (I2V)
 
 很多模型支持"给一张图，生成视频"：
-- 输入：1 张图 $x_0^{(0)}$（已知）+ 后续 T-1 帧（噪声）
+- 输入：1 张图 $`x_0^{(0)}`$（已知）+ 后续 T-1 帧（噪声）
 - 模型：UNet 接受 mask（哪些帧已知）
 - 训练：随机 mask 一些帧作为已知
 
@@ -234,7 +234,7 @@ SVD: 14 帧（约 1 秒）
 Sora: 60 秒
 Pika/Runway: 4-10 秒
 
-为什么难？$O(T \cdot H \cdot W)$ attention 在长视频时 OOM。Sora 用 **patches over space-time** 缓解。
+为什么难？$`O(T \cdot H \cdot W)`$ attention 在长视频时 OOM。Sora 用 **patches over space-time** 缓解。
 
 ### 10.2 物理一致性
 扩散模型不"理解"物理：水流方向、重力、碰撞经常错。
@@ -253,7 +253,7 @@ Sora 通过海量训练**部分**学到，但仍有失败案例（玻璃杯落�
 
 视频生成模型 = **隐式世界模型**（隐式预测 next frame）。
 具身研究关心的是：
-- 给定 action $a_t$，预测 next observation $o_{t+1}$
+- 给定 action $`a_t`$，预测 next observation $`o_{t+1}`$
 - 这正是 video conditional generation
 
 代表工作：**Genie** (Bruce et al., 2024, DeepMind)、**WorldDreamer**、**1X World Model**。

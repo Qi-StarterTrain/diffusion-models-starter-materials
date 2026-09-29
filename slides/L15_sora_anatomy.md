@@ -44,15 +44,15 @@ Sora（2024/2 公布，2024/12 发布）是 OpenAI 的视频生成系统：
 
 ### 3.1 核心想法
 
-视频 $\in \mathbb{R}^{T \times H \times W \times C}$
-→ 3D patches of size $(p_t, p_h, p_w)$
-→ tokens $\in \mathbb{R}^{N \times D}$
+视频 $`\in \mathbb{R}^{T \times H \times W \times C}`$
+→ 3D patches of size $`(p_t, p_h, p_w)`$
+→ tokens $`\in \mathbb{R}^{N \times D}`$
 
-其中 $N = (T/p_t)(H/p_h)(W/p_w)$。
+其中 $`N = (T/p_t)(H/p_h)(W/p_w)`$。
 
-例：60s × 1080p × 30FPS = $1800 \times 1920 \times 1080 \times 3$
-- patch $4 \times 32 \times 32$: $N = 450 \times 60 \times 33.75 = 911,250$ tokens
-- 完整 attention $O(N^2) \approx 10^{12}$ → 不可行
+例：60s × 1080p × 30FPS = $`1800 \times 1920 \times 1080 \times 3`$
+- patch $`4 \times 32 \times 32`$: $`N = 450 \times 60 \times 33.75 = 911,250`$ tokens
+- 完整 attention $`O(N^2) \approx 10^{12}`$ → 不可行
 - 必须用 sparse/window attention
 
 ---
@@ -62,7 +62,7 @@ Sora（2024/2 公布，2024/12 发布）是 OpenAI 的视频生成系统：
 朴素：在 latent space 做 patchify（已经 8x 下采样）
 Sora：可能用更激进的下采样
 
-具体 patch size 未公开，但从 demo 时长与显存推算：可能用 $(p_t, p_h, p_w) = (4, 16, 16)$。
+具体 patch size 未公开，但从 demo 时长与显存推算：可能用 $`(p_t, p_h, p_w) = (4, 16, 16)`$。
 
 ---
 
@@ -160,7 +160,7 @@ Sora 在**短时间**（<5s）下表现不错，**长时间**仍有失败。
 - **算力**：1-2 万 H100 卡训 1-3 个月
 - **参数**：3B - 10B（小于 GPT-4 但大于 SD XL）
 
-**Cost 估算**：$50M - $200M 训练成本。这是为什么 Sora 不开源——economic moat。
+**Cost 估算**：$`50M - `$200M 训练成本。这是为什么 Sora 不开源——economic moat。
 
 ---
 
@@ -212,7 +212,7 @@ Tech report 末尾承认：
 
 ### 9.1 Token reduction
 
-完整 attention $O(N^2)$ 在 N=1M 不可行。可能用：
+完整 attention $`O(N^2)`$ 在 N=1M 不可行。可能用：
 - **Spatial-Temporal factorization**：先 spatial attn 再 temporal
 - **Window attention**：每个 token 只看附近时空 window
 - **Hierarchical**：早期 layer 用 local，深 layer 用 global

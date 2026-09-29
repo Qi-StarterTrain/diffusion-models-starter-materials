@@ -35,7 +35,7 @@ Stable Diffusion 中"scaling factor = 0.18215"是怎么来的？为什么需要�
 ---
 
 ### Q5
-为什么 SD 的 VAE 用极小的 KL 权重（$\lambda \approx 10^{-6}$）而不是标准 VAE 的 KL 权重？
+为什么 SD 的 VAE 用极小的 KL 权重（$`\lambda \approx 10^{-6}`$）而不是标准 VAE 的 KL 权重？
 
 ---
 
@@ -50,7 +50,7 @@ Stable Diffusion 中"scaling factor = 0.18215"是怎么来的？为什么需要�
 ### Q7
 **Anderson 反向 SDE 公式**：
 
-对正向 SDE $dx = f(x, t) dt + g(t) dW$，写出反向 SDE 的形式（包含 score 项）。
+对正向 SDE $`dx = f(x, t) dt + g(t) dW`$，写出反向 SDE 的形式（包含 score 项）。
 
 简述推导思路（不必完整推导）：从 Fokker-Planck 方程出发，要求反向过程的密度演化与正向匹配。
 
@@ -60,29 +60,29 @@ Stable Diffusion 中"scaling factor = 0.18215"是怎么来的？为什么需要�
 **DDIM 推导**：
 
 从两个条件
-1. $q_\sigma(x_t | x_0) = \mathcal{N}(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I)$（与 DDPM 同）
-2. $q_\sigma(x_{t-1} | x_t, x_0) = \mathcal{N}(a_t x_0 + b_t x_t, \sigma_t^2 I)$（线性形式）
+1. $`q_\sigma(x_t | x_0) = \mathcal{N}(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I)`$（与 DDPM 同）
+2. $`q_\sigma(x_{t-1} | x_t, x_0) = \mathcal{N}(a_t x_0 + b_t x_t, \sigma_t^2 I)`$（线性形式）
 
-推出 $a_t, b_t$ 的表达式（用 $\sigma_t$ 与 $\bar\alpha$ 系列表示）。
+推出 $`a_t, b_t`$ 的表达式（用 $`\sigma_t`$ 与 $`\bar\alpha`$ 系列表示）。
 
 ---
 
 ### Q9
 **CFG 公式推导**：
 
-从贝叶斯分解 $\nabla_x \log p(x|y) = \nabla_x \log p(y|x) + \nabla_x \log p(x)$ 出发，推出 CFG 公式：
+从贝叶斯分解 $`\nabla_x \log p(x|y) = \nabla_x \log p(y|x) + \nabla_x \log p(x)`$ 出发，推出 CFG 公式：
 $$\hat\epsilon = \epsilon_\theta(x, t, \emptyset) + s \cdot (\epsilon_\theta(x, t, y) - \epsilon_\theta(x, t, \emptyset))$$
 
-要求显式写出"用 $\nabla \log p(x|y) - \nabla \log p(x)$ 替代 $\nabla \log p(y|x)$"这一关键步骤。
+要求显式写出"用 $`\nabla \log p(x|y) - \nabla \log p(x)`$ 替代 $`\nabla \log p(y|x)`$"这一关键步骤。
 
 ---
 
 ### Q10
 **Probability flow ODE 推导**：
 
-给定 SDE $dx = f(x, t) dt + g(t) dW$（对应密度 $p_t$），证明 ODE
+给定 SDE $`dx = f(x, t) dt + g(t) dW`$（对应密度 $`p_t`$），证明 ODE
 $$\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)$$
-的解在每个时间 $t$ 与原 SDE 的边缘分布相同。
+的解在每个时间 $`t`$ 与原 SDE 的边缘分布相同。
 
 提示：用 FPE 形式，对比两个 transport equation。
 

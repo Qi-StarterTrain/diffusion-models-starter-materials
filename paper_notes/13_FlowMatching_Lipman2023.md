@@ -46,7 +46,7 @@ $$\nabla_\theta \mathcal{L}_{\text{CFM}} = \nabla_\theta \mathcal{L}_{\text{FM}}
 
 ## 四、Linear Path（最常用）
 
-$x_t = (1-t) x_0 + t x_1$，对应 $u_t(x_t | x_1) = x_1 - x_0$。
+$`x_t = (1-t) x_0 + t x_1`$，对应 $`u_t(x_t | x_1) = x_1 - x_0`$。
 
 训练 loss：
 $$\mathcal{L} = \mathbb{E}\left[\|v_\theta(x_t, t) - (x_1 - x_0)\|^2\right]$$
@@ -57,7 +57,7 @@ $$\mathcal{L} = \mathbb{E}\left[\|v_\theta(x_t, t) - (x_1 - x_0)\|^2\right]$$
 
 ## 五、与 DDPM 的关系
 
-DDPM 用 $\bar\alpha_t$ schedule（凸函数），FM 用 $t$（线性）。
+DDPM 用 $`\bar\alpha_t`$ schedule（凸函数），FM 用 $`t`$（线性）。
 
 差异：**轨迹 straightness**。
 - DDPM：弯曲（特别在大 t 处）
@@ -97,7 +97,7 @@ CIFAR-10 NFE-FID Pareto：FM 在 10-20 NFE 区间优于 DDPM。
 **部分是**。对高斯先验 + L2 cost 的 OT 是 linear；其他 cost 不是。但实践用 linear 已足够。
 
 ### 3. "CFM 与 FM 数学等价？"
-**梯度等价**，不是 loss 等价。两个 loss 的数值不同（常数差），但对 $\theta$ 的偏导相同。
+**梯度等价**，不是 loss 等价。两个 loss 的数值不同（常数差），但对 $`\theta`$ 的偏导相同。
 
 ---
 
@@ -113,7 +113,7 @@ SD 3 (Esser et al., 2024) 用 rectified flow + DiT，最重要的改进：
 
 ## 十、思考题
 
-1. 推导 linear path 的 $u_t(x|x_1) = x_1 - x_0$（参考 derive_07）
+1. 推导 linear path 的 $`u_t(x|x_1) = x_1 - x_0`$（参考 derive_07）
 2. 在 2D 数据上比较 OT path 与 linear path 的训练 loss 曲线
 3. 用 FM 训练再做 reflow（Liu 2022），观察 1-step 质量改善
 4. 思考：FM 可以做 "score distillation"吗？怎么把 SD 1.5 (DDPM) 转成 FM？

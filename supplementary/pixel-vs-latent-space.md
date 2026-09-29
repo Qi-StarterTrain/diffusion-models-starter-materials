@@ -46,8 +46,8 @@ $$
 T_{\text{total}} = \text{NFE} \times T_{\text{denoise}} + T_{\text{decode}}
 $$
 
-- **NFE = 50** 时，$T_{\text{decode}}$ 相对于 50 次 U-Net 前向可以忽略不计；
-- **NFE = 4** 时（W12 的蒸馏技术让这成为常态），分子里的第一项缩小了十几倍，而 $T_{\text{decode}}$ 一点没变。
+- **NFE = 50** 时，$`T_{\text{decode}}`$ 相对于 50 次 U-Net 前向可以忽略不计；
+- **NFE = 4** 时（W12 的蒸馏技术让这成为常态），分子里的第一项缩小了十几倍，而 $`T_{\text{decode}}`$ 一点没变。
 
 于是 decode 在端到端延迟里的占比**急剧上升**。论文里的实测数字很直观：在单张 H800 上生成 1024×1024 图像，SD 系 VAE decoder 单独一次 decode 要 91.88 ms、10472 GFLOPs（论文 Table 1）。当整个 4 步采样只需要几百毫秒时，这一下 decode 就不再是零头了。
 
@@ -126,7 +126,7 @@ $$
 
 ### 5.3 预测目标：x-prediction 还是 v-prediction？
 
-回忆 L12：flow matching 用的是 v-prediction，模型预测速度场 $v = x_1 - x_0$。而 [derive_03_ddpm_loss.md](../derivations/derive_03_ddpm_loss.md) 里我们推过，$\epsilon$-prediction、$x_0$-prediction、v-prediction 在数学上可以互相换算，差别在于**损失函数对不同 $t$ 的隐式加权**。
+回忆 L12：flow matching 用的是 v-prediction，模型预测速度场 $`v = x_1 - x_0`$。而 [derive_03_ddpm_loss.md](../derivations/derive_03_ddpm_loss.md) 里我们推过，$`\epsilon`$-prediction、$`x_0`$-prediction、v-prediction 在数学上可以互相换算，差别在于**损失函数对不同 $`t`$ 的隐式加权**。
 
 这里出现了一个真实的设计难题：源模型是用 v-prediction 训的，迁到 pixel space 时应该保留 v-prediction，还是切到 x-prediction？
 
@@ -161,28 +161,28 @@ $$
 
 从 VAE latent 换到 RGB 像素，同时改变了两件事：空间分辨率（变成 8 倍）和信号的分布。直接沿用 latent 空间的噪声调度，会让模型暴露在一个完全不同的信噪比（SNR）下——SNR 为什么重要，见 [snr-importance.md](snr-importance.md)。
 
-论文没有重新设计整个 schedule，而是引入**一个**噪声缩放因子 $\gamma$：
+论文没有重新设计整个 schedule，而是引入**一个**噪声缩放因子 $`\gamma`$：
 
 $$
 \mathbf{x}_t = t\mathbf{x}_0 + (1-t)\gamma\boldsymbol{\epsilon}, \qquad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})
 $$
 
-**先看理论怎么说。** 设 $r$ 为 RGB 图像与其 latent 的空间尺寸之比，这里 $r = 8$。如果把 pixel 输入做因子为 $r$ 的平均池化，独立像素噪声的方差会降低 $r^2$ 倍，于是
+**先看理论怎么说。** 设 $`r`$ 为 RGB 图像与其 latent 的空间尺寸之比，这里 $`r = 8`$。如果把 pixel 输入做因子为 $`r`$ 的平均池化，独立像素噪声的方差会降低 $`r^2`$ 倍，于是
 
 $$
 \mathrm{SNR}^{1/r}_{\text{pixel}}(t) \approx \frac{r^2}{\gamma^2}\,\mathrm{SNR}_{\text{latent}}(t)
 $$
 
-令两边 SNR 匹配，解得 $\gamma = r = 8$。推导很干净。
+令两边 SNR 匹配，解得 $`\gamma = r = 8`$。推导很干净。
 
 **再看实验怎么说**（Table 2）：
 
-| $\gamma$ | 1 | **2** | 4 | 8 |
+| $`\gamma`$ | 1 | **2** | 4 | 8 |
 |---|---|---|---|---|
 | GenEval ↑ | 0.6811 | **0.7545** | 0.7413 | 0.7316 |
 | DPG ↑ | 84.03 | **87.54** | 86.01 | 85.64 |
 
-理论推出来的 $\gamma = 8$ 是**四个里面最差的**。最优值是 $\gamma = 2$。Figure 10 的定性结果一致：$\gamma = 1, 4, 8$ 都有明显偏色，只有 $\gamma = 2$ 色彩还原均衡。
+理论推出来的 $`\gamma = 8`$ 是**四个里面最差的**。最优值是 $`\gamma = 2`$。Figure 10 的定性结果一致：$`\gamma = 1, 4, 8`$ 都有明显偏色，只有 $`\gamma = 2`$ 色彩还原均衡。
 
 **为什么？** 因为那个推导里藏了一个没说出口的简化假设：**"空间分辨率是两种表示之间唯一的差异"**。而这显然不成立——VAE encoder 不等价于平均池化，RGB 像素和 VAE latent 在信号统计和预测目标上都不一样。分辨率匹配只覆盖了分布偏移的一部分。
 
@@ -240,7 +240,7 @@ latent-space 步数蒸馏                   0.95 s
 
 3. **复现门槛极高。** 6B backbone、200 亿图文对、H800 集群。这不是能拿来做 Project 的东西，当作阅读材料就好。
 
-4. **它很新，还没有第三方验证。** 2026 年 8 月刚挂出来，出自单一团队。$\gamma = 2$ 这类具体数值高度依赖于他们的具体设定（Z-Image 架构、$r = 8$、特定数据混合），不要当成普适常数记住。**要记住的是"理论值只给量级、最优值要实测"这个方法，不是数字 2。**
+4. **它很新，还没有第三方验证。** 2026 年 8 月刚挂出来，出自单一团队。$`\gamma = 2`$ 这类具体数值高度依赖于他们的具体设定（Z-Image 架构、$`r = 8`$、特定数据混合），不要当成普适常数记住。**要记住的是"理论值只给量级、最优值要实测"这个方法，不是数字 2。**
 
 5. **两条路线仍在并行演进。** SD 3、FLUX 这些主力开源模型仍然是 latent 的，且 latent 一侧也在改进（更大的 VAE、端到端联合训练）。目前看这更像是**两种表示在训练流水线的不同阶段各司其职**，而不是谁取代谁。
 

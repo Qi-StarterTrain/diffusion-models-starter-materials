@@ -49,7 +49,7 @@
 
 ## 三、Spacetime Patches
 
-把 video latent $(T, H, W)$ 划分成 3D patches，flatten 成 token sequence。
+把 video latent $`(T, H, W)`$ 划分成 3D patches，flatten 成 token sequence。
 - 不同长度 / 分辨率 video → 不同 token 数
 - DiT 天然支持变长
 
@@ -88,7 +88,7 @@ Tech report 末尾承认：
 - **参数**：3B-10B
 - **训练数据**：千 PB 级 video（疑似 YouTube + 自有 + 合成）
 - **算力**：1-2 万 H100 × 1-3 个月
-- **训练成本**：$50M-$200M
+- **训练成本**：$`50M-`$200M
 - **推理成本**：单 60s 视频约 $1（按 OpenAI pricing 反推）
 
 ---

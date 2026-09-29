@@ -8,7 +8,7 @@
 
 ### 题 1 答案
 
-$Y \sim \mathcal{N}(a\mu + b, a^2 \sigma^2)$
+$`Y \sim \mathcal{N}(a\mu + b, a^2 \sigma^2)`$
 
 **关键点**：高斯分布的线性变换仍是高斯，均值线性变化、方差按平方放缩。这是 DDPM 中所有"加噪推导"的基础工具。
 
@@ -18,11 +18,11 @@ $Y \sim \mathcal{N}(a\mu + b, a^2 \sigma^2)$
 
 ### 题 2 答案
 
-$x = \mu + \sigma \cdot \epsilon$，其中 $\epsilon \sim \mathcal{N}(0, 1)$。
+$`x = \mu + \sigma \cdot \epsilon`$，其中 $`\epsilon \sim \mathcal{N}(0, 1)`$。
 
 **关键点**：这就是 **reparameterization trick**。
-- 直接采样 $x \sim \mathcal{N}(\mu, \sigma^2)$ 不可导（采样是不连续操作）
-- 把随机性"外包"给 $\epsilon$，则 $\mu, \sigma$ 与 $x$ 之间是确定性映射，可反向传播
+- 直接采样 $`x \sim \mathcal{N}(\mu, \sigma^2)`$ 不可导（采样是不连续操作）
+- 把随机性"外包"给 $`\epsilon`$，则 $`\mu, \sigma`$ 与 $`x`$ 之间是确定性映射，可反向传播
 
 VAE、扩散模型的训练全部依赖这个技巧。
 
@@ -32,7 +32,7 @@ VAE、扩散模型的训练全部依赖这个技巧。
 
 ### 题 3 答案
 
-$X_1 + X_2 \sim \mathcal{N}(\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)$
+$`X_1 + X_2 \sim \mathcal{N}(\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)`$
 
 **关键点**：独立高斯之和仍是高斯，均值/方差均相加。
 DDPM 中"两次加噪可合并为一次"的推导基于此。
@@ -44,8 +44,8 @@ DDPM 中"两次加噪可合并为一次"的推导基于此。
 $$D_{\mathrm{KL}}(p \| q) = \int p(x) \log \frac{p(x)}{q(x)} \mathrm{d}x$$
 
 性质：
-1. **非负性**：$D_{\mathrm{KL}}(p \| q) \geq 0$，等号当且仅当 $p = q$ 几乎处处成立
-2. **不对称**：$D_{\mathrm{KL}}(p \| q) \neq D_{\mathrm{KL}}(q \| p)$（一般情况下）
+1. **非负性**：$`D_{\mathrm{KL}}(p \| q) \geq 0`$，等号当且仅当 $`p = q`$ 几乎处处成立
+2. **不对称**：$`D_{\mathrm{KL}}(p \| q) \neq D_{\mathrm{KL}}(q \| p)`$（一般情况下）
 
 **关键点**：KL 是 ELBO 推导的核心工具，理解它的非对称性能帮助理解为什么 forward KL 和 reverse KL 在 VAE/扩散中的作用不同。
 
@@ -57,11 +57,11 @@ $$D_{\mathrm{KL}}(p \| q) = \int p(x) \log \frac{p(x)}{q(x)} \mathrm{d}x$$
 
 $$p(\theta | x) = \frac{p(x | \theta) \cdot p(\theta)}{p(x)}$$
 
-- $p(\theta)$：**先验**，参数本身的分布
-- $p(x | \theta)$：**似然**，给定参数下数据的概率
-- $p(\theta | x)$：**后验**，看到数据后对参数的更新
+- $`p(\theta)`$：**先验**，参数本身的分布
+- $`p(x | \theta)`$：**似然**，给定参数下数据的概率
+- $`p(\theta | x)`$：**后验**，看到数据后对参数的更新
 
-**关键点**：扩散模型的 reverse process $p_\theta(x_{t-1} | x_t)$ 本质上是在估计后验 $q(x_{t-1} | x_t, x_0)$ 的近似。
+**关键点**：扩散模型的 reverse process $`p_\theta(x_{t-1} | x_t)`$ 本质上是在估计后验 $`q(x_{t-1} | x_t, x_0)`$ 的近似。
 
 ---
 
@@ -77,9 +77,9 @@ $$\frac{\partial L}{\partial x} = f'(g(h(x))) \cdot g'(h(x)) \cdot h'(x)$$
 
 ### 题 7 答案
 
-$\nabla f = (2x + 3y, 3x + 2y)$
+$`\nabla f = (2x + 3y, 3x + 2y)`$
 
-在 $(1, 2)$ 处：$\nabla f(1, 2) = (2 + 6, 3 + 4) = (8, 7)$
+在 $`(1, 2)`$ 处：$`\nabla f(1, 2) = (2 + 6, 3 + 4) = (8, 7)`$
 
 ---
 
@@ -87,19 +87,19 @@ $\nabla f = (2x + 3y, 3x + 2y)$
 
 **是**。
 
-推导：设 $f = x^\top A x = \sum_i \sum_j A_{ij} x_i x_j$
+推导：设 $`f = x^\top A x = \sum_i \sum_j A_{ij} x_i x_j`$
 
 $$\frac{\partial f}{\partial x_k} = \sum_j A_{kj} x_j + \sum_i A_{ik} x_i = (Ax)_k + (A^\top x)_k$$
 
-故 $\frac{\partial f}{\partial x} = (A + A^\top) x$。
+故 $`\frac{\partial f}{\partial x} = (A + A^\top) x`$。
 
-**特例**：当 $A$ 对称时，$\frac{\partial f}{\partial x} = 2Ax$（这是高斯密度推导中的常见情况）。
+**特例**：当 $`A`$ 对称时，$`\frac{\partial f}{\partial x} = 2Ax`$（这是高斯密度推导中的常见情况）。
 
 ---
 
 ### 题 9 答案
 
-$\int_{-\infty}^{+\infty} \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{(x-\mu)^2}{2\sigma^2}} \mathrm{d}x = 1$
+$`\int_{-\infty}^{+\infty} \frac{1}{\sqrt{2\pi}\sigma} e^{-\frac{(x-\mu)^2}{2\sigma^2}} \mathrm{d}x = 1`$
 
 **关键点**：这是高斯分布的归一化常数。如果你"心里没有这个 1"，做扩散模型推导会非常痛苦。
 
@@ -141,10 +141,10 @@ $$L = \frac{1}{N} \sum_{i=1}^{N} (\hat{y}_i - y_i)^2$$
 
 ### 题 13 答案
 
-1. **一阶动量（momentum）**：使用梯度的指数移动平均，$m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t$，作用是平滑梯度方向、加速收敛
-2. **二阶动量（adaptive learning rate）**：使用梯度平方的指数移动平均，$v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2$，作用是为每个参数自适应学习率（梯度大的参数学习率自动减小）
+1. **一阶动量（momentum）**：使用梯度的指数移动平均，$`m_t = \beta_1 m_{t-1} + (1-\beta_1) g_t`$，作用是平滑梯度方向、加速收敛
+2. **二阶动量（adaptive learning rate）**：使用梯度平方的指数移动平均，$`v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2`$，作用是为每个参数自适应学习率（梯度大的参数学习率自动减小）
 
-最终更新：$\theta_t = \theta_{t-1} - \alpha \cdot \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$
+最终更新：$`\theta_t = \theta_{t-1} - \alpha \cdot \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}`$
 
 ---
 
@@ -163,15 +163,15 @@ $$L = \frac{1}{N} \sum_{i=1}^{N} (\hat{y}_i - y_i)^2$$
 
 ### 题 15 答案
 
-**(a)** 由于 $\epsilon \sim \mathcal{N}(0, I)$，$x_0$ 是确定的：
-- 均值：$E[x_1] = \sqrt{1-\beta} \cdot x_0$
-- 方差：$\mathrm{Var}[x_1] = \beta \cdot I$
+**(a)** 由于 $`\epsilon \sim \mathcal{N}(0, I)`$，$`x_0`$ 是确定的：
+- 均值：$`E[x_1] = \sqrt{1-\beta} \cdot x_0`$
+- 方差：$`\mathrm{Var}[x_1] = \beta \cdot I`$
 
-**(b)** $x_1 | x_0 \sim \mathcal{N}(\sqrt{1-\beta} \cdot x_0, \beta \cdot I)$
+**(b)** $`x_1 | x_0 \sim \mathcal{N}(\sqrt{1-\beta} \cdot x_0, \beta \cdot I)`$
 
-**(c)** $\mathcal{L} = \mathbb{E}_{x_0, \epsilon} \left[ \| f_\theta(x_1) - x_0 \|^2 \right]$
+**(c)** $`\mathcal{L} = \mathbb{E}_{x_0, \epsilon} \left[ \| f_\theta(x_1) - x_0 \|^2 \right]`$
 
-或等价地，预测噪声形式：$\mathcal{L} = \mathbb{E}_{x_0, \epsilon} \left[ \| g_\theta(x_1) - \epsilon \|^2 \right]$
+或等价地，预测噪声形式：$`\mathcal{L} = \mathbb{E}_{x_0, \epsilon} \left[ \| g_\theta(x_1) - \epsilon \|^2 \right]`$
 
 **(d) 关键洞察**：
 - 加噪过程是一个固定的、可解析计算的高斯转移；

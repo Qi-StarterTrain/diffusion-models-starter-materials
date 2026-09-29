@@ -39,7 +39,7 @@
 EDM 写法：
 $$x_t = D_\theta(c_{\text{noise}}(t) \cdot \epsilon \cdot c_{\text{in}}(t) + c_{\text{skip}}(t) \cdot c_{\text{out}}(t) \cdot x_t, t)$$
 
-通过选不同的 $c_{\text{in}}, c_{\text{out}}, c_{\text{skip}}, c_{\text{noise}}$ 函数，可以**重现** DDPM、Score SDE 等所有变体。
+通过选不同的 $`c_{\text{in}}, c_{\text{out}}, c_{\text{skip}}, c_{\text{noise}}`$ 函数，可以**重现** DDPM、Score SDE 等所有变体。
 
 **优势**：从一个统一形式出发，每个设计选择都可以系统消融。
 
@@ -50,9 +50,9 @@ $$x_t = D_\theta(c_{\text{noise}}(t) \cdot \epsilon \cdot c_{\text{in}}(t) + c_{
 $$\sigma_i = \left(\sigma_{\max}^{1/\rho} + \frac{i}{N-1}(\sigma_{\min}^{1/\rho} - \sigma_{\max}^{1/\rho})\right)^\rho$$
 
 参数：
-- $\sigma_{\min} = 0.002$
-- $\sigma_{\max} = 80$
-- $\rho = 7$
+- $`\sigma_{\min} = 0.002`$
+- $`\sigma_{\max} = 80`$
+- $`\rho = 7`$
 
 **对比**：DDPM 的 linear schedule 在低分辨率合理，但 EDM schedule 更精细控制 SNR 分布。
 
@@ -83,17 +83,17 @@ def heun_step(x, sigma_i, sigma_next, denoise_fn):
 
 ## 六、Preconditioning（§4.1 必看）
 
-让网络预测 $D_\theta$（"denoised image"）而非 $\epsilon$。具体：
+让网络预测 $`D_\theta`$（"denoised image"）而非 $`\epsilon`$。具体：
 
 $$D_\theta(x, \sigma) = c_{\text{skip}}(\sigma) \cdot x + c_{\text{out}}(\sigma) \cdot F_\theta(c_{\text{in}}(\sigma) \cdot x, c_{\text{noise}}(\sigma))$$
 
 其中：
-- $c_{\text{in}} = 1/\sqrt{\sigma^2 + \sigma_{\text{data}}^2}$：让输入方差 ≈ 1
-- $c_{\text{out}} = \sigma \sigma_{\text{data}} / \sqrt{\sigma^2 + \sigma_{\text{data}}^2}$
-- $c_{\text{skip}} = \sigma_{\text{data}}^2 / (\sigma^2 + \sigma_{\text{data}}^2)$
-- $c_{\text{noise}} = \frac{1}{4} \log \sigma$
+- $`c_{\text{in}} = 1/\sqrt{\sigma^2 + \sigma_{\text{data}}^2}`$：让输入方差 ≈ 1
+- $`c_{\text{out}} = \sigma \sigma_{\text{data}} / \sqrt{\sigma^2 + \sigma_{\text{data}}^2}`$
+- $`c_{\text{skip}} = \sigma_{\text{data}}^2 / (\sigma^2 + \sigma_{\text{data}}^2)`$
+- $`c_{\text{noise}} = \frac{1}{4} \log \sigma`$
 
-**动机**：让网络无论在大 $\sigma$ 还是小 $\sigma$，输入/输出都接近单位方差。神经网络在这种归一化下学得更好。
+**动机**：让网络无论在大 $`\sigma`$ 还是小 $`\sigma`$，输入/输出都接近单位方差。神经网络在这种归一化下学得更好。
 
 ---
 
@@ -137,9 +137,9 @@ ImageNet 64×64 SOTA（NFE=79）：
 
 ---
 
-### 3. "Preconditioning 一定要 $\sigma_{\text{data}} = 0.5$？"
+### 3. "Preconditioning 一定要 $`\sigma_{\text{data}} = 0.5`$？"
 
-实验值。$\sigma_{\text{data}}$ 是训练数据的标准差（在 normalize 后接近 0.5）。如果你的数据归一化方式不同，要重新算。
+实验值。$`\sigma_{\text{data}}`$ 是训练数据的标准差（在 normalize 后接近 0.5）。如果你的数据归一化方式不同，要重新算。
 
 ---
 
@@ -154,8 +154,8 @@ ImageNet 64×64 SOTA（NFE=79）：
 
 ## 十、思考题
 
-1. 为什么 $\rho = 7$ 而不是 1, 2, 5？画 sigma schedule 曲线分析
-2. Preconditioning 让网络输出 $D_\theta$ 而非 $\epsilon$。两种参数化在数学上等价吗？为什么 EDM 选 $D_\theta$？
+1. 为什么 $`\rho = 7`$ 而不是 1, 2, 5？画 sigma schedule 曲线分析
+2. Preconditioning 让网络输出 $`D_\theta`$ 而非 $`\epsilon`$。两种参数化在数学上等价吗？为什么 EDM 选 $`D_\theta`$？
 3. 如果不用 EDM preconditioning，单换 sigma schedule，能 work 吗？
 
 ---

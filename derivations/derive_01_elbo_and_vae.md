@@ -7,14 +7,14 @@
 
 ## §1 设置
 
-我们有数据 $\{x_i\}_{i=1}^N$，希望学习生成模型 $p_\theta(x)$。
+我们有数据 $`\{x_i\}_{i=1}^N`$，希望学习生成模型 $`p_\theta(x)`$。
 
-引入隐变量 $z$：
+引入隐变量 $`z`$：
 $$p_\theta(x) = \int p_\theta(x, z) \, dz = \int p_\theta(x | z) \cdot p(z) \, dz$$
 
 其中：
-- $p(z) = \mathcal{N}(0, I)$ 是先验，固定
-- $p_\theta(x | z)$ 由解码器神经网络参数化
+- $`p(z) = \mathcal{N}(0, I)`$ 是先验，固定
+- $`p_\theta(x | z)`$ 由解码器神经网络参数化
 
 ---
 
@@ -24,15 +24,15 @@ $$\log p_\theta(x) = \log \int p_\theta(x | z) \, p(z) \, dz$$
 
 **问题**：
 1. 积分一般无解析解
-2. 蒙特卡洛估计 $\frac{1}{K} \sum_k p_\theta(x | z_k)$（$z_k \sim p(z)$）在高维下采样效率极低——大多数 $z_k$ 给出 $p_\theta(x | z_k) \approx 0$
+2. 蒙特卡洛估计 $`\frac{1}{K} \sum_k p_\theta(x | z_k)`$（$`z_k \sim p(z)`$）在高维下采样效率极低——大多数 $`z_k`$ 给出 $`p_\theta(x | z_k) \approx 0`$
 
-**解决思路**：引入"好的"提议分布 $q_\phi(z | x)$，让 $z$ 采样集中在有意义的区域。
+**解决思路**：引入"好的"提议分布 $`q_\phi(z | x)`$，让 $`z`$ 采样集中在有意义的区域。
 
 ---
 
 ## §3 ELBO 推导（路径 A：Jensen 不等式）
 
-引入任意分布 $q_\phi(z | x)$：
+引入任意分布 $`q_\phi(z | x)`$：
 
 $$
 \begin{aligned}
@@ -45,7 +45,7 @@ $$
 \end{aligned}
 $$
 
-**Jensen 不等式**：对凹函数 $\phi$，$\phi(\mathbb{E}[X]) \geq \mathbb{E}[\phi(X)]$。这里 $\phi = \log$。
+**Jensen 不等式**：对凹函数 $`\phi`$，$`\phi(\mathbb{E}[X]) \geq \mathbb{E}[\phi(X)]`$。这里 $`\phi = \log`$。
 
 ---
 
@@ -59,7 +59,7 @@ $$\mathrm{ELBO} = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x, z) - \log q_\phi(z|x
 
 ### 4.2 重构 + KL 正则形式（最常用）
 
-把 $p_\theta(x, z) = p_\theta(x | z) \cdot p(z)$ 代入：
+把 $`p_\theta(x, z) = p_\theta(x | z) \cdot p(z)`$ 代入：
 
 $$
 \begin{aligned}
@@ -97,17 +97,17 @@ $$
 
 $$\boxed{\log p_\theta(x) = \mathrm{ELBO}(x; \theta, \phi) + D_{\mathrm{KL}}(q_\phi(z|x) \| p_\theta(z|x))}$$
 
-由于 KL 非负，自动得到 $\log p_\theta(x) \geq \mathrm{ELBO}$。
+由于 KL 非负，自动得到 $`\log p_\theta(x) \geq \mathrm{ELBO}`$。
 
 ---
 
 ### 5.2 解读
 
-- **差距 = $D_{\mathrm{KL}}(q_\phi(z|x) \| p_\theta(z|x))$**：变分后验 $q_\phi$ 与真实后验的 KL
-- 当 $q_\phi = p_\theta^{\text{post}}$ 时，ELBO = 真实对数似然
+- **差距 = $`D_{\mathrm{KL}}(q_\phi(z|x) \| p_\theta(z|x))`$**：变分后验 $`q_\phi`$ 与真实后验的 KL
+- 当 $`q_\phi = p_\theta^{\text{post}}`$ 时，ELBO = 真实对数似然
 - 最大化 ELBO **同时**做两件事：
-  1. 提高真实 $\log p_\theta(x)$
-  2. 让 $q_\phi$ 逼近真实后验
+  1. 提高真实 $`\log p_\theta(x)`$
+  2. 让 $`q_\phi`$ 逼近真实后验
 
 ---
 
@@ -116,15 +116,15 @@ $$\boxed{\log p_\theta(x) = \mathrm{ELBO}(x; \theta, \phi) + D_{\mathrm{KL}}(q_\
 ### 6.1 设计选择
 
 VAE 假设：
-- $p(z) = \mathcal{N}(0, I)$
-- $q_\phi(z | x) = \mathcal{N}(\mu_\phi(x), \sigma_\phi^2(x) \cdot I)$（对角协方差）
-- $p_\theta(x | z) = \mathcal{N}(\mu_\theta(z), I)$（单位方差，简化）
+- $`p(z) = \mathcal{N}(0, I)`$
+- $`q_\phi(z | x) = \mathcal{N}(\mu_\phi(x), \sigma_\phi^2(x) \cdot I)`$（对角协方差）
+- $`p_\theta(x | z) = \mathcal{N}(\mu_\theta(z), I)`$（单位方差，简化）
 
 ---
 
 ### 6.2 重构项化简
 
-由于 $p_\theta(x | z) = \mathcal{N}(\mu_\theta(z), I)$：
+由于 $`p_\theta(x | z) = \mathcal{N}(\mu_\theta(z), I)`$：
 
 $$\log p_\theta(x | z) = -\frac{1}{2} \| x - \mu_\theta(z) \|^2 + \text{const}$$
 
@@ -137,7 +137,7 @@ $$\mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] = -\frac{1}{2} \mathbb{E}_{q_\phi
 
 ### 6.3 KL 项化简（高斯之间）
 
-对 $q_\phi(z|x) = \mathcal{N}(\mu, \mathrm{diag}(\sigma^2))$ 和 $p(z) = \mathcal{N}(0, I)$：
+对 $`q_\phi(z|x) = \mathcal{N}(\mu, \mathrm{diag}(\sigma^2))`$ 和 $`p(z) = \mathcal{N}(0, I)`$：
 
 **一维形式**：
 $$D_{\mathrm{KL}}(\mathcal{N}(\mu, \sigma^2) \| \mathcal{N}(0, 1)) = \frac{1}{2}(\mu^2 + \sigma^2 - \log \sigma^2 - 1)$$
@@ -159,7 +159,7 @@ $$
 整理：
 $$D_{\mathrm{KL}} = \frac{1}{2}(\mu^2 + \sigma^2 - 2\log\sigma - 1) = \frac{1}{2}(\mu^2 + \sigma^2 - \log\sigma^2 - 1)$$
 
-**$d$ 维形式**（独立各维）：
+**$`d`$ 维形式**（独立各维）：
 $$D_{\mathrm{KL}}(\mathcal{N}(\mu, \mathrm{diag}(\sigma^2)) \| \mathcal{N}(0, I)) = \frac{1}{2} \sum_{i=1}^d (\mu_i^2 + \sigma_i^2 - \log\sigma_i^2 - 1)$$
 
 ---
@@ -170,22 +170,22 @@ $$D_{\mathrm{KL}}(\mathcal{N}(\mu, \mathrm{diag}(\sigma^2)) \| \mathcal{N}(0, I)
 
 $$\boxed{\mathcal{L}_{\mathrm{VAE}}(\theta, \phi; x) = \underbrace{\| x - \mu_\theta(z) \|^2}_{\text{recon (MSE)}} + \underbrace{\sum_i (\mu_i^2 + \sigma_i^2 - \log\sigma_i^2 - 1)}_{\text{KL，闭合}}}$$
 
-去掉了无关常数（$\frac{1}{2}$ 等可吸收到 learning rate）。
+去掉了无关常数（$`\frac{1}{2}`$ 等可吸收到 learning rate）。
 
 ---
 
 ## §7 重参数化技巧
 
-**问题**：上述 loss 的重构项含 $\mathbb{E}_{q_\phi(z|x)}[\cdot]$，要对 $\phi$ 求导。
+**问题**：上述 loss 的重构项含 $`\mathbb{E}_{q_\phi(z|x)}[\cdot]`$，要对 $`\phi`$ 求导。
 
-直接 $z \sim q_\phi(z|x)$ 是采样操作，不可导（采样过程梯度不能传过去）。
+直接 $`z \sim q_\phi(z|x)`$ 是采样操作，不可导（采样过程梯度不能传过去）。
 
 **重参数化**：
 $$z = \mu_\phi(x) + \sigma_\phi(x) \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$$
 
-把随机性"外包"给 $\epsilon$，$\mu, \sigma$ 与 $z$ 是确定性映射。
+把随机性"外包"给 $`\epsilon`$，$`\mu, \sigma`$ 与 $`z`$ 是确定性映射。
 
-**结果**：梯度可以经由 $z$ 流回 $\phi$。
+**结果**：梯度可以经由 $`z`$ 流回 $`\phi`$。
 
 实践代码：
 ```python
@@ -218,12 +218,12 @@ def vae_loss(x, x_recon, mu, log_sigma):
 
 | VAE | DDPM |
 |-----|------|
-| 单一隐变量 $z$ | $T$ 个隐变量 $x_1, \dots, x_T$ |
-| 编码器 $q_\phi(z\|x)$ | **固定**的加噪 $q(x_{1:T}\|x_0)$ |
-| 解码器 $p_\theta(x\|z)$ | 反向 $p_\theta(x_{0:T})$ |
+| 单一隐变量 $`z`$ | $`T`$ 个隐变量 $`x_1, \dots, x_T`$ |
+| 编码器 $`q_\phi(z\|x)`$ | **固定**的加噪 $`q(x_{1:T}\|x_0)`$ |
+| 解码器 $`p_\theta(x\|z)`$ | 反向 $`p_\theta(x_{0:T})`$ |
 | ELBO 训练 | ELBO 训练 |
 
-**DDPM = 链式 VAE**：把"一个隐变量"扩展为"$T$ 个隐变量"，把"学习编码器"改为"固定加噪过程"。
+**DDPM = 链式 VAE**：把"一个隐变量"扩展为"$`T`$ 个隐变量"，把"学习编码器"改为"固定加噪过程"。
 
 下一份推导手稿 (derive_02) 将处理 DDPM 的具体推导。
 
@@ -234,7 +234,7 @@ def vae_loss(x, x_recon, mu, log_sigma):
 完成本推导后，你应当能不查资料回答：
 
 1. 写出 ELBO 的两种等价形式
-2. 证明 $\log p(x) - \mathrm{ELBO} = D_{\mathrm{KL}}(q \| p^{\text{post}})$
+2. 证明 $`\log p(x) - \mathrm{ELBO} = D_{\mathrm{KL}}(q \| p^{\text{post}})`$
 3. 推导高斯之间的 KL 闭合形式
 4. 解释重参数化的必要性
 

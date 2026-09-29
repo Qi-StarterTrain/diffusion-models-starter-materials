@@ -132,7 +132,7 @@ $$\mathcal{L}_{\text{VAE}} = \underbrace{\| x - D(E(x)) \|^2}_{\text{recon}} + \
 - **Recon**：像素 MSE/L1，保证基本重构
 - **LPIPS**（Zhang 2018）：基于预训练 VGG 特征的距离，保证感知相似
 - **GAN**（PatchGAN discriminator）：高频细节，避免模糊
-- **KL**：弱正则化（$\lambda_{\text{KL}} \approx 10^{-6}$），让 latent 接近高斯但不过度规整
+- **KL**：弱正则化（$`\lambda_{\text{KL}} \approx 10^{-6}`$），让 latent 接近高斯但不过度规整
 
 > **🔑 关键**：KL 权重**故意设得极小**——这不是真正的 VAE（不需要从 prior 采样），而是一个"轻微正则化的 autoencoder"。
 
@@ -253,7 +253,7 @@ class CrossAttention(nn.Module):
         return out
 ```
 
-**计算复杂度**：$O(HW \cdot T)$，远低于 self-attention 的 $O(HW^2)$。
+**计算复杂度**：$`O(HW \cdot T)`$，远低于 self-attention 的 $`O(HW^2)`$。
 
 ---
 
@@ -384,7 +384,7 @@ T_{\text{total}} = \text{NFE} \times T_{\text{denoise}} + T_{\text{decode}}
 $$
 
 - **50 步采样**时，这一次 decode 相对于 50 次 U-Net 前向可以忽略；
-- **蒸馏到 4 步**之后（W12 会讲），第一项缩小十几倍而 $T_{\text{decode}}$ 一点没变，于是 **decode 开始占据可观的延迟比例**。
+- **蒸馏到 4 步**之后（W12 会讲），第一项缩小十几倍而 $`T_{\text{decode}}`$ 一点没变，于是 **decode 开始占据可观的延迟比例**。
 
 换句话说，**LDM 的计算优势随采样步数下降而缩水**。这正是 2025–2026 年 pixel-space 方法重新受关注的直接动因之一，详见 [Pixel Space vs Latent Space：latent 不是终点](../supplementary/pixel-vs-latent-space.md)。
 
@@ -474,7 +474,7 @@ A: CLIP 是对齐图文的，其文本 embedding 自带"视觉概念"信息。BE
 
 **Q: latent space diffusion 有什么数学上的问题？**
 
-A: 严格来说，latent 不是真正的高斯先验（VAE 训练只做了弱 KL）。在 latent 上做 diffusion 时，DDPM 假设的"$x_T \sim \mathcal{N}(0,I)$"不严格成立。实践中影响不大，但理论上 LDM 与原始 DDPM 有 mismatch。
+A: 严格来说，latent 不是真正的高斯先验（VAE 训练只做了弱 KL）。在 latent 上做 diffusion 时，DDPM 假设的"$`x_T \sim \mathcal{N}(0,I)`$"不严格成立。实践中影响不大，但理论上 LDM 与原始 DDPM 有 mismatch。
 
 **Q: SD 能不能做高分辨率（如 1024×1024）？**
 

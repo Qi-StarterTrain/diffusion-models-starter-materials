@@ -24,7 +24,7 @@ for t = T, T-1, ..., 1:
 每一步**必须**做一次完整的网络前向（U-Net 调用一次）。
 
 **问题**：
-- $T = 1000$ 意味着每张图生成需要 1000 次前向
+- $`T = 1000`$ 意味着每张图生成需要 1000 次前向
 - 在 RTX 3090 上生成单张 512×512 SD 图需要 ~30 秒
 - 视频、3D 应用完全无法接受
 
@@ -39,7 +39,7 @@ for t = T, T-1, ..., 1:
 仔细看 L04 推导的 simplified loss：
 $$\mathcal{L}_{\text{simple}} = \mathbb{E}_{t, x_0, \epsilon} \left[ \| \epsilon - \epsilon_\theta(x_t, t) \|^2 \right]$$
 
-**只依赖于 $q(x_t | x_0)$ 这一个边缘分布**，不依赖于完整马尔可夫链 $q(x_{1:T} | x_0)$！
+**只依赖于 $`q(x_t | x_0)`$ 这一个边缘分布**，不依赖于完整马尔可夫链 $`q(x_{1:T} | x_0)`$！
 
 > **🔑 DDIM 的关键洞察**：训练好的 DDPM 网络其实是在拟合 score（不依赖采样路径）。我们可以**改变采样路径**，只要保证每个时间点的边缘分布不变。
 
@@ -47,13 +47,13 @@ $$\mathcal{L}_{\text{simple}} = \mathbb{E}_{t, x_0, \epsilon} \left[ \| \epsilon
 
 ### 2.2 设计非马尔可夫前向过程
 
-DDPM 假设：$q(x_{1:T}|x_0) = \prod_t q(x_t | x_{t-1})$（马尔可夫）
+DDPM 假设：$`q(x_{1:T}|x_0) = \prod_t q(x_t | x_{t-1})`$（马尔可夫）
 
-DDIM 改写：$q_\sigma(x_{1:T}|x_0) = q_\sigma(x_T|x_0) \prod_{t=2}^T q_\sigma(x_{t-1} | x_t, x_0)$（非马尔可夫，显式条件于 $x_0$）
+DDIM 改写：$`q_\sigma(x_{1:T}|x_0) = q_\sigma(x_T|x_0) \prod_{t=2}^T q_\sigma(x_{t-1} | x_t, x_0)`$（非马尔可夫，显式条件于 $`x_0`$）
 
 要求：
-- 每个 $q_\sigma(x_t | x_0)$ 与 DDPM 相同（保证训练目标不变）
-- $q_\sigma(x_{t-1} | x_t, x_0)$ 是高斯，但方差 $\sigma_t^2$ 可调
+- 每个 $`q_\sigma(x_t | x_0)`$ 与 DDPM 相同（保证训练目标不变）
+- $`q_\sigma(x_{t-1} | x_t, x_0)`$ 是高斯，但方差 $`\sigma_t^2`$ 可调
 
 通过繁琐但机械的推导（参考 derive_05），可以得到：
 
@@ -63,20 +63,20 @@ $$q_\sigma(x_{t-1} | x_t, x_0) = \mathcal{N}\left( \sqrt{\bar\alpha_{t-1}} x_0 +
 
 ### 2.3 DDIM 的两个极端
 
-**当 $\sigma_t^2 = \tilde\beta_t$（DDPM posterior 方差）**：
+**当 $`\sigma_t^2 = \tilde\beta_t`$（DDPM posterior 方差）**：
 - 退化为 DDPM 标准采样
 - 引入随机性，多样性高
 
-**当 $\sigma_t^2 = 0$（DDIM 默认）**：
+**当 $`\sigma_t^2 = 0`$（DDIM 默认）**：
 - 反向过程**完全确定**（无随机项）
-- 给定 $x_T$，输出 $x_0$ 唯一
+- 给定 $`x_T`$，输出 $`x_0`$ 唯一
 - 这就是 DDIM
 
 ---
 
 ## §3 DDIM 更新公式（核心）
 
-把 $\sigma_t^2 = 0$ 代入上式，并用 $x_0 = \frac{x_t - \sqrt{1-\bar\alpha_t} \epsilon_\theta}{\sqrt{\bar\alpha_t}}$（从噪声预测反推 $x_0$）：
+把 $`\sigma_t^2 = 0`$ 代入上式，并用 $`x_0 = \frac{x_t - \sqrt{1-\bar\alpha_t} \epsilon_\theta}{\sqrt{\bar\alpha_t}}`$（从噪声预测反推 $`x_0`$）：
 
 $$\boxed{x_{t-1} = \sqrt{\bar\alpha_{t-1}} \cdot \hat x_0(x_t) + \sqrt{1 - \bar\alpha_{t-1}} \cdot \epsilon_\theta(x_t, t)}$$
 
@@ -84,21 +84,21 @@ $$\boxed{x_{t-1} = \sqrt{\bar\alpha_{t-1}} \cdot \hat x_0(x_t) + \sqrt{1 - \bar\
 $$\hat x_0(x_t) = \frac{x_t - \sqrt{1-\bar\alpha_t} \cdot \epsilon_\theta(x_t, t)}{\sqrt{\bar\alpha_t}}$$
 
 **直观解释**：
-1. 用网络预测当前 $\epsilon$
-2. 反推估计的 $\hat x_0$
-3. 用 $\hat x_0$ 沿着 forward 公式"前进"到 $x_{t-1}$
+1. 用网络预测当前 $`\epsilon`$
+2. 反推估计的 $`\hat x_0`$
+3. 用 $`\hat x_0`$ 沿着 forward 公式"前进"到 $`x_{t-1}`$
 
 ---
 
 ### 3.1 跳步采样
 
-DDIM 的**真正威力**：可以选择采样子序列 $\tau_1 < \tau_2 < \dots < \tau_S$（$S \ll T$）。
+DDIM 的**真正威力**：可以选择采样子序列 $`\tau_1 < \tau_2 < \dots < \tau_S`$（$`S \ll T`$）。
 
-每步从 $x_{\tau_i}$ 直接跳到 $x_{\tau_{i-1}}$：
+每步从 $`x_{\tau_i}`$ 直接跳到 $`x_{\tau_{i-1}}`$：
 
 $$x_{\tau_{i-1}} = \sqrt{\bar\alpha_{\tau_{i-1}}} \cdot \hat x_0(x_{\tau_i}) + \sqrt{1 - \bar\alpha_{\tau_{i-1}}} \cdot \epsilon_\theta(x_{\tau_i}, \tau_i)$$
 
-**关键**：每次都用同一个训练好的 $\epsilon_\theta$（不用重训）。
+**关键**：每次都用同一个训练好的 $`\epsilon_\theta`$（不用重训）。
 
 > **🔑 这意味着**：训一个 DDPM，可以用任意步数采样！这是真正的 "decouple training from inference"。
 
@@ -106,12 +106,12 @@ $$x_{\tau_{i-1}} = \sqrt{\bar\alpha_{\tau_{i-1}}} \cdot \hat x_0(x_{\tau_i}) + \
 
 ### 3.2 步数选择
 
-常用 $S$ 值：
-- $S = 1000$：与 DDPM 等价（FID 最低）
-- $S = 100$：质量基本不变（FID 微涨 0.1-0.3）
-- $S = 50$：FID 涨 1-2（视觉差异肉眼不可见）
-- $S = 20$：FID 明显变差，但仍可用
-- $S = 10$：可见劣化
+常用 $`S`$ 值：
+- $`S = 1000`$：与 DDPM 等价（FID 最低）
+- $`S = 100`$：质量基本不变（FID 微涨 0.1-0.3）
+- $`S = 50`$：FID 涨 1-2（视觉差异肉眼不可见）
+- $`S = 20`$：FID 明显变差，但仍可用
+- $`S = 10`$：可见劣化
 
 **SD 的默认配置**：50 步 DDIM 是工业标准。
 
@@ -124,7 +124,7 @@ $$x_{\tau_{i-1}} = \sqrt{\bar\alpha_{\tau_{i-1}}} \cdot \hat x_0(x_{\tau_i}) + \
 回顾 L06 中的 probability flow ODE（VP-SDE 形式）：
 $$\frac{dx}{dt} = -\frac{1}{2} \beta(t) x - \frac{1}{2} \beta(t) \cdot \nabla_x \log p_t(x)$$
 
-用 noise 与 score 等价关系 $\nabla_x \log p_t = -\epsilon_\theta / \sqrt{1-\bar\alpha_t}$，并做"参数化变量替换"（详见 derive_05 附录），可以证明：
+用 noise 与 score 等价关系 $`\nabla_x \log p_t = -\epsilon_\theta / \sqrt{1-\bar\alpha_t}`$，并做"参数化变量替换"（详见 derive_05 附录），可以证明：
 
 **DDIM 更新公式精确等价于该 ODE 的一阶 Euler 离散化**（在适当参数化下）。
 
@@ -148,14 +148,14 @@ $$\frac{dx}{dt} = -\frac{1}{2} \beta(t) x - \frac{1}{2} \beta(t) \cdot \nabla_x 
 普通 Euler 法：
 $$x_{t+\Delta t} \approx x_t + f(x_t, t) \cdot \Delta t$$
 
-这里 $f$ 含 $\epsilon_\theta(x_t, t)$（昂贵），$\Delta t$ 大时误差累积大。
+这里 $`f`$ 含 $`\epsilon_\theta(x_t, t)`$（昂贵），$`\Delta t`$ 大时误差累积大。
 
 **DPM-Solver 的洞察**：把 ODE 分解为
 $$\frac{dx}{dt} = f_{\text{lin}}(t) \cdot x + f_{\text{nonlin}}(x, t)$$
 
-其中线性部分 $f_{\text{lin}}$ **解析可积**。然后只需要数值积分非线性部分。
+其中线性部分 $`f_{\text{lin}}`$ **解析可积**。然后只需要数值积分非线性部分。
 
-效果：在 $\Delta t$ 大时仍精确——**10 步 DPM-Solver 可媲美 50 步 DDIM**。
+效果：在 $`\Delta t`$ 大时仍精确——**10 步 DPM-Solver 可媲美 50 步 DDIM**。
 
 ---
 
@@ -256,17 +256,17 @@ FID
 
 ### 8.1 数值稳定性
 
-DDIM 的 $\hat x_0$ 计算涉及除以 $\sqrt{\bar\alpha_t}$，当 $t$ 接近 $T$ 时 $\bar\alpha_t \to 0$，**除零风险**。
+DDIM 的 $`\hat x_0`$ 计算涉及除以 $`\sqrt{\bar\alpha_t}`$，当 $`t`$ 接近 $`T`$ 时 $`\bar\alpha_t \to 0`$，**除零风险**。
 
 实践：
-- 把 $\hat x_0$ clip 到合理范围（如 $[-3, 3]$ for normalized images）
-- 不直接计算 $\hat x_0$ 中间量，用代数化简后的形式
+- 把 $`\hat x_0`$ clip 到合理范围（如 $`[-3, 3]`$ for normalized images）
+- 不直接计算 $`\hat x_0`$ 中间量，用代数化简后的形式
 
 ### 8.2 时间步选择
 
 跳步采样的时间序列选择有讲究：
 - **Linear**：均匀间隔 → 简单，但前期粗后期精
-- **Quadratic**：$\tau_i \propto i^2$ → 前期密集，后期稀疏
+- **Quadratic**：$`\tau_i \propto i^2`$ → 前期密集，后期稀疏
 - **Karras**：基于 SNR 的非线性间隔 → SOTA
 
 Karras 时间步：
@@ -280,7 +280,7 @@ sigmas = (sigma_max**(1/rho) + ramp * (sigma_min**(1/rho) - sigma_max**(1/rho)))
 
 DDIM 推理时，每步同时处理 batch。建议：
 - batch_size 取决于显存而非速度
-- 不同 sample 的 $t$ 序列**相同**（与训练时不同）
+- 不同 sample 的 $`t`$ 序列**相同**（与训练时不同）
 - 可以预先计算所有时间步的系数
 
 ---
@@ -289,7 +289,7 @@ DDIM 推理时，每步同时处理 batch。建议：
 
 ### 9.1 反向问题
 
-给定一张真实图像 $x_0$，能否找到一个 $x_T \sim \mathcal{N}(0, I)$ 使得 DDIM 采样能精确还原 $x_0$？
+给定一张真实图像 $`x_0`$，能否找到一个 $`x_T \sim \mathcal{N}(0, I)`$ 使得 DDIM 采样能精确还原 $`x_0`$？
 
 **答案**：对 DDIM（确定性）可以！这叫 **DDIM Inversion**。
 
@@ -298,12 +298,12 @@ DDIM 推理时，每步同时处理 batch。建议：
 把 DDIM 的反向公式**反着用**：
 $$x_t = \sqrt{\bar\alpha_t} \cdot \hat x_0(x_{t-1}) + \sqrt{1-\bar\alpha_t} \cdot \epsilon_\theta(x_{t-1}, t-1)$$
 
-注意是用 $\epsilon_\theta(x_{t-1}, t-1)$ 而不是 $\epsilon_\theta(x_t, t)$——这是 **一阶近似**，有累积误差。
+注意是用 $`\epsilon_\theta(x_{t-1}, t-1)`$ 而不是 $`\epsilon_\theta(x_t, t)`$——这是 **一阶近似**，有累积误差。
 
 ### 9.3 应用
 
 - **图像编辑**：先 invert，修改条件，再 sample
-- **风格迁移**：保留 $x_T$，换 prompt
+- **风格迁移**：保留 $`x_T`$，换 prompt
 - **Null-text inversion**（Mokady 2022）：更精确的 inversion 技术
 
 > **🔑 SD 中的 img2img 功能**就基于 DDIM inversion（局部）。
@@ -313,7 +313,7 @@ $$x_t = \sqrt{\bar\alpha_t} \cdot \hat x_0(x_{t-1}) + \sqrt{1-\bar\alpha_t} \cdo
 ## §10 本讲核心要点
 
 1. **DDIM 把训练与采样解耦**：训一次，任意步数推理
-2. **DDIM 更新公式**：$x_{t-1} = \sqrt{\bar\alpha_{t-1}} \hat x_0 + \sqrt{1-\bar\alpha_{t-1}} \epsilon_\theta$（必背）
+2. **DDIM 更新公式**：$`x_{t-1} = \sqrt{\bar\alpha_{t-1}} \hat x_0 + \sqrt{1-\bar\alpha_{t-1}} \epsilon_\theta`$（必背）
 3. **DDIM = 一阶 ODE 离散化**，对应 probability flow ODE
 4. **DPM-Solver** 利用半解析积分，10 步可达 DDIM 50 步效果
 5. **采样器选择**取决于场景：质量优先用高阶，简单优先用 DDIM
@@ -332,9 +332,9 @@ $$x_t = \sqrt{\bar\alpha_t} \cdot \hat x_0(x_{t-1}) + \sqrt{1-\bar\alpha_t} \cdo
    - 提交 `ddim_sampler.py` + 对比报告
 
 2. **思考题**：
-   - DDIM 为什么"确定性"？给定相同 $x_T$，输出是否一定相同？
+   - DDIM 为什么"确定性"？给定相同 $`x_T`$，输出是否一定相同？
    - 如果用 DDIM 100 步推理一个**用 cosine schedule** 训练的模型，时间步如何选？
-   - 为什么 $\sigma_t^2$ 在 DDIM 和 DDPM 之间"插值"会得到不同质量？
+   - 为什么 $`\sigma_t^2`$ 在 DDIM 和 DDPM 之间"插值"会得到不同质量？
 
 ### 进阶档
 
@@ -364,7 +364,7 @@ $$x_t = \sqrt{\bar\alpha_t} \cdot \hat x_0(x_{t-1}) + \sqrt{1-\bar\alpha_t} \cdo
 
 **Q: DDIM 是 SDE 还是 ODE？**
 
-A: 当 $\sigma_t^2 = 0$ 时是 ODE（确定性）；当 $\sigma_t^2 \neq 0$ 时是某种 SDE。论文里的 "DDIM" 默认指前者。
+A: 当 $`\sigma_t^2 = 0`$ 时是 ODE（确定性）；当 $`\sigma_t^2 \neq 0`$ 时是某种 SDE。论文里的 "DDIM" 默认指前者。
 
 **Q: 为什么 DDIM 在 SD 里只用 50 步而不是 20 步？**
 

@@ -43,7 +43,7 @@ Improved DDPM 的整体哲学：**找到既能保证 FID、又能改进 NLL 的�
 回顾 L03：
 $$\beta_t = \beta_{\min} + \frac{t-1}{T-1}(\beta_{\max} - \beta_{\min})$$
 
-可视化 $\bar\alpha_t$ 随 $t$ 的变化：
+可视化 $`\bar\alpha_t`$ 随 $`t`$ 的变化：
 
 ```
 ᾱ_t (linear):
@@ -65,16 +65,16 @@ $$\beta_t = \beta_{\min} + \frac{t-1}{T-1}(\beta_{\max} - \beta_{\min})$$
 
 ### 2.2 Cosine Schedule 的设计
 
-Nichol & Dhariwal 的想法：**让 $\bar\alpha_t$ 在中间区域下降得更平缓**。
+Nichol & Dhariwal 的想法：**让 $`\bar\alpha_t`$ 在中间区域下降得更平缓**。
 
 $$\bar\alpha_t = \frac{f(t)}{f(0)}, \quad f(t) = \cos^2\left(\frac{t/T + s}{1 + s} \cdot \frac{\pi}{2}\right)$$
 
-其中 $s = 0.008$ 是小偏移量，防止 $t=0$ 处导数为零。
+其中 $`s = 0.008`$ 是小偏移量，防止 $`t=0`$ 处导数为零。
 
-由 $\bar\alpha_t$ 反推 $\beta_t$：
+由 $`\bar\alpha_t`$ 反推 $`\beta_t`$：
 $$\beta_t = 1 - \frac{\bar\alpha_t}{\bar\alpha_{t-1}}$$
 
-**实践**：把 $\beta_t$ clip 到 $(10^{-5}, 0.999)$，防止数值问题。
+**实践**：把 $`\beta_t`$ clip 到 $`(10^{-5}, 0.999)`$，防止数值问题。
 
 ---
 
@@ -121,11 +121,11 @@ def cosine_beta_schedule(T, s=0.008):
 
 ### 3.1 DDPM 固定方差的局限
 
-L04 中我们提到，DDPM 把反向方差固定为 $\sigma_t^2 = \beta_t$ 或 $\sigma_t^2 = \tilde\beta_t$。
+L04 中我们提到，DDPM 把反向方差固定为 $`\sigma_t^2 = \beta_t`$ 或 $`\sigma_t^2 = \tilde\beta_t`$。
 
 但严格 ELBO 推导显示：
-- 大 $t$ 区域：最优方差 ≈ $\beta_t$
-- 小 $t$ 区域：最优方差 ≈ $\tilde\beta_t$
+- 大 $`t`$ 区域：最优方差 ≈ $`\beta_t`$
+- 小 $`t`$ 区域：最优方差 ≈ $`\tilde\beta_t`$
 - 中间区域：在两者之间插值
 
 **固定方差等于做了次优选择**。
@@ -134,24 +134,24 @@ L04 中我们提到，DDPM 把反向方差固定为 $\sigma_t^2 = \beta_t$ 或 $
 
 ### 3.2 学习"插值系数"而非方差本身
 
-直接让网络预测 $\Sigma_\theta$ 很难（要保证正定）。Nichol & Dhariwal 提出：**让网络预测一个标量 $v$，在 log 空间插值**：
+直接让网络预测 $`\Sigma_\theta`$ 很难（要保证正定）。Nichol & Dhariwal 提出：**让网络预测一个标量 $`v`$，在 log 空间插值**：
 
 $$\Sigma_\theta(x_t, t) = \exp\left(v \cdot \log \beta_t + (1 - v) \cdot \log \tilde\beta_t\right)$$
 
-其中 $v = v_\theta(x_t, t) \in [0, 1]$（通过 sigmoid 输出）。
+其中 $`v = v_\theta(x_t, t) \in [0, 1]`$（通过 sigmoid 输出）。
 
 **好处**：
-- $v=0$ 时方差为 $\tilde\beta_t$（lower bound）
-- $v=1$ 时方差为 $\beta_t$（upper bound）
-- 任何 $v$ 都保证方差合理（log-space 插值避免负数）
+- $`v=0`$ 时方差为 $`\tilde\beta_t`$（lower bound）
+- $`v=1`$ 时方差为 $`\beta_t`$（upper bound）
+- 任何 $`v`$ 都保证方差合理（log-space 插值避免负数）
 
 ---
 
 ### 3.3 网络架构改动
 
-U-Net 的输出从 $C$ 通道（噪声 $\epsilon$）变成 $2C$ 通道：
-- 前 $C$ 通道：预测 $\epsilon$
-- 后 $C$ 通道：预测 $v$（每个像素一个，sigmoid 后用作插值）
+U-Net 的输出从 $`C`$ 通道（噪声 $`\epsilon`$）变成 $`2C`$ 通道：
+- 前 $`C`$ 通道：预测 $`\epsilon`$
+- 后 $`C`$ 通道：预测 $`v`$（每个像素一个，sigmoid 后用作插值）
 
 ```python
 class UNet(nn.Module):
@@ -170,11 +170,11 @@ class UNet(nn.Module):
 $$\mathcal{L}_{\text{hybrid}} = \mathcal{L}_{\text{simple}} + \lambda \cdot \mathcal{L}_{\text{vlb}}$$
 
 其中：
-- $\mathcal{L}_{\text{simple}}$：噪声预测 MSE（对应 $\epsilon$ 通道）
-- $\mathcal{L}_{\text{vlb}}$：完整 ELBO（对应 $v$ 通道）
-- $\lambda = 0.001$（小权重）
+- $`\mathcal{L}_{\text{simple}}`$：噪声预测 MSE（对应 $`\epsilon`$ 通道）
+- $`\mathcal{L}_{\text{vlb}}`$：完整 ELBO（对应 $`v`$ 通道）
+- $`\lambda = 0.001`$（小权重）
 
-**关键细节**：对 $v$ 通道**只反传 $\mathcal{L}_{\text{vlb}}$ 的梯度**，不让 $\mathcal{L}_{\text{vlb}}$ 干扰已经好的噪声预测。
+**关键细节**：对 $`v`$ 通道**只反传 $`\mathcal{L}_{\text{vlb}}`$ 的梯度**，不让 $`\mathcal{L}_{\text{vlb}}`$ 干扰已经好的噪声预测。
 
 ```python
 def hybrid_loss(model, x0, t, schedule, lambda_vlb=0.001):
@@ -200,9 +200,9 @@ def hybrid_loss(model, x0, t, schedule, lambda_vlb=0.001):
 
 ## §4 Importance Sampling
 
-### 4.1 不同 $t$ 的训练困难度不同
+### 4.1 不同 $`t`$ 的训练困难度不同
 
-实测发现：$\mathcal{L}_t$（每个时间步的 loss 贡献）随 $t$ 变化巨大。
+实测发现：$`\mathcal{L}_t`$（每个时间步的 loss 贡献）随 $`t`$ 变化巨大。
 
 ```
 loss vs t (CIFAR-10):
@@ -212,7 +212,7 @@ loss vs t (CIFAR-10):
    t=999   : L ≈ 0.040 ← 训练最困难
 ```
 
-**均匀采样 $t$ 浪费了大量训练资源**——大部分 batch 落在"容易"的时间步上。
+**均匀采样 $`t`$ 浪费了大量训练资源**——大部分 batch 落在"容易"的时间步上。
 
 ---
 
@@ -223,9 +223,9 @@ loss vs t (CIFAR-10):
 $$p(t) \propto \sqrt{\mathbb{E}[\mathcal{L}_t^2]}$$
 
 实现：
-1. 维护每个 $t$ 的近期 loss 历史（如最近 10 次）
+1. 维护每个 $`t`$ 的近期 loss 历史（如最近 10 次）
 2. 根据 loss 平方均值的开方作为采样权重
-3. 在 batch 中按这个分布采样 $t$
+3. 在 batch 中按这个分布采样 $`t`$
 
 ```python
 class LossAwareSampler:
@@ -314,9 +314,9 @@ Improved DDPM 还做了一项重要的**scaling 实验**：模型越大效果越
 ## §8 本讲核心要点
 
 1. **Cosine schedule** 在中等到高分辨率（64×64+）上改进 NLL
-2. **Learned variance** 让网络预测插值系数 $v$，在 $\log\beta_t$ 与 $\log\tilde\beta_t$ 间插值
-3. **Hybrid loss** 隔离 $\mathcal{L}_{\text{vlb}}$ 对噪声预测的干扰
-4. **Importance sampling** 按 loss 历史平方加权采样 $t$，让训练聚焦困难时间步
+2. **Learned variance** 让网络预测插值系数 $`v`$，在 $`\log\beta_t`$ 与 $`\log\tilde\beta_t`$ 间插值
+3. **Hybrid loss** 隔离 $`\mathcal{L}_{\text{vlb}}`$ 对噪声预测的干扰
+4. **Importance sampling** 按 loss 历史平方加权采样 $`t`$，让训练聚焦困难时间步
 5. **Scaling law** 在扩散模型上同样成立——堆参数有效
 6. **意外好处**：learned variance 让少步采样质量更好
 
@@ -332,8 +332,8 @@ Improved DDPM 还做了一项重要的**scaling 实验**：模型越大效果越
    - 提交 schedule 对比图与简短分析（1 页）
 
 2. **思考题**：
-   - (a) 为什么 hybrid loss 中要把 $\lambda$ 设得很小（0.001）？如果设为 1 会怎样？
-   - (b) 学方差时为什么在 log-space 插值，而不是直接在线性空间预测 $\sigma^2$？
+   - (a) 为什么 hybrid loss 中要把 $`\lambda`$ 设得很小（0.001）？如果设为 1 会怎样？
+   - (b) 学方差时为什么在 log-space 插值，而不是直接在线性空间预测 $`\sigma^2`$？
 
 3. **Reading note**：阅读 Improved DDPM 论文 §3-§4，按模板提交笔记。重点理解 learned variance 的动机与实现。
 
@@ -368,8 +368,8 @@ A: 这是已知现象。Cosine 设计针对 64×64+ 分辨率，在 32×32 的 C
 
 **Q: Learned variance 工程上稳定吗？**
 
-A: 大部分时候稳定，但偶尔会 collapse（$v$ 变成全 0 或全 1）。解决方法：
-- $\lambda$ 不要太大
+A: 大部分时候稳定，但偶尔会 collapse（$`v`$ 变成全 0 或全 1）。解决方法：
+- $`\lambda`$ 不要太大
 - 训练初期可以先 freeze variance 通道（只学噪声预测），后期再 unfreeze
 
 **Q: Stable Diffusion 用了 learned variance 吗？**
@@ -378,7 +378,7 @@ A: 没有。SD 1.x/2.x 仍然用 fixed variance。Learned variance 在产业实�
 
 **Q: 论文里说 cosine 是为了"让低频内容在加噪后期保留"，怎么理解？**
 
-A: cosine schedule 让中间 $t$ 区域 $\bar\alpha_t$ 衰减更慢。这意味着模型在中等噪声水平上看到更多训练样本，其中粗略结构（低频）刚好处于"接近被噪声覆盖但仍可见"的状态——这是学习低频结构的关键区间。
+A: cosine schedule 让中间 $`t`$ 区域 $`\bar\alpha_t`$ 衰减更慢。这意味着模型在中等噪声水平上看到更多训练样本，其中粗略结构（低频）刚好处于"接近被噪声覆盖但仍可见"的状态——这是学习低频结构的关键区间。
 
 ---
 

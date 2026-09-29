@@ -9,12 +9,12 @@
 
 ## §1 设置
 
-输入：video latent $z \in \mathbb{R}^{T \times H \times W \times C}$
+输入：video latent $`z \in \mathbb{R}^{T \times H \times W \times C}`$
 
-patch 后 tokens：$z \in \mathbb{R}^{N \times d}$，其中 $N = T \cdot H \cdot W / (p_t p_h p_w)$
+patch 后 tokens：$`z \in \mathbb{R}^{N \times d}`$，其中 $`N = T \cdot H \cdot W / (p_t p_h p_w)`$
 
 **关心两件事**：
-1. 计算复杂度（$O(N^2)$ 不可行时怎么办）
+1. 计算复杂度（$`O(N^2)`$ 不可行时怎么办）
 2. 表达能力（能否建模长程时空依赖）
 
 ---
@@ -27,12 +27,12 @@ $$\text{Attn}(Q, K, V) = \text{softmax}(QK^T/\sqrt{d}) V$$
 
 ### 2.2 复杂度
 
-- Time: $O(N^2 d)$
-- Memory: $O(N^2)$（存 attention matrix）
+- Time: $`O(N^2 d)`$
+- Memory: $`O(N^2)`$（存 attention matrix）
 
-在视频上 $N$ 极大：
+在视频上 $`N`$ 极大：
 - 32 frames × 32×32 latent → N = 32768
-- $N^2 = 10^9$ → 完全不可行
+- $`N^2 = 10^9`$ → 完全不可行
 
 ---
 
@@ -50,12 +50,12 @@ z (T, HW, d)
 
 ### 3.2 复杂度
 
-- Spatial attn: $T$ 个独立 attention, 每个 $O((HW)^2 d) = O(N^2 d / T^2)$。总 $O(N^2 d / T)$。
-- Temporal attn: $HW$ 个独立, 每个 $O(T^2 d) = O(N^2 d / (HW)^2)$。总 $O(N^2 d / (HW))$。
+- Spatial attn: $`T`$ 个独立 attention, 每个 $`O((HW)^2 d) = O(N^2 d / T^2)`$。总 $`O(N^2 d / T)`$。
+- Temporal attn: $`HW`$ 个独立, 每个 $`O(T^2 d) = O(N^2 d / (HW)^2)`$。总 $`O(N^2 d / (HW))`$。
 
-总：$O(N^2 d / T) + O(N^2 d / (HW)) \approx O(N^2 d / \min(T, HW))$
+总：$`O(N^2 d / T) + O(N^2 d / (HW)) \approx O(N^2 d / \min(T, HW))`$
 
-例：$T = 32, HW = 1024 \to$ 速度提升 32 倍。
+例：$`T = 32, HW = 1024 \to`$ 速度提升 32 倍。
 
 ### 3.3 表达能力损失
 
@@ -71,7 +71,7 @@ z (T, HW, d)
 
 ### 4.1 算法
 
-把 token 划分成 spatio-temporal **windows** $W_{t,h,w}$（如 $4 \times 8 \times 8$）。
+把 token 划分成 spatio-temporal **windows** $`W_{t,h,w}`$（如 $`4 \times 8 \times 8`$）。
 
 ```
 z (T, H, W, d)
@@ -84,10 +84,10 @@ windows: list of (4 * 8 * 8, d) blocks
 
 ### 4.2 复杂度
 
-设 window size $w$。每个 window 计算 $O(w^2 d)$。总 windows: $N/w$。
+设 window size $`w`$。每个 window 计算 $`O(w^2 d)`$。总 windows: $`N/w`$。
 $$O(N/w \cdot w^2 d) = O(N w d)$$
 
-例：$w = 256 \to O(N \cdot 256 \cdot d)$，比 $O(N^2 d)$ 在大 N 下快得多。
+例：$`w = 256 \to O(N \cdot 256 \cdot d)`$，比 $`O(N^2 d)`$ 在大 N 下快得多。
 
 ### 4.3 Shift window
 
@@ -130,7 +130,7 @@ Layer 3N/4 - N: sparse full attention (global)
 2. **Global tokens**（几个固定的"hub" tokens）
 3. **Random**（随机几个）
 
-复杂度：$O(N \log N)$ 或 $O(N \sqrt{N})$。
+复杂度：$`O(N \log N)`$ 或 $`O(N \sqrt{N})`$。
 
 ### 6.2 在 video 上的应用
 
@@ -146,15 +146,15 @@ Layer 3N/4 - N: sparse full attention (global)
 
 ### 7.1 思路
 
-把 softmax 用 kernel 替代，让 attention 变成 $O(N)$。
+把 softmax 用 kernel 替代，让 attention 变成 $`O(N)`$。
 
 $$\text{softmax}(QK^T) V \approx \phi(Q) (\phi(K)^T V)$$
 
-其中 $\phi$ 是 kernel feature map（如 ELU+1）。
+其中 $`\phi`$ 是 kernel feature map（如 ELU+1）。
 
 ### 7.2 Performer / Linformer
 
-复杂度：$O(N d^2)$（取决于 $d$ 与 sequence dim 的关系）。
+复杂度：$`O(N d^2)`$（取决于 $`d`$ 与 sequence dim 的关系）。
 
 ### 7.3 实践
 
@@ -168,14 +168,14 @@ $$\text{softmax}(QK^T) V \approx \phi(Q) (\phi(K)^T V)$$
 
 不在 attention 上想办法，而是**降低 N**：
 
-- 用 **3D VAE** 替代 2D VAE：把 $(T, H, W) \to (T/2, H/8, W/8)$
+- 用 **3D VAE** 替代 2D VAE：把 $`(T, H, W) \to (T/2, H/8, W/8)`$
 - N 直接减半 → attention 计算 4 倍便宜
 
 ### 8.2 应用
 
 Open-Sora 2.0、Mochi 1 都用 3D VAE：
-- $f_t = 4$（时间下采样 4 倍）
-- $f_s = 8$（空间下采样 8 倍）
+- $`f_t = 4`$（时间下采样 4 倍）
+- $`f_s = 8`$（空间下采样 8 倍）
 
 ### 8.3 缺点
 
@@ -201,7 +201,7 @@ generate frames 33-48
 
 ### 9.2 Memory budget
 
-KV cache size: $O(N \cdot d \cdot L)$（L 是 layer 数）。
+KV cache size: $`O(N \cdot d \cdot L)`$（L 是 layer 数）。
 
 实际：16 frames × 32×32 patches × 1152 dim × 28 layers × fp16 ≈ 1 GB。
 

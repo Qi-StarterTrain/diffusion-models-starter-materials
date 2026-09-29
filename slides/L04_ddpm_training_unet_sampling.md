@@ -15,13 +15,13 @@
 
 L03 我们建立了：
 
-- 前向过程：$q(x_t|x_{t-1}) = \mathcal{N}(\sqrt{\alpha_t} x_{t-1}, \beta_t I)$
-- 闭合形式：$q(x_t|x_0) = \mathcal{N}(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I)$
-- 理想反向后验：$q(x_{t-1}|x_t, x_0) = \mathcal{N}(\tilde\mu_t, \tilde\beta_t I)$
+- 前向过程：$`q(x_t|x_{t-1}) = \mathcal{N}(\sqrt{\alpha_t} x_{t-1}, \beta_t I)`$
+- 闭合形式：$`q(x_t|x_0) = \mathcal{N}(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I)`$
+- 理想反向后验：$`q(x_{t-1}|x_t, x_0) = \mathcal{N}(\tilde\mu_t, \tilde\beta_t I)`$
 
 本讲要解决：
 
-1. **如何参数化 $p_\theta(x_{t-1}|x_t)$？**（让网络拟合反向过程）
+1. **如何参数化 $`p_\theta(x_{t-1}|x_t)`$？**（让网络拟合反向过程）
 2. **如何训练这个网络？**（ELBO → MSE）
 3. **U-Net 怎么设计？**（架构细节）
 4. **如何采样？**（推理算法）
@@ -40,8 +40,8 @@ $$
 
 **两种简化**：
 
-- DDPM 把方差固定为 $\Sigma_\theta = \sigma_t^2 I$（$\sigma_t^2 = \beta_t$ 或 $\tilde\beta_t$，性能差不多）
-- 网络只预测均值 $\mu_\theta(x_t, t)$
+- DDPM 把方差固定为 $`\Sigma_\theta = \sigma_t^2 I`$（$`\sigma_t^2 = \beta_t`$ 或 $`\tilde\beta_t`$，性能差不多）
+- 网络只预测均值 $`\mu_\theta(x_t, t)`$
 
 > **改进 DDPM** 让网络也预测方差，叫 learned variance。后续讲。
 
@@ -53,9 +53,9 @@ $$
 p_\theta(x_{0:T}) = p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} | x_t)
 $$
 
-其中 $p(x_T) = \mathcal{N}(0, I)$（先验，纯噪声）。
+其中 $`p(x_T) = \mathcal{N}(0, I)`$（先验，纯噪声）。
 
-最终生成 $x_0$ 的分布：
+最终生成 $`x_0`$ 的分布：
 
 $$
 p_\theta(x_0) = \int p_\theta(x_{0:T}) \mathrm{d}x_{1:T}
@@ -69,7 +69,7 @@ $$
 
 ### 3.1 ELBO 写出
 
-仿照 VAE，引入"变分后验"$q(x_{1:T}|x_0)$（这里就是已知的前向过程！）：
+仿照 VAE，引入"变分后验"$`q(x_{1:T}|x_0)`$（这里就是已知的前向过程！）：
 
 $$
 \log p_\theta(x_0) \geq \mathbb{E}_{q(x_{1:T}|x_0)}\left[\log \frac{p_\theta(x_{0:T})}{q(x_{1:T}|x_0)}\right] =: \mathcal{L}
@@ -85,9 +85,9 @@ $$
 
 ---
 
-### 3.2 关键技巧：把 forward 改写为含 $x_0$ 的形式
+### 3.2 关键技巧：把 forward 改写为含 $`x_0`$ 的形式
 
-直接处理上面的 sum 复杂。**核心 trick** 是把 $q(x_t|x_{t-1})$ 用 Bayes 改写：
+直接处理上面的 sum 复杂。**核心 trick** 是把 $`q(x_t|x_{t-1})`$ 用 Bayes 改写：
 
 $$
 q(x_t | x_{t-1}) = q(x_t | x_{t-1}, x_0) = \frac{q(x_{t-1} | x_t, x_0) \cdot q(x_t | x_0)}{q(x_{t-1} | x_0)}
@@ -105,11 +105,11 @@ $$
 
 | 项                              | 含义                                                       |
 | ------------------------------- | ---------------------------------------------------------- |
-| $L_T$                         | 终态对齐项（不含$\theta$，可忽略）                       |
-| $L_{t-1}$ for $t=2,\dots,T$ | 让$p_\theta(x_{t-1}\|x_t)$ 逼近 $q(x_{t-1}\|x_t, x_0)$ |
-| $L_0$                         | 重构项（最后一步）                                         |
+| $`L_T`$                         | 终态对齐项（不含$`\theta`$，可忽略）                       |
+| $`L_{t-1}`$ for $`t=2,\dots,T`$ | 让$`p_\theta(x_{t-1}\|x_t)`$ 逼近 $`q(x_{t-1}\|x_t, x_0)`$ |
+| $`L_0`$                         | 重构项（最后一步）                                         |
 
-**关键观察**：$L_{t-1}$ 是**两个高斯之间的 KL**，可以闭合计算。这就是 DDPM 训练目标极简的根源。
+**关键观察**：$`L_{t-1}`$ 是**两个高斯之间的 KL**，可以闭合计算。这就是 DDPM 训练目标极简的根源。
 
 ---
 
@@ -117,8 +117,8 @@ $$
 
 回顾 §L03，
 
-- $q(x_{t-1} | x_t, x_0) = \mathcal{N}(\tilde\mu_t(x_t, x_0), \tilde\beta_t I)$
-- $p_\theta(x_{t-1} | x_t) = \mathcal{N}(\mu_\theta(x_t, t), \sigma_t^2 I)$
+- $`q(x_{t-1} | x_t, x_0) = \mathcal{N}(\tilde\mu_t(x_t, x_0), \tilde\beta_t I)`$
+- $`p_\theta(x_{t-1} | x_t) = \mathcal{N}(\mu_\theta(x_t, t), \sigma_t^2 I)`$
 
 两个等方差高斯的 KL：
 
@@ -138,15 +138,15 @@ $$
 
 ### 3.4 进一步化简：从均值预测到噪声预测
 
-代入 L03 推出的 $\tilde\mu_t(x_t, x_0) = \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon \right)$，
+代入 L03 推出的 $`\tilde\mu_t(x_t, x_0) = \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon \right)`$，
 
-并把 $\mu_\theta$ **设计为相同的形式**：
+并把 $`\mu_\theta`$ **设计为相同的形式**：
 
 $$
 \mu_\theta(x_t, t) := \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon_\theta(x_t, t) \right)
 $$
 
-—— 让网络预测 $\epsilon$ 而不是均值。
+—— 让网络预测 $`\epsilon`$ 而不是均值。
 
 代入 KL：
 
@@ -160,7 +160,7 @@ $$
 
 ### 3.5 DDPM 的最终训练目标（**最重要的公式**）
 
-DDPM 论文进一步发现：**去掉权重，在所有 $t$ 上等权重训练，效果反而更好**。
+DDPM 论文进一步发现：**去掉权重，在所有 $`t`$ 上等权重训练，效果反而更好**。
 
 最终极简训练目标：
 
@@ -174,14 +174,14 @@ $$
 
 ### 3.6 为什么去掉权重效果更好？
 
-权重 $\frac{\beta_t^2}{2\sigma_t^2 \alpha_t (1-\bar\alpha_t)}$ 在小 $t$ 时极大、大 $t$ 时较小。
+权重 $`\frac{\beta_t^2}{2\sigma_t^2 \alpha_t (1-\bar\alpha_t)}`$ 在小 $`t`$ 时极大、大 $`t`$ 时较小。
 
 这意味着：
 
-- 加权目标过分关注**已经很简单的小 $t$ 任务**（去除一点点噪声）
-- 忽略了**真正困难的大 $t$ 任务**（从接近纯噪声中恢复结构）
+- 加权目标过分关注**已经很简单的小 $`t`$ 任务**（去除一点点噪声）
+- 忽略了**真正困难的大 $`t`$ 任务**（从接近纯噪声中恢复结构）
 
-去掉权重相当于给所有时间步**等量训练资源**，反而让大 $t$ 区域学得更好。
+去掉权重相当于给所有时间步**等量训练资源**，反而让大 $`t`$ 区域学得更好。
 
 ---
 
@@ -222,7 +222,7 @@ def p_losses(model, x0, t, betas):
 
 ### 5.1 为什么用 U-Net？
 
-DDPM 的网络要做"去噪"——给定 $x_t$ 和 $t$，输出 $\epsilon$（同 shape 的张量）。
+DDPM 的网络要做"去噪"——给定 $`x_t`$ 和 $`t`$，输出 $`\epsilon`$（同 shape 的张量）。
 
 U-Net 天然适合此任务：
 
@@ -275,7 +275,7 @@ Time embedding t (B,) → MLP → broadcast 到每个 ResBlock
 
 ### 5.3 Timestep Embedding
 
-时间步 $t$ 是离散整数，需要变成连续向量后注入网络。
+时间步 $`t`$ 是离散整数，需要变成连续向量后注入网络。
 
 **Sinusoidal embedding**（Transformer 同款）：
 
@@ -519,8 +519,8 @@ def train(model, loader, optimizer, schedule, num_steps):
    - 实现 sinusoidal time embedding 与 ResBlock
    - 在 MNIST 上训练 50 epoch，生成可辨认数字
 3. **思考题**：
-   (a) 如果让网络预测 $x_0$ 而非 $\epsilon$，训练目标会是什么？两者数学上等价吗？
-   (b) 为什么 $t=1$ 时采样不加随机性？（提示：思考 $L_0$ 项的本质）
+   (a) 如果让网络预测 $`x_0`$ 而非 $`\epsilon`$，训练目标会是什么？两者数学上等价吗？
+   (b) 为什么 $`t=1`$ 时采样不加随机性？（提示：思考 $`L_0`$ 项的本质）
 
 ### 选做
 
@@ -543,13 +543,13 @@ def train(model, loader, optimizer, schedule, num_steps):
 
 ## §12 常见问题
 
-**Q: 为什么训练时随机采样 $t$，而不是按顺序遍历？**
+**Q: 为什么训练时随机采样 $`t`$，而不是按顺序遍历？**
 
-A: 这是单样本 MC 估计期望的标准做法。$\mathcal{L}$ 本身是对所有 $t$ 的求和（×期望），随机采样让每个 batch 是无偏估计。如果按顺序，会让训练严重不平衡。
+A: 这是单样本 MC 估计期望的标准做法。$`\mathcal{L}`$ 本身是对所有 $`t`$ 的求和（×期望），随机采样让每个 batch 是无偏估计。如果按顺序，会让训练严重不平衡。
 
-**Q: $\sigma_t^2$ 用 $\beta_t$ 还是 $\tilde\beta_t$？**
+**Q: $`\sigma_t^2`$ 用 $`\beta_t`$ 还是 $`\tilde\beta_t`$？**
 
-A: 实践差不多。$\beta_t$（"upper bound"）：噪声更大，可能采样多样；$\tilde\beta_t$（"lower bound"）：更接近理想后验。两者 FID 差异在 0.5 以内。Improved DDPM 干脆让网络学习方差。
+A: 实践差不多。$`\beta_t`$（"upper bound"）：噪声更大，可能采样多样；$`\tilde\beta_t`$（"lower bound"）：更接近理想后验。两者 FID 差异在 0.5 以内。Improved DDPM 干脆让网络学习方差。
 
 **Q: 为什么 DDPM 训练这么稳定？**
 
@@ -559,18 +559,18 @@ A: 三个原因：
 2. 加噪过程提供了很强的隐式正则（每个 batch 都看到不同噪声水平）
 3. 没有 GAN 那样的博弈，不存在训练失衡
 
-**Q: 我看到代码里 `t` 是从 0 开始的，但论文公式 $t \in \{1, \dots, T\}$。如何对应？**
+**Q: 我看到代码里 `t` 是从 0 开始的，但论文公式 $`t \in \{1, \dots, T\}`$。如何对应？**
 
-A: 代码 0-indexed 是惯例，对应论文的 $t-1$。具体看代码细节。这是新手常见混淆点。
+A: 代码 0-indexed 是惯例，对应论文的 $`t-1`$。具体看代码细节。这是新手常见混淆点。
 
 **Q: 训练时 loss 一直降不下来怎么办？**
 
 A: 常见问题排查清单：
 
-- ❓ 数据归一化了吗？DDPM 期望 $x_0 \in [-1, 1]$
+- ❓ 数据归一化了吗？DDPM 期望 $`x_0 \in [-1, 1]`$
 - ❓ time embedding 真的注入到每个 ResBlock 了吗？
 - ❓ schedule 张量用 `register_buffer` 注册了吗？（否则 `.to(device)` 不跟着移动）
-- ❓ batch 内 $t$ 的随机性正确吗？
+- ❓ batch 内 $`t`$ 的随机性正确吗？
 - ❓ 损失曲线是否进入了 0.02 附近的"地板"？这通常是正常的（MSE noise prediction 的典型量级）
 
 ---

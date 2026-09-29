@@ -8,10 +8,10 @@
 
 ### 1. AdaLN-Zero "zero init" 含义
 
-把 AdaLN 的 condition 投影层（输出 $\gamma, \beta, \alpha$）权重 init 为 0。
+把 AdaLN 的 condition 投影层（输出 $`\gamma, \beta, \alpha`$）权重 init 为 0。
 
 **必要性**：
-- 让 $\gamma = \beta = \alpha = 0$ → modulate $(1+\gamma) \text{LN}(x) + \beta = \text{LN}(x)$，残差缩放 $\alpha \cdot \text{Attn} = 0$
+- 让 $`\gamma = \beta = \alpha = 0`$ → modulate $`(1+\gamma) \text{LN}(x) + \beta = \text{LN}(x)`$，残差缩放 $`\alpha \cdot \text{Attn} = 0`$
 - 整个 block 退化为 identity (just LN，加上 zero 残差)
 - 训练初始大模型不爆炸，逐层"激活"
 
@@ -24,11 +24,11 @@
 | | DDPM | Flow Matching |
 |---|------|----------------|
 | 路径 | SDE 加噪 | ODE 路径 (linear) |
-| Schedule | $\bar\alpha_t$ 非线性 | $t$ 线性 |
+| Schedule | $`\bar\alpha_t`$ 非线性 | $`t`$ 线性 |
 | 采样 | 数千步 SDE | 几十步 ODE |
-| 目标 | 噪声 $\epsilon$ | 速度 $v = x_1 - x_0$ |
+| 目标 | 噪声 $`\epsilon`$ | 速度 $`v = x_1 - x_0`$ |
 
-**工程简洁性**：FM 更简洁——loss 就是 $\|v_\theta - (x_1 - x_0)\|^2$，没有 $\beta$ schedule、没有 $\bar\alpha$、没有 noise schedule 复杂数学。
+**工程简洁性**：FM 更简洁——loss 就是 $`\|v_\theta - (x_1 - x_0)\|^2`$，没有 $`\beta`$ schedule、没有 $`\bar\alpha`$、没有 noise schedule 复杂数学。
 
 ---
 
@@ -48,8 +48,8 @@ CM 是"扩散稳定性 + GAN 单步"的折中。
 ### 4. Spatial + Temporal factorized attention
 
 **计算优势**：
-- Full 3D: $O(N^2)$ where $N = THW$
-- Factorized: $O(T \cdot (HW)^2 + HW \cdot T^2) \approx O(N^2 / \min(T, HW))$
+- Full 3D: $`O(N^2)`$ where $`N = THW`$
+- Factorized: $`O(T \cdot (HW)^2 + HW \cdot T^2) \approx O(N^2 / \min(T, HW))`$
 - 在 video 上节省 32-100×
 
 **表达能力代价**：
@@ -61,7 +61,7 @@ CM 是"扩散稳定性 + GAN 单步"的折中。
 
 ### 5. Sora spacetime patches
 
-把 $(T, H, W)$ 视频 latent 划分成 $(p_t, p_h, p_w)$ 大小的 3D 块，每块 flatten 为一个 token。
+把 $`(T, H, W)`$ 视频 latent 划分成 $`(p_t, p_h, p_w)`$ 大小的 3D 块，每块 flatten 为一个 token。
 
 **支持任意分辨率/时长**：
 - DiT 架构对 token 数量不敏感（self-attention 处理任意长度）
@@ -86,84 +86,84 @@ CM 是"扩散稳定性 + GAN 单步"的折中。
 
 ### 7. Linear-path FM 推导（10 分）
 
-**(a) 推导 $u_t(x_t | x_1)$**：
+**(a) 推导 $`u_t(x_t | x_1)`$**：
 
-设 $x_t = (1-t) x_0 + t x_1$。对 $t$ 求全微分：
+设 $`x_t = (1-t) x_0 + t x_1`$。对 $`t`$ 求全微分：
 $$\frac{d x_t}{dt} = -x_0 + x_1 = x_1 - x_0$$
 
-由 $u_t(x_t|x_1) \equiv \frac{d x_t}{dt}$（条件 ODE 的速度场），所以 $u_t(x_t|x_1) = x_1 - x_0$。
+由 $`u_t(x_t|x_1) \equiv \frac{d x_t}{dt}`$（条件 ODE 的速度场），所以 $`u_t(x_t|x_1) = x_1 - x_0`$。
 
 ---
 
 **(b) CFM loss**：
 $$\mathcal{L}_{\text{CFM}}(\theta) = \mathbb{E}_{t \sim U[0,1], x_1 \sim p_{\text{data}}, x_0 \sim \mathcal{N}(0, I)}\left[\|v_\theta(x_t, t) - (x_1 - x_0)\|^2\right]$$
 
-其中 $x_t = (1-t) x_0 + t x_1$。
+其中 $`x_t = (1-t) x_0 + t x_1`$。
 
 ---
 
 **(c) 等价性直觉**：
 
-CFM loss 与 FM loss 数值上差一个常数（与 $\theta$ 无关）：
+CFM loss 与 FM loss 数值上差一个常数（与 $`\theta`$ 无关）：
 $$\mathcal{L}_{\text{CFM}} - \mathcal{L}_{\text{FM}} = \mathbb{E}[\|u_t(x|x_1)\|^2 - \|u_t(x)\|^2]$$
 
-—— 这一项不依赖 $\theta$，所以对 $\theta$ 偏导为 0。两个 loss 的 gradient 相同。
+—— 这一项不依赖 $`\theta`$，所以对 $`\theta`$ 偏导为 0。两个 loss 的 gradient 相同。
 
-详细证明用了 marginalization lemma：$u_t(x) = \mathbb{E}_{x_1|x}[u_t(x|x_1)]$。
+详细证明用了 marginalization lemma：$`u_t(x) = \mathbb{E}_{x_1|x}[u_t(x|x_1)]`$。
 
 ---
 
 ### 8. CM EDM 参数化（10 分）
 
-**(a) $c$ 函数作用**：
-- $c_{\text{in}}$：归一化输入（让 $c_{\text{in}} \cdot x$ 在不同 $t$ 下分布一致）
-- $c_{\text{noise}}$：把 $t$ 转成 sensitive 范围（如 $\log$）
-- $c_{\text{skip}}, c_{\text{out}}$：boundary parametrization
+**(a) $`c`$ 函数作用**：
+- $`c_{\text{in}}`$：归一化输入（让 $`c_{\text{in}} \cdot x`$ 在不同 $`t`$ 下分布一致）
+- $`c_{\text{noise}}`$：把 $`t`$ 转成 sensitive 范围（如 $`\log`$）
+- $`c_{\text{skip}}, c_{\text{out}}`$：boundary parametrization
 
-**在 $t = \epsilon$ 处必须**：$c_{\text{skip}}(\epsilon) = 1, c_{\text{out}}(\epsilon) = 0$ → $f_\theta(x, \epsilon) = x$ 自动满足。
+**在 $`t = \epsilon`$ 处必须**：$`c_{\text{skip}}(\epsilon) = 1, c_{\text{out}}(\epsilon) = 0`$ → $`f_\theta(x, \epsilon) = x`$ 自动满足。
 
 **(b) CD loss**：
 
 $$\mathcal{L}_{\text{CD}} = \mathbb{E}_{n, x_0, \epsilon}\bigl[d(f_\theta(x_{t_{n+1}}, t_{n+1}), f_{\theta^-}(\hat x_{t_n}, t_n))\bigr]$$
 
-其中 $\hat x_{t_n}$ 是 teacher 走一步 ODE 得到。
+其中 $`\hat x_{t_n}`$ 是 teacher 走一步 ODE 得到。
 
 **EMA teacher 作用**：
-- 学生与"自己的 EMA copy"对齐，避免 trivial 解（$f = 0$）
+- 学生与"自己的 EMA copy"对齐，避免 trivial 解（$`f = 0`$）
 - 类似 BYOL / DINO 的 momentum target
 
 **(c) CT trick**：
 
-CT 用"同一个 noise $\epsilon$，加到不同的 $t$ 水平上"：
+CT 用"同一个 noise $`\epsilon`$，加到不同的 $`t`$ 水平上"：
 $$x_{t_n} = x_0 + t_n \epsilon, \quad x_{t_{n+1}} = x_0 + t_{n+1} \epsilon$$
 
-(同一 $\epsilon$！) 
+(同一 $`\epsilon`$！) 
 
-这两点近似在同一 ODE 轨迹上（VE-SDE 下精确）。在 $N \to \infty$ 极限下 CT gradient = CD gradient。
+这两点近似在同一 ODE 轨迹上（VE-SDE 下精确）。在 $`N \to \infty`$ 极限下 CT gradient = CD gradient。
 
 ---
 
 ### 9. DiT FLOPs（10 分）
 
 **(a) Token 数与 attention FLOPs**：
-- $N = (32/2)^2 = 256$ tokens
-- Self-attention FLOPs（一个 block）：$2 N^2 d$（Q@K + softmax(QK)@V，乘 2 算 attn 的两次矩阵乘）
-- $= 2 \cdot 256^2 \cdot 1152 = 1.51 \times 10^8 \approx 0.15$ GFLOPs
+- $`N = (32/2)^2 = 256`$ tokens
+- Self-attention FLOPs（一个 block）：$`2 N^2 d`$（Q@K + softmax(QK)@V，乘 2 算 attn 的两次矩阵乘）
+- $`= 2 \cdot 256^2 \cdot 1152 = 1.51 \times 10^8 \approx 0.15`$ GFLOPs
 
 **(b) FFN FLOPs（hidden 4d）**：
-- 每 token：$2 \cdot d \cdot 4d + 2 \cdot 4d \cdot d = 16 d^2 \approx 16 \cdot 1152^2 \approx 2.12 \times 10^7$
-- 全 N tokens：$N \cdot 16 d^2 = 256 \cdot 2.12 \times 10^7 = 5.43 \times 10^9 \approx 5.4$ GFLOPs
+- 每 token：$`2 \cdot d \cdot 4d + 2 \cdot 4d \cdot d = 16 d^2 \approx 16 \cdot 1152^2 \approx 2.12 \times 10^7`$
+- 全 N tokens：$`N \cdot 16 d^2 = 256 \cdot 2.12 \times 10^7 = 5.43 \times 10^9 \approx 5.4`$ GFLOPs
 
 —— FFN 主导（35× attention）。
 
 **(c) Total training FLOPs**：
-- 每 forward block: $0.15 + 5.4 \approx 5.55$ GFLOPs
-- 28 layers: $28 \times 5.55 = 155$ GFLOPs per image
-- Backward 约 2× forward → $465$ GFLOPs per image-step
-- Batch 256 × 1M steps: $256 \cdot 10^6 \cdot 465 \times 10^9 = 1.19 \times 10^{20}$ FLOPs
+- 每 forward block: $`0.15 + 5.4 \approx 5.55`$ GFLOPs
+- 28 layers: $`28 \times 5.55 = 155`$ GFLOPs per image
+- Backward 约 2× forward → $`465`$ GFLOPs per image-step
+- Batch 256 × 1M steps: $`256 \cdot 10^6 \cdot 465 \times 10^9 = 1.19 \times 10^{20}`$ FLOPs
 
 对比 SD UNet 256×256 @ 0.5 TFLOPs/image-forward：
-- DiT-XL/2 forward: $155 / 0.5 \times 10^3 \approx 0.31$ → DiT 单步 forward **比 SD UNet 便宜约 3×**（同 latent resolution）
+- DiT-XL/2 forward: $`155 / 0.5 \times 10^3 \approx 0.31`$ → DiT 单步 forward **比 SD UNet 便宜约 3×**（同 latent resolution）
 
 但 SD 256×256 在 64×64 latent (8x downsample) 上做 attention；DiT 在 32×32 latent 上 patch 后只有 16×16=256 tokens。具体比例依配置。
 
@@ -171,28 +171,28 @@ $$x_{t_n} = x_0 + t_n \epsilon, \quad x_{t_{n+1}} = x_0 + t_{n+1} \epsilon$$
 
 ### 10. Video attention factorization（10 分）
 
-设 $N = 32 \cdot 32 \cdot 32 = 32768$。
+设 $`N = 32 \cdot 32 \cdot 32 = 32768`$。
 
 **(a) Full 3D**：
-- Attention matrix: $N \times N = 32768^2 \approx 1.07 \times 10^9$
-- fp16: 2 bytes/entry → $\approx 2.14$ GB **per attention layer per head!**
+- Attention matrix: $`N \times N = 32768^2 \approx 1.07 \times 10^9`$
+- fp16: 2 bytes/entry → $`\approx 2.14`$ GB **per attention layer per head!**
 - 多头 + 多层 → 数百 GB → 不可行
 
 **(b) Factorized**：
-- Spatial: $T$ 个独立 attention, 每个 $(HW)^2 = (32 \cdot 32)^2 = 1.05 \times 10^6$ entries
-- Total spatial: $32 \cdot 1.05 \times 10^6 = 3.35 \times 10^7$
-- Temporal: $HW$ 个独立, 每个 $T^2 = 32^2 = 1024$ entries
-- Total temporal: $1024 \cdot 1024 = 1.05 \times 10^6$
-- Grand total: $3.46 \times 10^7$ entries × 2 bytes = **69 MB** per layer per head
+- Spatial: $`T`$ 个独立 attention, 每个 $`(HW)^2 = (32 \cdot 32)^2 = 1.05 \times 10^6`$ entries
+- Total spatial: $`32 \cdot 1.05 \times 10^6 = 3.35 \times 10^7`$
+- Temporal: $`HW`$ 个独立, 每个 $`T^2 = 32^2 = 1024`$ entries
+- Total temporal: $`1024 \cdot 1024 = 1.05 \times 10^6`$
+- Grand total: $`3.46 \times 10^7`$ entries × 2 bytes = **69 MB** per layer per head
 
-**节省**：$2.14 \times 10^9 / 6.9 \times 10^7 \approx 31\times$ ✓
+**节省**：$`2.14 \times 10^9 / 6.9 \times 10^7 \approx 31\times`$ ✓
 
-**(c) Window attention** ($w_t \times w_h \times w_w = 4 \times 8 \times 8$)：
-- 每 window: $w_t \cdot w_h \cdot w_w = 256$ tokens → $256^2 = 65536$ entries
-- 窗口数: $N / 256 = 32768 / 256 = 128$
-- Total: $128 \cdot 65536 = 8.4 \times 10^6$ entries × 2 = **16.8 MB**
+**(c) Window attention** ($`w_t \times w_h \times w_w = 4 \times 8 \times 8`$)：
+- 每 window: $`w_t \cdot w_h \cdot w_w = 256`$ tokens → $`256^2 = 65536`$ entries
+- 窗口数: $`N / 256 = 32768 / 256 = 128`$
+- Total: $`128 \cdot 65536 = 8.4 \times 10^6`$ entries × 2 = **16.8 MB**
 
-**节省**：$2.14 \times 10^9 / 8.4 \times 10^6 \approx 255\times$ ✓
+**节省**：$`2.14 \times 10^9 / 8.4 \times 10^6 \approx 255\times`$ ✓
 
 ---
 

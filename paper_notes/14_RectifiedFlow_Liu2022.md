@@ -21,20 +21,20 @@
 与 Flow Matching 同：
 $$x_t = (1-t) x_0 + t x_1$$
 
-训练 $v_\theta(x_t, t) \approx x_1 - x_0$。
+训练 $`v_\theta(x_t, t) \approx x_1 - x_0`$。
 
 ### 2.2 Reflow 关键 trick
 
-训完第一个模型 $v_\theta^{(1)}$ 后：
-1. 生成大量 $(x_0, x_1^{\text{pred}})$ pairs（用 $v_\theta^{(1)}$ 采样）
-2. 用 $x_1^{\text{pred}}$ 替代真实 $x_1$，重新训
-3. 得到 $v_\theta^{(2)}$，trajectory 更直
+训完第一个模型 $`v_\theta^{(1)}`$ 后：
+1. 生成大量 $`(x_0, x_1^{\text{pred}})`$ pairs（用 $`v_\theta^{(1)}`$ 采样）
+2. 用 $`x_1^{\text{pred}}`$ 替代真实 $`x_1`$，重新训
+3. 得到 $`v_\theta^{(2)}`$，trajectory 更直
 
 ### 2.3 为什么 reflow 有效？
 
-问题：第一个 model 学到的"linear path"在实际采样时**不真的是直线**。因为多个 $x_1$ 共享同一 $x_0$，模型在中间产生 detour。
+问题：第一个 model 学到的"linear path"在实际采样时**不真的是直线**。因为多个 $`x_1`$ 共享同一 $`x_0`$，模型在中间产生 detour。
 
-reflow 把 detour 直接"硬编码"成新数据，让 $v_\theta^{(2)}$ 学到真正的直线。
+reflow 把 detour 直接"硬编码"成新数据，让 $`v_\theta^{(2)}`$ 学到真正的直线。
 
 ---
 
@@ -45,9 +45,9 @@ reflow 把 detour 直接"硬编码"成新数据，让 $v_\theta^{(2)}$ 学到真
 定义 trajectory 的曲率：
 $$S = \mathbb{E}\int_0^1 \|v(x_t, t) - (x_1 - x_0)\|^2 dt$$
 
-低 $S$ = 直；高 $S$ = 弯。
+低 $`S`$ = 直；高 $`S`$ = 弯。
 
-实验：reflow 后 $S$ 显著下降。
+实验：reflow 后 $`S`$ 显著下降。
 
 ### 3.2 1-step quality
 
@@ -91,7 +91,7 @@ $$S = \mathbb{E}\int_0^1 \|v(x_t, t) - (x_1 - x_0)\|^2 dt$$
 ## 六、常被误读
 
 ### 1. "Reflow 必须做 distillation？"
-**不**。Reflow 训出的 $v^{(2)}$ 可以**任意步数**采样，质量都好。distillation 是另一回事（CM 路线）。
+**不**。Reflow 训出的 $`v^{(2)}`$ 可以**任意步数**采样，质量都好。distillation 是另一回事（CM 路线）。
 
 ### 2. "Rectified Flow ≠ Flow Matching？"
 **几乎等价**，但侧重不同：

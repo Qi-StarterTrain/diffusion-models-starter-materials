@@ -10,16 +10,16 @@
 
 ### Q1
 请用一句话区分以下三个概念：
-- $q(x_t | x_0)$
-- $q(x_t | x_{t-1})$
-- $q(x_{t-1} | x_t, x_0)$
+- $`q(x_t | x_0)`$
+- $`q(x_t | x_{t-1})`$
+- $`q(x_{t-1} | x_t, x_0)`$
 
 DDPM 训练用到了哪一个？为什么？
 
 ---
 
 ### Q2
-DDPM 训练目标 $\mathcal{L}_{\text{simple}}$ 与严格 ELBO 推导出来的损失差什么？为什么 DDPM 用前者？
+DDPM 训练目标 $`\mathcal{L}_{\text{simple}}`$ 与严格 ELBO 推导出来的损失差什么？为什么 DDPM 用前者？
 
 ---
 
@@ -30,12 +30,12 @@ DDPM 训练目标 $\mathcal{L}_{\text{simple}}$ 与严格 ELBO 推导出来的�
 ---
 
 ### Q4
-为什么 DDPM 网络选择预测 $\epsilon$ 而非 $x_0$ 或 $x_{t-1}$ 或 $\mu$？至少给出两个原因。
+为什么 DDPM 网络选择预测 $`\epsilon`$ 而非 $`x_0`$ 或 $`x_{t-1}`$ 或 $`\mu`$？至少给出两个原因。
 
 ---
 
 ### Q5
-DDPM 中 $\beta_t$ 的取值范围（在 linear schedule 下）。如果把 $\beta_{\max}$ 改成 0.5（远高于标准），训练会出什么问题？
+DDPM 中 $`\beta_t`$ 的取值范围（在 linear schedule 下）。如果把 $`\beta_{\max}`$ 改成 0.5（远高于标准），训练会出什么问题？
 
 ---
 
@@ -47,7 +47,7 @@ DDPM 中 $\beta_t$ 的取值范围（在 linear schedule 下）。如果把 $\be
 ## 第二部分：推导题（每题 10 分，共 40 分）
 
 ### Q7
-从 $q(x_t | x_{t-1}) = \mathcal{N}(\sqrt{1-\beta_t} x_{t-1}, \beta_t I)$ 出发，**用归纳法**证明：
+从 $`q(x_t | x_{t-1}) = \mathcal{N}(\sqrt{1-\beta_t} x_{t-1}, \beta_t I)`$ 出发，**用归纳法**证明：
 $$q(x_t | x_0) = \mathcal{N}(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I)$$
 
 要求：写出归纳假设、归纳步骤、关键技巧（独立高斯之和）。
@@ -55,25 +55,25 @@ $$q(x_t | x_0) = \mathcal{N}(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I)$$
 ---
 
 ### Q8
-用贝叶斯定理 + 高斯运算推出 $q(x_{t-1} | x_t, x_0)$ 的均值 $\tilde\mu_t$ 与方差 $\tilde\beta_t$。
+用贝叶斯定理 + 高斯运算推出 $`q(x_{t-1} | x_t, x_0)`$ 的均值 $`\tilde\mu_t`$ 与方差 $`\tilde\beta_t`$。
 
-允许直接用 $q(x_t | x_0)$ 的结论（即 Q7 的结果）。
+允许直接用 $`q(x_t | x_0)`$ 的结论（即 Q7 的结果）。
 
 ---
 
 ### Q9
-DDPM 网络参数化为 $\mu_\theta = \frac{1}{\sqrt{\alpha_t}}(x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon_\theta)$。
+DDPM 网络参数化为 $`\mu_\theta = \frac{1}{\sqrt{\alpha_t}}(x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon_\theta)`$。
 
-证明 $\|\tilde\mu_t - \mu_\theta\|^2$ 等于 $\|\epsilon - \epsilon_\theta\|^2$ 乘上一个**只依赖于 $t$ 的系数**，给出这个系数的表达式。
+证明 $`\|\tilde\mu_t - \mu_\theta\|^2`$ 等于 $`\|\epsilon - \epsilon_\theta\|^2`$ 乘上一个**只依赖于 $`t`$ 的系数**，给出这个系数的表达式。
 
 ---
 
 ### Q10
 解释 noise prediction 与 score matching 的等价性。具体地：
 
-(a) 写出 $\nabla_{x_t} \log q(x_t | x_0)$ 的解析表达式。
+(a) 写出 $`\nabla_{x_t} \log q(x_t | x_0)`$ 的解析表达式。
 
-(b) 用上式说明：训练 $\epsilon_\theta(x_t, t) \approx \epsilon$ 等价于训练 $s_\theta(x_t, t) \approx \nabla_{x_t} \log p_t(x_t)$。
+(b) 用上式说明：训练 $`\epsilon_\theta(x_t, t) \approx \epsilon`$ 等价于训练 $`s_\theta(x_t, t) \approx \nabla_{x_t} \log p_t(x_t)`$。
 
 (c) 给出两者之间的转换系数。
 

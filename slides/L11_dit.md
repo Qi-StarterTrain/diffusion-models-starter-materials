@@ -62,7 +62,7 @@ UNet 适合扩散的核心理由：
 
 ### 3.2 Patchify
 
-Latent $z \in \mathbb{R}^{4 \times 32 \times 32}$（SD VAE 输出），patch size $p = 2$：
+Latent $`z \in \mathbb{R}^{4 \times 32 \times 32}`$（SD VAE 输出），patch size $`p = 2`$：
 
 ```python
 # z 是 (B, 4, 32, 32)
@@ -71,10 +71,10 @@ patches = z.unfold(2, p, p).unfold(3, p, p).reshape(B, 4*p*p, -1).transpose(1, 2
 tokens = linear_proj(patches)  # (B, 256, D)
 ```
 
-**$p$ 选 1 vs 2 vs 4**：
-- $p=1$：256×256 patches（计算量爆炸）
-- $p=2$：16×16 = 256 patches（DiT 默认）
-- $p=4$：8×8 = 64 patches（损失细节）
+**$`p`$ 选 1 vs 2 vs 4**：
+- $`p=1`$：256×256 patches（计算量爆炸）
+- $`p=2`$：16×16 = 256 patches（DiT 默认）
+- $`p=4`$：8×8 = 64 patches（损失细节）
 
 ---
 
@@ -144,7 +144,7 @@ class DiTBlock(nn.Module):
 
 ### 3.6 条件 c 的构造
 
-$c$ 是 time + class embedding 之和：
+$`c`$ 是 time + class embedding 之和：
 
 ```python
 t_emb = timestep_embedding(t, D)  # sinusoidal
@@ -207,8 +207,8 @@ MMDiT：text 与 image 在**同一序列**做 self-attention（双流并行）
 
 DiT 用 **EDM-style** loss（不是 simplified DDPM loss）：
 - 输入归一化（preconditioning）
-- $\sigma$ schedule（不是 $t$ schedule）
-- $D_\theta$ prediction（不是 $\epsilon$）
+- $`\sigma`$ schedule（不是 $`t`$ schedule）
+- $`D_\theta`$ prediction（不是 $`\epsilon`$）
 
 详见 paper note 09 (EDM)。
 
@@ -238,7 +238,7 @@ ImageNet 256 训练：
 | Inductive bias | 强（卷积、多尺度） | 弱（attention）|
 | 高分辨率 | encoder/decoder 设计依赖 | 直接加 token 数（不变架构） |
 | 视频 | 难（时序依赖、多帧） | 简单（时间维度变成 token 维度） |
-| 训练成本 | 标准 | 大 model 下 attention $O(N^2)$ 贵 |
+| 训练成本 | 标准 | 大 model 下 attention $`O(N^2)`$ 贵 |
 | 推理 | 标准 | 同上 |
 | LoRA 兼容 | 成熟 | 较新但可行 |
 | 社区生态 | 海量 | 正在追赶（SD 3 后） |
@@ -277,7 +277,7 @@ DiT 框架原生支持——只需调整 patchify 与 unpatchify。
 未来方向：
 - Vision (image tokens) + Language (text tokens) + Proprioception (state tokens) + Action (diffusion target tokens)
 - 全部进 DiT，统一架构
-- $\pi_0$（Physical Intelligence）部分采用此思路
+- $`\pi_0`$（Physical Intelligence）部分采用此思路
 
 详见 L17。
 
@@ -318,7 +318,7 @@ A：**对 class-conditional 是的**，对 text-conditional **不一定**。
 
 **Q3：DiT 的 patch size 越小越好吗？**
 
-A：不一定。$p = 1$ 让序列长度从 256 → 1024，attention $O(N^2)$ 变 16 倍。计算量限制下 $p = 2$ 最划算。
+A：不一定。$`p = 1`$ 让序列长度从 256 → 1024，attention $`O(N^2)`$ 变 16 倍。计算量限制下 $`p = 2`$ 最划算。
 
 ---
 

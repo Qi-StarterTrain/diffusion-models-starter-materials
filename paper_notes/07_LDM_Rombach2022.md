@@ -51,11 +51,11 @@ $$\mathcal{L}_{\text{VAE}} = \mathcal{L}_{\text{recon}} + \mathcal{L}_{\text{LPI
 - **Recon**: L1 pixel loss
 - **LPIPS** (Zhang 2018): VGG perceptual loss
 - **GAN**: PatchGAN discriminator，让高频细节锐利
-- **KL**: 极小权重 ($\lambda_{\text{KL}} \approx 10^{-6}$)
+- **KL**: 极小权重 ($`\lambda_{\text{KL}} \approx 10^{-6}`$)
 
 ### 设计选择
 - **VQ-VAE vs KL-VAE**：实验显示 KL-VAE 更适合 LDM（连续 latent + diffusion 兼容）
-- **Downsample factor**：$f = 4, 8, 16$。SD 1.5 用 $f=8$（4 channels latent）
+- **Downsample factor**：$`f = 4, 8, 16`$。SD 1.5 用 $`f=8`$（4 channels latent）
 - **Latent channels**：4（SD 1.5/2.0），16（SD 3）
 
 ---
@@ -63,15 +63,15 @@ $$\mathcal{L}_{\text{VAE}} = \mathcal{L}_{\text{recon}} + \mathcal{L}_{\text{LPI
 ## 五、§3.2 LDM（必看）
 
 训练：
-1. $x \xrightarrow{E} z_0$（一次性）
-2. $z_0 \xrightarrow{加噪} z_t$
-3. UNet 预测噪声：$\epsilon_\theta(z_t, t, c)$
+1. $`x \xrightarrow{E} z_0`$（一次性）
+2. $`z_0 \xrightarrow{加噪} z_t`$
+3. UNet 预测噪声：$`\epsilon_\theta(z_t, t, c)`$
 4. Loss = MSE
 
 推理：
-1. $z_T \sim \mathcal{N}(0, I)$
-2. 50 步 DDIM 采样得到 $z_0$
-3. $z_0 \xrightarrow{D} x$
+1. $`z_T \sim \mathcal{N}(0, I)`$
+2. 50 步 DDIM 采样得到 $`z_0`$
+3. $`z_0 \xrightarrow{D} x`$
 
 ---
 
@@ -105,8 +105,8 @@ SD 1.x: ~860M。比像素空间 DDPM 的 ~50M 大得多——因为 LDM 把"计�
 ### 1. "Latent space 是 VAE 的 z?"
 
 是，**但和经典 VAE 不同**：
-- KL 权重极小，latent 不严格是 $\mathcal{N}(0, I)$
-- LDM 在 latent 上做 DDPM 假设的"$z_T \sim \mathcal{N}(0, I)$" 严格上不成立
+- KL 权重极小，latent 不严格是 $`\mathcal{N}(0, I)`$
+- LDM 在 latent 上做 DDPM 假设的"$`z_T \sim \mathcal{N}(0, I)`$" 严格上不成立
 - 实践中由于 forward 加噪足够，影响不大
 
 ---
@@ -132,7 +132,7 @@ SD 3 用更大的 VAE（16 channels）部分缓解。
 
 ## 九、关键实验表
 
-§4.1 Table 8: $f$ 选择的 FID
+§4.1 Table 8: $`f`$ 选择的 FID
 | f | FID (CelebA-HQ) | 计算量 |
 |---|-----------------|--------|
 | 1 (像素) | 27.4 | 1x |
@@ -140,7 +140,7 @@ SD 3 用更大的 VAE（16 channels）部分缓解。
 | **8** | **15.5** | **64x 减少** |
 | 16 | 28.7 | 256x 但质量降 |
 
-—— $f=8$ 是甜点（质量与计算的最佳折中）。
+—— $`f=8`$ 是甜点（质量与计算的最佳折中）。
 
 ---
 
@@ -155,7 +155,7 @@ SD 3 用更大的 VAE（16 channels）部分缓解。
 
 ## 十一、思考题
 
-1. 如果 KL 权重 $\lambda$ 增大到 1（标准 VAE），SD 会出什么问题？
+1. 如果 KL 权重 $`\lambda`$ 增大到 1（标准 VAE），SD 会出什么问题？
 2. 为什么 SD 不能生成清晰文字？从 VAE 重构 loss 分析
 3. SDXL 的 latent 大小是 (4, 128, 128)（1024×1024 输出）。这与 SD 1.5 的 (4, 64, 64) 对比，UNet 计算量约多少倍？
 

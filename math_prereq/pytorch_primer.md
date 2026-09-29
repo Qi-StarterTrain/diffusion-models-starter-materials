@@ -359,7 +359,7 @@ def extract(a, t, x_shape):
     return out.view(B, *([1] * (len(x_shape) - 1)))
 ```
 
-> **🔑 在扩散模型中**：每个 batch 包含不同的 $t$，需要按 $t$ 取出对应的 $\bar\alpha_t$、$\beta_t$ 等系数。这个工具函数会反复用到。
+> **🔑 在扩散模型中**：每个 batch 包含不同的 $`t`$，需要按 $`t`$ 取出对应的 $`\bar\alpha_t`$、$`\beta_t`$ 等系数。这个工具函数会反复用到。
 
 ---
 
