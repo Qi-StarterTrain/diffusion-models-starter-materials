@@ -30,11 +30,15 @@
 ## 三、核心公式
 
 ### 训练
-$$\mathcal{L} = \mathbb{E}\left[\|\epsilon - \epsilon_\theta(x_t, t, y)\|^2\right]$$
+```math
+\mathcal{L} = \mathbb{E}\left[\|\epsilon - \epsilon_\theta(x_t, t, y)\|^2\right]
+```
 其中 $`y`$ 以概率 $`p_{\text{uncond}} = 0.1`$ 被替换为 $`\emptyset`$（null token）。
 
 ### 推理
-$$\hat\epsilon = \epsilon_\theta(x_t, t, \emptyset) + s \cdot \left[\epsilon_\theta(x_t, t, y) - \epsilon_\theta(x_t, t, \emptyset)\right]$$
+```math
+\hat\epsilon = \epsilon_\theta(x_t, t, \emptyset) + s \cdot \left[\epsilon_\theta(x_t, t, y) - \epsilon_\theta(x_t, t, \emptyset)\right]
+```
 
 ---
 
@@ -49,7 +53,9 @@ $$\hat\epsilon = \epsilon_\theta(x_t, t, \emptyset) + s \cdot \left[\epsilon_\th
 ## 五、与 CG 的数学等价（必看）
 
 由贝叶斯：
-$$\nabla_x \log p(x|y) = \nabla_x \log p(x) + \nabla_x \log p(y|x)$$
+```math
+\nabla_x \log p(x|y) = \nabla_x \log p(x) + \nabla_x \log p(y|x)
+```
 
 CG 用独立分类器估计 $`\nabla \log p(y|x)`$。
 CFG 用 $`\nabla \log p(x|y) - \nabla \log p(x)`$ 替代 $`\nabla \log p(y|x)`$。
@@ -69,7 +75,9 @@ CFG 用 $`\nabla \log p(x|y) - \nabla \log p(x)`$ 替代 $`\nabla \log p(y|x)`$�
 ### 2. "Negative prompt 是 CFG 的扩展？"
 
 是。CFG 公式中把 $`\emptyset`$ 换成 $`y_{\text{neg}}`$：
-$$\hat\epsilon = \epsilon_\theta(y_{\text{neg}}) + s (\epsilon_\theta(y_{\text{pos}}) - \epsilon_\theta(y_{\text{neg}}))$$
+```math
+\hat\epsilon = \epsilon_\theta(y_{\text{neg}}) + s (\epsilon_\theta(y_{\text{pos}}) - \epsilon_\theta(y_{\text{neg}}))
+```
 
 **直觉**："远离" $`y_{\text{neg}}`$，"靠近" $`y_{\text{pos}}`$。
 
@@ -78,7 +86,9 @@ $$\hat\epsilon = \epsilon_\theta(y_{\text{neg}}) + s (\epsilon_\theta(y_{\text{p
 ### 3. "CFG 后采样的是 $`p(x|y)`$？"
 
 **严格说不是**。$`s > 1`$ 时实际采样的是：
-$$\tilde p(x|y) \propto p(x|y) \cdot (p(x|y)/p(x))^{s-1}$$
+```math
+\tilde p(x|y) \propto p(x|y) \cdot (p(x|y)/p(x))^{s-1}
+```
 
 —— 一个"偏向典型 $`y`$ 样本"的偏差分布。这就是 CFG 牺牲多样性换质量的来源。
 

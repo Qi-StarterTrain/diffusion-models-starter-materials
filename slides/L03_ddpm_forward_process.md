@@ -51,12 +51,16 @@ Reverse (学习):
 
 DDPM 把每一步加噪定义为一个高斯转移：
 
-$$q(x_t | x_{t-1}) = \mathcal{N}\bigl(x_t; \sqrt{1 - \beta_t} \cdot x_{t-1}, \beta_t \cdot I\bigr)$$
+```math
+q(x_t | x_{t-1}) = \mathcal{N}\bigl(x_t; \sqrt{1 - \beta_t} \cdot x_{t-1}, \beta_t \cdot I\bigr)
+```
 
 其中 $`\beta_t \in (0, 1)`$ 是预先指定的"噪声强度"序列（noise schedule）。
 
 **用重参数化展开**：
-$$x_t = \sqrt{1 - \beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$$
+```math
+x_t = \sqrt{1 - \beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)
+```
 
 ---
 
@@ -67,7 +71,9 @@ $$x_t = \sqrt{1 - \beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon, \quad 
 **关键性质**：上述定义**保持了方差稳定**。
 
 设 $`\mathrm{Var}(x_{t-1}) = 1`$（数据归一化后），则：
-$$\mathrm{Var}(x_t) = (1-\beta_t) \cdot 1 + \beta_t \cdot 1 = 1$$
+```math
+\mathrm{Var}(x_t) = (1-\beta_t) \cdot 1 + \beta_t \cdot 1 = 1
+```
 
 —— **方差不会随时间步爆炸**！如果用简单加法，方差会单调累积，最终无法控制。
 
@@ -81,7 +87,9 @@ $$\mathrm{Var}(x_t) = (1-\beta_t) \cdot 1 + \beta_t \cdot 1 = 1$$
 
 整个 forward 过程是马尔可夫链：
 
-$$q(x_{1:T} | x_0) = \prod_{t=1}^{T} q(x_t | x_{t-1})$$
+```math
+q(x_{1:T} | x_0) = \prod_{t=1}^{T} q(x_t | x_{t-1})
+```
 
 —— 每一步只依赖前一步。
 
@@ -98,7 +106,9 @@ $$q(x_{1:T} | x_0) = \prod_{t=1}^{T} q(x_t | x_{t-1})$$
 ### 3.2 引入符号简化
 
 定义：
-$$\alpha_t := 1 - \beta_t, \quad \bar\alpha_t := \prod_{s=1}^{t} \alpha_s$$
+```math
+\alpha_t := 1 - \beta_t, \quad \bar\alpha_t := \prod_{s=1}^{t} \alpha_s
+```
 
 —— $`\bar\alpha_t`$ 是从 1 到 $`t`$ 所有 $`\alpha`$ 的累积乘积。
 
@@ -107,37 +117,47 @@ $$\alpha_t := 1 - \beta_t, \quad \bar\alpha_t := \prod_{s=1}^{t} \alpha_s$$
 ### 3.3 推导（**必须完全掌握**）
 
 我们要证明：
-$$q(x_t | x_0) = \mathcal{N}\bigl(x_t; \sqrt{\bar\alpha_t} \cdot x_0, (1 - \bar\alpha_t) \cdot I\bigr)$$
+```math
+q(x_t | x_0) = \mathcal{N}\bigl(x_t; \sqrt{\bar\alpha_t} \cdot x_0, (1 - \bar\alpha_t) \cdot I\bigr)
+```
 
 **用归纳法**。
 
 **第 1 步（base case）**：
-$$x_1 = \sqrt{\alpha_1} \cdot x_0 + \sqrt{1 - \alpha_1} \cdot \epsilon_1, \quad \epsilon_1 \sim \mathcal{N}(0, I)$$
+```math
+x_1 = \sqrt{\alpha_1} \cdot x_0 + \sqrt{1 - \alpha_1} \cdot \epsilon_1, \quad \epsilon_1 \sim \mathcal{N}(0, I)
+```
 
 故 $`q(x_1 | x_0) = \mathcal{N}(\sqrt{\alpha_1} x_0, (1-\alpha_1) I) = \mathcal{N}(\sqrt{\bar\alpha_1} x_0, (1-\bar\alpha_1) I)`$。✓
 
 **第 2 步（归纳步）**：假设 $`x_{t-1} = \sqrt{\bar\alpha_{t-1}} x_0 + \sqrt{1 - \bar\alpha_{t-1}} \cdot \tilde\epsilon`$，$`\tilde\epsilon \sim \mathcal{N}(0, I)`$。
 
 代入单步公式：
-$$
+```math
 \begin{aligned}
 x_t &= \sqrt{\alpha_t} \cdot x_{t-1} + \sqrt{1-\alpha_t} \cdot \epsilon_t \\
 &= \sqrt{\alpha_t} \left( \sqrt{\bar\alpha_{t-1}} x_0 + \sqrt{1-\bar\alpha_{t-1}} \tilde\epsilon \right) + \sqrt{1-\alpha_t} \cdot \epsilon_t \\
 &= \sqrt{\alpha_t \bar\alpha_{t-1}} \cdot x_0 + \sqrt{\alpha_t (1-\bar\alpha_{t-1})} \cdot \tilde\epsilon + \sqrt{1-\alpha_t} \cdot \epsilon_t \\
 &= \sqrt{\bar\alpha_t} \cdot x_0 + \underbrace{\sqrt{\alpha_t (1-\bar\alpha_{t-1})} \cdot \tilde\epsilon + \sqrt{1-\alpha_t} \cdot \epsilon_t}_{\text{两个独立高斯之和}}
 \end{aligned}
-$$
+```
 
 利用"独立高斯之和的方差相加"：
-$$\mathrm{Var} = \alpha_t (1-\bar\alpha_{t-1}) + (1-\alpha_t) = \alpha_t - \alpha_t \bar\alpha_{t-1} + 1 - \alpha_t = 1 - \bar\alpha_t$$
+```math
+\mathrm{Var} = \alpha_t (1-\bar\alpha_{t-1}) + (1-\alpha_t) = \alpha_t - \alpha_t \bar\alpha_{t-1} + 1 - \alpha_t = 1 - \bar\alpha_t
+```
 
 所以这两项之和等价于一个 $`\sqrt{1-\bar\alpha_t} \cdot \epsilon`$，$`\epsilon \sim \mathcal{N}(0, I)`$。
 
 最终：
-$$\boxed{x_t = \sqrt{\bar\alpha_t} \cdot x_0 + \sqrt{1-\bar\alpha_t} \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)}$$
+```math
+\boxed{x_t = \sqrt{\bar\alpha_t} \cdot x_0 + \sqrt{1-\bar\alpha_t} \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)}
+```
 
 即：
-$$\boxed{q(x_t | x_0) = \mathcal{N}\bigl(x_t; \sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I\bigr)}$$
+```math
+\boxed{q(x_t | x_0) = \mathcal{N}\bigl(x_t; \sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I\bigr)}
+```
 
 ✅ 这是 DDPM 中**最常用的公式**，必须能闭眼写出。
 
@@ -161,7 +181,9 @@ $$\boxed{q(x_t | x_0) = \mathcal{N}\bigl(x_t; \sqrt{\bar\alpha_t} x_0, (1-\bar\a
 ### 3.5 信噪比（SNR）视角
 
 定义：
-$$\text{SNR}(t) = \frac{\bar\alpha_t}{1 - \bar\alpha_t}$$
+```math
+\text{SNR}(t) = \frac{\bar\alpha_t}{1 - \bar\alpha_t}
+```
 
 —— 信号方差 / 噪声方差。
 
@@ -173,7 +195,9 @@ $$\text{SNR}(t) = \frac{\bar\alpha_t}{1 - \bar\alpha_t}$$
 
 ### 4.1 Linear Schedule（DDPM 原始）
 
-$$\beta_t = \beta_{\min} + \frac{t-1}{T-1} (\beta_{\max} - \beta_{\min})$$
+```math
+\beta_t = \beta_{\min} + \frac{t-1}{T-1} (\beta_{\max} - \beta_{\min})
+```
 
 DDPM 默认：$`T=1000`$，$`\beta_{\min}=10^{-4}`$，$`\beta_{\max}=0.02`$。
 
@@ -195,7 +219,9 @@ DDPM 默认：$`T=1000`$，$`\beta_{\min}=10^{-4}`$，$`\beta_{\max}=0.02`$。
 ### 4.3 Cosine Schedule（Improved DDPM）
 
 Nichol & Dhariwal 2021 提出：
-$$\bar\alpha_t = \frac{f(t)}{f(0)}, \quad f(t) = \cos^2\left( \frac{t/T + s}{1 + s} \cdot \frac{\pi}{2} \right)$$
+```math
+\bar\alpha_t = \frac{f(t)}{f(0)}, \quad f(t) = \cos^2\left( \frac{t/T + s}{1 + s} \cdot \frac{\pi}{2} \right)
+```
 
 其中 $`s = 0.008`$ 防止 $`t=0`$ 时数值问题。
 
@@ -235,7 +261,9 @@ DDPM 的训练目标就是让 $`p_\theta(x_{t-1} | x_t)`$ 逼近这个理想分�
 ### 5.2 推导
 
 由贝叶斯定理：
-$$q(x_{t-1} | x_t, x_0) = \frac{q(x_t | x_{t-1}, x_0) \cdot q(x_{t-1} | x_0)}{q(x_t | x_0)}$$
+```math
+q(x_{t-1} | x_t, x_0) = \frac{q(x_t | x_{t-1}, x_0) \cdot q(x_{t-1} | x_0)}{q(x_t | x_0)}
+```
 
 由马尔可夫性，$`q(x_t | x_{t-1}, x_0) = q(x_t | x_{t-1})`$。三项都是已知的高斯：
 
@@ -245,12 +273,18 @@ $$q(x_{t-1} | x_t, x_0) = \frac{q(x_t | x_{t-1}, x_0) \cdot q(x_{t-1} | x_0)}{q(
 
 **经过繁琐但机械的高斯运算**（详见推导手稿 derive_02），得到：
 
-$$\boxed{q(x_{t-1} | x_t, x_0) = \mathcal{N}\bigl(x_{t-1}; \tilde\mu_t(x_t, x_0), \tilde\beta_t \cdot I\bigr)}$$
+```math
+\boxed{q(x_{t-1} | x_t, x_0) = \mathcal{N}\bigl(x_{t-1}; \tilde\mu_t(x_t, x_0), \tilde\beta_t \cdot I\bigr)}
+```
 
 其中：
-$$\tilde\mu_t(x_t, x_0) = \frac{\sqrt{\bar\alpha_{t-1}} \beta_t}{1 - \bar\alpha_t} x_0 + \frac{\sqrt{\alpha_t}(1 - \bar\alpha_{t-1})}{1 - \bar\alpha_t} x_t$$
+```math
+\tilde\mu_t(x_t, x_0) = \frac{\sqrt{\bar\alpha_{t-1}} \beta_t}{1 - \bar\alpha_t} x_0 + \frac{\sqrt{\alpha_t}(1 - \bar\alpha_{t-1})}{1 - \bar\alpha_t} x_t
+```
 
-$$\tilde\beta_t = \frac{1 - \bar\alpha_{t-1}}{1 - \bar\alpha_t} \beta_t$$
+```math
+\tilde\beta_t = \frac{1 - \bar\alpha_{t-1}}{1 - \bar\alpha_t} \beta_t
+```
 
 —— 是 $`x_t`$ 和 $`x_0`$ 的线性组合的高斯，**方差不依赖于 $`x_t`$ 或 $`x_0`$**！
 
@@ -260,7 +294,9 @@ $$\tilde\beta_t = \frac{1 - \bar\alpha_{t-1}}{1 - \bar\alpha_t} \beta_t$$
 
 利用 $`x_0 = \frac{1}{\sqrt{\bar\alpha_t}}(x_t - \sqrt{1-\bar\alpha_t} \epsilon)`$，代入 $`\tilde\mu_t`$ 并化简：
 
-$$\tilde\mu_t(x_t, \epsilon) = \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon \right)$$
+```math
+\tilde\mu_t(x_t, \epsilon) = \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon \right)
+```
 
 —— **均值是 $`x_t`$ 减去一个跟 $`\epsilon`$ 成比例的项**！
 

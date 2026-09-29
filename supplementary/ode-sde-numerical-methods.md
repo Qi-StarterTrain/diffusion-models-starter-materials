@@ -13,35 +13,35 @@
 
 考虑常微分方程 ODE：
 
-$$
+```math
 \frac{dx}{dt}=f(x,t)
-$$
+```
 
 大多数情况下，我们无法写出解析解，所以希望从已知的：
 
-$$
+```math
 x(t)
-$$
+```
 
 近似计算：
 
-$$
+```math
 x(t+h)
-$$
+```
 
 其中：
 
-$$
+```math
 h=\Delta t
-$$
+```
 
 是时间步长。
 
 数值方法要解决的问题就是：
 
-$$
+```math
 x(t+h)\approx ?
-$$
+```
 
 ## 2. Taylor 展开是数值方法的起点
 
@@ -49,7 +49,7 @@ $$
 
 因此可以直接对 $`x(t+h)`$ 做 Taylor 展开：
 
-$$
+```math
 \boxed{
 x(t+h)
 =
@@ -63,7 +63,7 @@ h x'(t)
 +
 \cdots
 }
-$$
+```
 
 这一步只是普通微积分，还没有用到 ODE。
 
@@ -71,31 +71,31 @@ $$
 
 ODE 给出：
 
-$$
+```math
 x'(t)=f(x,t)
-$$
+```
 
 所以 Taylor 展开的第一阶项可以直接写成：
 
-$$
+```math
 h x'(t)=h f(x,t)
-$$
+```
 
 关键是二阶导数 $`x''(t)`$。
 
 因为：
 
-$$
+```math
 x'(t)=f(x(t),t)
-$$
+```
 
 所以：
 
-$$
+```math
 x''(t)
 =
 \frac{d}{dt} f(x(t),t)
-$$
+```
 
 这里会出现链式法则。
 
@@ -103,21 +103,21 @@ $$
 
 因为：
 
-$$
+```math
 f=f(x,t)
-$$
+```
 
 而：
 
-$$
+```math
 x=x(t)
-$$
+```
 
 所以实际上：
 
-$$
+```math
 f=f(x(t),t)
-$$
+```
 
 变量关系可以理解为：
 
@@ -138,19 +138,19 @@ t
 
 若：
 
-$$
+```math
 z=f(x,y)
-$$
+```
 
 其中：
 
-$$
+```math
 x=x(t),\qquad y=y(t)
-$$
+```
 
 则：
 
-$$
+```math
 \boxed{
 \frac{dz}{dt}
 =
@@ -158,23 +158,23 @@ $$
 +
 \frac{\partial f}{\partial y}\frac{dy}{dt}
 }
-$$
+```
 
 对于 ODE：
 
-$$
+```math
 f=f(x,t)
-$$
+```
 
 第二个变量就是 $`t`$，所以：
 
-$$
+```math
 \frac{dt}{dt}=1
-$$
+```
 
 于是：
 
-$$
+```math
 \boxed{
 \frac{d}{dt}f(x,t)
 =
@@ -182,17 +182,17 @@ f_x\frac{dx}{dt}
 +
 f_t
 }
-$$
+```
 
 再利用：
 
-$$
+```math
 \frac{dx}{dt}=f
-$$
+```
 
 得到：
 
-$$
+```math
 \boxed{
 x''
 =
@@ -200,7 +200,7 @@ f_t
 +
 f_x f
 }
-$$
+```
 
 这里 $`f_x`$ 表示 $`\partial f/\partial x`$，$`f_t`$ 表示 $`\partial f/\partial t`$。
 
@@ -208,7 +208,7 @@ $$
 
 把 $`x'=f`$ 和 $`x''=f_t+f_xf`$ 代入 Taylor 展开：
 
-$$
+```math
 \boxed{
 x(t+h)
 =
@@ -220,23 +220,23 @@ h f
 +
 O(h^3)
 }
-$$
+```
 
 如果是自治系统：
 
-$$
+```math
 f=f(x)
-$$
+```
 
 也就是 $`f`$ 不显式依赖 $`t`$，那么：
 
-$$
+```math
 f_t=0
-$$
+```
 
 于是：
 
-$$
+```math
 \boxed{
 x(t+h)
 =
@@ -248,7 +248,7 @@ h f
 +
 O(h^3)
 }
-$$
+```
 
 这是理解 ODE 数值方法最重要的公式之一。
 
@@ -256,7 +256,7 @@ $$
 
 Euler 方法就是只保留 Taylor 展开的第一阶项：
 
-$$
+```math
 \boxed{
 x_{n+1}
 =
@@ -264,7 +264,7 @@ x_n
 +
 h f(x_n,t_n)
 }
-$$
+```
 
 所以 Euler 可以理解成：
 
@@ -272,9 +272,9 @@ $$
 
 它没有使用二阶项：
 
-$$
+```math
 \frac12 h^2(f_t+f_xf)
-$$
+```
 
 也没有使用更高阶项。
 
@@ -282,7 +282,7 @@ $$
 
 真实解是：
 
-$$
+```math
 x
 +
 h f
@@ -290,17 +290,17 @@ h f
 \frac12 h^2(f_t+f_xf)
 +
 O(h^3)
-$$
+```
 
 Euler 只保留：
 
-$$
+```math
 x+hf
-$$
+```
 
 两者相减，得到一步误差，也叫局部截断误差：
 
-$$
+```math
 \boxed{
 e_{\mathrm{local}}
 =
@@ -308,15 +308,15 @@ e_{\mathrm{local}}
 +
 O(h^3)
 }
-$$
+```
 
 因此：
 
-$$
+```math
 \boxed{
 e_{\mathrm{local}}=O(h^2)
 }
-$$
+```
 
 这里的 $`O(h^2)`$ 表示：当 $`h\to 0`$ 时，误差的主导量级是 $`h^2`$。
 
@@ -324,21 +324,21 @@ $$
 
 误差实际上包含很多项：
 
-$$
+```math
 h^2+h^3+h^4+\cdots
-$$
+```
 
 但是当：
 
-$$
+```math
 h\to 0
-$$
+```
 
 时：
 
-$$
+```math
 h^2 \gg h^3 \gg h^4
-$$
+```
 
 因此误差主要由第一个被舍弃项决定。
 
@@ -348,49 +348,49 @@ $$
 
 所以通常写成：
 
-$$
+```math
 O(h^2)
-$$
+```
 
 ## 10. 为什么 Euler 是一阶方法
 
 Euler 的一步局部误差是：
 
-$$
+```math
 O(h^2)
-$$
+```
 
 但是要求解整个区间：
 
-$$
+```math
 [0,T]
-$$
+```
 
 需要：
 
-$$
+```math
 N=\frac{T}{h}
-$$
+```
 
 步。
 
 误差会不断传播并累积。直观估计：
 
-$$
+```math
 N\cdot O(h^2)
 =
 \frac{T}{h}O(h^2)
 =
 O(h)
-$$
+```
 
 严格证明需要稳定性分析，例如 Grönwall 不等式，但结论一致：
 
-$$
+```math
 \boxed{
 \text{Global Error}=O(h)
 }
-$$
+```
 
 因此 Euler 是一阶数值方法。
 
@@ -412,15 +412,15 @@ $$
 
 Runge-Kutta 方法的巧妙之处在于，它通常不用显式计算：
 
-$$
+```math
 x'',\qquad x''',\qquad x^{(4)}
-$$
+```
 
 而是通过多次计算：
 
-$$
+```math
 f(x,t)
-$$
+```
 
 来间接恢复这些高阶项。
 
@@ -428,15 +428,15 @@ $$
 
 随机微分方程 SDE 写作：
 
-$$
+```math
 dx=f(x,t)\,dt+g(x,t)\,dW
-$$
+```
 
 其中 $`W_t`$ 是 Brownian motion，也叫 Wiener process。
 
 它有一个关键性质：
 
-$$
+```math
 \boxed{
 \Delta W
 =
@@ -444,17 +444,17 @@ W_{t+h}-W_t
 \sim
 \mathcal N(0,h)
 }
-$$
+```
 
 因此：
 
-$$
+```math
 \Delta W
 =
 \sqrt h\,\epsilon,
 \qquad
 \epsilon\sim\mathcal N(0,1)
-$$
+```
 
 由于 Brownian motion 几乎处处不可导，普通 Taylor 展开不再适用。
 
@@ -466,13 +466,13 @@ SDE 要使用的是：
 
 对 SDE：
 
-$$
+```math
 dx=f(x,t)\,dt+g(x,t)\,dW
-$$
+```
 
 Itô-Taylor 的一阶截断给出：
 
-$$
+```math
 \boxed{
 x_{n+1}
 =
@@ -482,19 +482,19 @@ f(x_n,t_n)h
 +
 g(x_n,t_n)\Delta W_n
 }
-$$
+```
 
 其中：
 
-$$
+```math
 \Delta W_n
 \sim
 \mathcal N(0,h)
-$$
+```
 
 也可以写成：
 
-$$
+```math
 \boxed{
 x_{n+1}
 =
@@ -506,7 +506,7 @@ g(x_n,t_n)\sqrt h\,\epsilon_n,
 \qquad
 \epsilon_n\sim\mathcal N(0,1)
 }
-$$
+```
 
 这就是 Euler-Maruyama 方法。
 
@@ -522,25 +522,25 @@ SDE 有两种常见误差标准：strong error 和 weak error。
 
 strong error 比较的是单条轨迹：
 
-$$
+```math
 \mathbb E[|X_T-X_T^h|]
-$$
+```
 
 其中 $`X_T`$ 是真实 SDE 解，$`X_T^h`$ 是步长为 $`h`$ 的数值解。
 
 Euler-Maruyama 的 strong order 是：
 
-$$
+```math
 \boxed{
 \text{Strong Order}=0.5
 }
-$$
+```
 
 直觉上，因为 Brownian 增量的尺度是：
 
-$$
+```math
 \Delta W\sim \sqrt h
-$$
+```
 
 所以单条随机轨迹的精确逼近比 ODE 更难。
 
@@ -548,23 +548,23 @@ $$
 
 weak error 比较的是分布或期望：
 
-$$
+```math
 \left|
 \mathbb E[\phi(X_T)]
 -
 \mathbb E[\phi(X_T^h)]
 \right|
-$$
+```
 
 其中 $`\phi`$ 是测试函数。
 
 Euler-Maruyama 的 weak order 是：
 
-$$
+```math
 \boxed{
 \text{Weak Order}=1
 }
-$$
+```
 
 因此有些材料说 Euler-Maruyama 是 first-order，通常指的是 weak first-order，而不是 strong first-order。
 
@@ -574,7 +574,7 @@ $$
 
 一维情形下：
 
-$$
+```math
 \boxed{
 x_{n+1}
 =
@@ -587,27 +587,27 @@ g\Delta W
 \frac12 gg'
 \left((\Delta W)^2-h\right)
 }
-$$
+```
 
 其中：
 
-$$
+```math
 g'=\frac{\partial g}{\partial x}
-$$
+```
 
 Milstein 方法恢复了 Itô-Taylor 展开中的下一项。
 
 因此它把 strong order 从：
 
-$$
+```math
 0.5
-$$
+```
 
 提高到：
 
-$$
+```math
 1
-$$
+```
 
 在高维或非交换噪声场景下，Milstein 的实现会更复杂，所以 diffusion model 实践中不一定常用它。
 
@@ -615,25 +615,25 @@ $$
 
 扩散模型里的反向 SDE 常写成：
 
-$$
+```math
 dx
 =
 \left(f-g^2s_\theta\right)dt
 +
 g\,dW
-$$
+```
 
 其中：
 
-$$
+```math
 s_\theta(x,t)\approx \nabla_x\log p_t(x)
-$$
+```
 
 是神经网络估计的 score。
 
 Euler-Maruyama 离散化就是：
 
-$$
+```math
 x_{k-1}
 =
 x_k
@@ -641,25 +641,25 @@ x_k
 \left(f-g^2s_\theta\right)h
 +
 g\sqrt h\,\epsilon
-$$
+```
 
 其中：
 
-$$
+```math
 \epsilon\sim\mathcal N(0,I)
-$$
+```
 
 这就是很多 reverse SDE sampler 的基本形式。
 
 另一方面，现代 diffusion sampler 更多时候求解的是 probability flow ODE：
 
-$$
+```math
 \frac{dx}{dt}
 =
 f
 -
 \frac12 g^2s_\theta
-$$
+```
 
 因此可以使用 ODE 求解器：
 

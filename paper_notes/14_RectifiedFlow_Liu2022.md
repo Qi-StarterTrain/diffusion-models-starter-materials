@@ -19,7 +19,9 @@
 ### 2.1 Linear path
 
 与 Flow Matching 同：
-$$x_t = (1-t) x_0 + t x_1$$
+```math
+x_t = (1-t) x_0 + t x_1
+```
 
 训练 $`v_\theta(x_t, t) \approx x_1 - x_0`$。
 
@@ -43,7 +45,9 @@ reflow 把 detour 直接"硬编码"成新数据，让 $`v_\theta^{(2)}`$ 学到�
 ### 3.1 Straightness 指标
 
 定义 trajectory 的曲率：
-$$S = \mathbb{E}\int_0^1 \|v(x_t, t) - (x_1 - x_0)\|^2 dt$$
+```math
+S = \mathbb{E}\int_0^1 \|v(x_t, t) - (x_1 - x_0)\|^2 dt
+```
 
 低 $`S`$ = 直；高 $`S`$ = 弯。
 

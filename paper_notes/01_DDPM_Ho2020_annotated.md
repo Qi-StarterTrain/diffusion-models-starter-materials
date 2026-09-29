@@ -39,22 +39,30 @@
 ## 三、核心公式（必背）
 
 ### 公式 1: Forward process
-$$q(x_t | x_0) = \mathcal{N}\bigl(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I\bigr)$$
+```math
+q(x_t | x_0) = \mathcal{N}\bigl(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I\bigr)
+```
 
 —— 任意 $`t`$ 一步加噪。
 
 ### 公式 2: Posterior
-$$q(x_{t-1} | x_t, x_0) = \mathcal{N}(\tilde\mu_t(x_t, x_0), \tilde\beta_t I)$$
+```math
+q(x_{t-1} | x_t, x_0) = \mathcal{N}(\tilde\mu_t(x_t, x_0), \tilde\beta_t I)
+```
 
 —— 真实反向（贝叶斯反推）。
 
 ### 公式 3: $`\epsilon`$-prediction
-$$\mu_\theta(x_t, t) = \frac{1}{\sqrt{\alpha_t}}\left(x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon_\theta(x_t, t)\right)$$
+```math
+\mu_\theta(x_t, t) = \frac{1}{\sqrt{\alpha_t}}\left(x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon_\theta(x_t, t)\right)
+```
 
 —— 网络参数化（关键洞察）。
 
 ### 公式 4: Simplified loss
-$$\mathcal{L}_{\text{simple}} = \mathbb{E}_{t, x_0, \epsilon}\left[\|\epsilon - \epsilon_\theta(\sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t}\epsilon, t)\|^2\right]$$
+```math
+\mathcal{L}_{\text{simple}} = \mathbb{E}_{t, x_0, \epsilon}\left[\|\epsilon - \epsilon_\theta(\sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t}\epsilon, t)\|^2\right]
+```
 
 —— **整篇论文的精华**。
 

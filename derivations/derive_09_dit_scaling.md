@@ -11,15 +11,21 @@
 
 ### 1.1 标准 LayerNorm
 
-$$\text{LN}(x) = \gamma \odot \frac{x - \mu}{\sigma} + \beta$$
+```math
+\text{LN}(x) = \gamma \odot \frac{x - \mu}{\sigma} + \beta
+```
 
 其中 $`\gamma, \beta \in \mathbb{R}^D`$ 是可学参数。
 
 ### 1.2 AdaLN（Adaptive LayerNorm）
 
 让 $`\gamma, \beta`$ 依赖于 condition $`c`$：
-$$\gamma(c) = W_\gamma c + b_\gamma$$
-$$\beta(c) = W_\beta c + b_\beta$$
+```math
+\gamma(c) = W_\gamma c + b_\gamma
+```
+```math
+\beta(c) = W_\beta c + b_\beta
+```
 
 广泛应用：StyleGAN、BigGAN 都用 AdaIN/AdaBN。在 DiT 里用 AdaLN。
 
@@ -144,7 +150,9 @@ DiT 论文的图 6 显示：
 ### 5.1 LLM (Chinchilla, Hoffmann 2022)
 
 最优 compute 分配：
-$$\text{data tokens} \approx 20 \times \text{params}$$
+```math
+\text{data tokens} \approx 20 \times \text{params}
+```
 
 例：7B 模型应训 140B tokens。
 

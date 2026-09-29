@@ -34,28 +34,36 @@ DDPM 在视觉质量上击败了 GAN，但在 NLL 上落后于最佳 likelihood 
 ## 三、核心公式
 
 ### Cosine Schedule
-$$\bar\alpha_t = \frac{f(t)}{f(0)}, \quad f(t) = \cos^2\left(\frac{t/T + s}{1+s} \cdot \frac{\pi}{2}\right)$$
+```math
+\bar\alpha_t = \frac{f(t)}{f(0)}, \quad f(t) = \cos^2\left(\frac{t/T + s}{1+s} \cdot \frac{\pi}{2}\right)
+```
 
 其中 $`s = 0.008`$ 是小偏移量。
 
 ---
 
 ### Learned Variance
-$$\Sigma_\theta = \exp(v \log \beta_t + (1-v) \log \tilde\beta_t)$$
+```math
+\Sigma_\theta = \exp(v \log \beta_t + (1-v) \log \tilde\beta_t)
+```
 
 网络预测 $`v \in [0, 1]`$，在 $`\log\beta_t`$（上界）与 $`\log\tilde\beta_t`$（下界）之间插值。
 
 ---
 
 ### Hybrid Loss
-$$\mathcal{L}_{\text{hybrid}} = \mathcal{L}_{\text{simple}} + \lambda \mathcal{L}_{\text{vlb}}, \quad \lambda = 0.001$$
+```math
+\mathcal{L}_{\text{hybrid}} = \mathcal{L}_{\text{simple}} + \lambda \mathcal{L}_{\text{vlb}}, \quad \lambda = 0.001
+```
 
 注意：**$`\mathcal{L}_{\text{vlb}}`$ 对 $`\epsilon`$ 通道 stop-gradient**——只用来训练方差通道。
 
 ---
 
 ### Importance Sampling
-$$p(t) \propto \sqrt{\mathbb{E}[L_t^2]}$$
+```math
+p(t) \propto \sqrt{\mathbb{E}[L_t^2]}
+```
 
 按 loss 平方均值的开方采样 $`t`$。
 

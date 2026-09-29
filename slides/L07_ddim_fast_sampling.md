@@ -37,7 +37,9 @@ for t = T, T-1, ..., 1:
 ### 2.1 DDPM 损失函数对前向过程的"无关性"
 
 仔细看 L04 推导的 simplified loss：
-$$\mathcal{L}_{\text{simple}} = \mathbb{E}_{t, x_0, \epsilon} \left[ \| \epsilon - \epsilon_\theta(x_t, t) \|^2 \right]$$
+```math
+\mathcal{L}_{\text{simple}} = \mathbb{E}_{t, x_0, \epsilon} \left[ \| \epsilon - \epsilon_\theta(x_t, t) \|^2 \right]
+```
 
 **只依赖于 $`q(x_t | x_0)`$ 这一个边缘分布**，不依赖于完整马尔可夫链 $`q(x_{1:T} | x_0)`$！
 
@@ -57,7 +59,9 @@ DDIM 改写：$`q_\sigma(x_{1:T}|x_0) = q_\sigma(x_T|x_0) \prod_{t=2}^T q_\sigma
 
 通过繁琐但机械的推导（参考 derive_05），可以得到：
 
-$$q_\sigma(x_{t-1} | x_t, x_0) = \mathcal{N}\left( \sqrt{\bar\alpha_{t-1}} x_0 + \sqrt{1 - \bar\alpha_{t-1} - \sigma_t^2} \cdot \frac{x_t - \sqrt{\bar\alpha_t} x_0}{\sqrt{1 - \bar\alpha_t}}, \sigma_t^2 I \right)$$
+```math
+q_\sigma(x_{t-1} | x_t, x_0) = \mathcal{N}\left( \sqrt{\bar\alpha_{t-1}} x_0 + \sqrt{1 - \bar\alpha_{t-1} - \sigma_t^2} \cdot \frac{x_t - \sqrt{\bar\alpha_t} x_0}{\sqrt{1 - \bar\alpha_t}}, \sigma_t^2 I \right)
+```
 
 ---
 
@@ -78,10 +82,14 @@ $$q_\sigma(x_{t-1} | x_t, x_0) = \mathcal{N}\left( \sqrt{\bar\alpha_{t-1}} x_0 +
 
 把 $`\sigma_t^2 = 0`$ 代入上式，并用 $`x_0 = \frac{x_t - \sqrt{1-\bar\alpha_t} \epsilon_\theta}{\sqrt{\bar\alpha_t}}`$（从噪声预测反推 $`x_0`$）：
 
-$$\boxed{x_{t-1} = \sqrt{\bar\alpha_{t-1}} \cdot \hat x_0(x_t) + \sqrt{1 - \bar\alpha_{t-1}} \cdot \epsilon_\theta(x_t, t)}$$
+```math
+\boxed{x_{t-1} = \sqrt{\bar\alpha_{t-1}} \cdot \hat x_0(x_t) + \sqrt{1 - \bar\alpha_{t-1}} \cdot \epsilon_\theta(x_t, t)}
+```
 
 其中：
-$$\hat x_0(x_t) = \frac{x_t - \sqrt{1-\bar\alpha_t} \cdot \epsilon_\theta(x_t, t)}{\sqrt{\bar\alpha_t}}$$
+```math
+\hat x_0(x_t) = \frac{x_t - \sqrt{1-\bar\alpha_t} \cdot \epsilon_\theta(x_t, t)}{\sqrt{\bar\alpha_t}}
+```
 
 **直观解释**：
 1. 用网络预测当前 $`\epsilon`$
@@ -96,7 +104,9 @@ DDIM 的**真正威力**：可以选择采样子序列 $`\tau_1 < \tau_2 < \dots
 
 每步从 $`x_{\tau_i}`$ 直接跳到 $`x_{\tau_{i-1}}`$：
 
-$$x_{\tau_{i-1}} = \sqrt{\bar\alpha_{\tau_{i-1}}} \cdot \hat x_0(x_{\tau_i}) + \sqrt{1 - \bar\alpha_{\tau_{i-1}}} \cdot \epsilon_\theta(x_{\tau_i}, \tau_i)$$
+```math
+x_{\tau_{i-1}} = \sqrt{\bar\alpha_{\tau_{i-1}}} \cdot \hat x_0(x_{\tau_i}) + \sqrt{1 - \bar\alpha_{\tau_{i-1}}} \cdot \epsilon_\theta(x_{\tau_i}, \tau_i)
+```
 
 **关键**：每次都用同一个训练好的 $`\epsilon_\theta`$（不用重训）。
 
@@ -122,7 +132,9 @@ $$x_{\tau_{i-1}} = \sqrt{\bar\alpha_{\tau_{i-1}}} \cdot \hat x_0(x_{\tau_i}) + \
 ### 4.1 DDIM 是 ODE 的一阶离散化
 
 回顾 L06 中的 probability flow ODE（VP-SDE 形式）：
-$$\frac{dx}{dt} = -\frac{1}{2} \beta(t) x - \frac{1}{2} \beta(t) \cdot \nabla_x \log p_t(x)$$
+```math
+\frac{dx}{dt} = -\frac{1}{2} \beta(t) x - \frac{1}{2} \beta(t) \cdot \nabla_x \log p_t(x)
+```
 
 用 noise 与 score 等价关系 $`\nabla_x \log p_t = -\epsilon_\theta / \sqrt{1-\bar\alpha_t}`$，并做"参数化变量替换"（详见 derive_05 附录），可以证明：
 
@@ -146,12 +158,16 @@ $$\frac{dx}{dt} = -\frac{1}{2} \beta(t) x - \frac{1}{2} \beta(t) \cdot \nabla_x 
 ### 5.1 关键思想：半解析积分
 
 普通 Euler 法：
-$$x_{t+\Delta t} \approx x_t + f(x_t, t) \cdot \Delta t$$
+```math
+x_{t+\Delta t} \approx x_t + f(x_t, t) \cdot \Delta t
+```
 
 这里 $`f`$ 含 $`\epsilon_\theta(x_t, t)`$（昂贵），$`\Delta t`$ 大时误差累积大。
 
 **DPM-Solver 的洞察**：把 ODE 分解为
-$$\frac{dx}{dt} = f_{\text{lin}}(t) \cdot x + f_{\text{nonlin}}(x, t)$$
+```math
+\frac{dx}{dt} = f_{\text{lin}}(t) \cdot x + f_{\text{nonlin}}(x, t)
+```
 
 其中线性部分 $`f_{\text{lin}}`$ **解析可积**。然后只需要数值积分非线性部分。
 
@@ -296,7 +312,9 @@ DDIM 推理时，每步同时处理 batch。建议：
 ### 9.2 算法
 
 把 DDIM 的反向公式**反着用**：
-$$x_t = \sqrt{\bar\alpha_t} \cdot \hat x_0(x_{t-1}) + \sqrt{1-\bar\alpha_t} \cdot \epsilon_\theta(x_{t-1}, t-1)$$
+```math
+x_t = \sqrt{\bar\alpha_t} \cdot \hat x_0(x_{t-1}) + \sqrt{1-\bar\alpha_t} \cdot \epsilon_\theta(x_{t-1}, t-1)
+```
 
 注意是用 $`\epsilon_\theta(x_{t-1}, t-1)`$ 而不是 $`\epsilon_\theta(x_t, t)`$——这是 **一阶近似**，有累积误差。
 

@@ -10,7 +10,9 @@
 ## §1 设置
 
 probability flow ODE：
-$$\frac{dx}{dt} = -\sigma(t) \nabla_x \log p_t(x), \quad t \in [\epsilon, T]$$
+```math
+\frac{dx}{dt} = -\sigma(t) \nabla_x \log p_t(x), \quad t \in [\epsilon, T]
+```
 
 （VE-SDE 形式，$`\epsilon > 0`$ 是数值稳定的下界）
 
@@ -25,10 +27,14 @@ ODE 解轨迹 $`\{x_t\}_{t \in [\epsilon, T]}`$ 由 $`x_T \sim \mathcal{N}(0, \s
 $`f: \mathbb{R}^d \times [\epsilon, T] \to \mathbb{R}^d`$ 称为 **consistency function**，如果：
 
 **Property 1 (Self-consistency)**：对同一轨迹上的两个点：
-$$f(x_t, t) = f(x_{t'}, t'), \quad \forall (t, t')$$
+```math
+f(x_t, t) = f(x_{t'}, t'), \quad \forall (t, t')
+```
 
 **Property 2 (Boundary)**：
-$$f(x_\epsilon, \epsilon) = x_\epsilon$$
+```math
+f(x_\epsilon, \epsilon) = x_\epsilon
+```
 
 ---
 
@@ -55,15 +61,21 @@ $$f(x_\epsilon, \epsilon) = x_\epsilon$$
 ### 3.2 EDM 式 preconditioning
 
 Song et al. 2023 采用：
-$$f_\theta(x, t) = c_{\text{skip}}(t) \cdot x + c_{\text{out}}(t) \cdot F_\theta(c_{\text{in}}(t) \cdot x, c_{\text{noise}}(t))$$
+```math
+f_\theta(x, t) = c_{\text{skip}}(t) \cdot x + c_{\text{out}}(t) \cdot F_\theta(c_{\text{in}}(t) \cdot x, c_{\text{noise}}(t))
+```
 
 设计：
 - $`c_{\text{skip}}(\epsilon) = 1, c_{\text{out}}(\epsilon) = 0`$ → boundary 自动满足
 - $`c_{\text{in}}, c_{\text{noise}}`$ 用于输入归一化
 
 具体（VE-SDE 设置）：
-$$c_{\text{skip}}(t) = \frac{\sigma_{\text{data}}^2}{(t - \epsilon)^2 + \sigma_{\text{data}}^2}$$
-$$c_{\text{out}}(t) = \frac{\sigma_{\text{data}} \cdot (t - \epsilon)}{\sqrt{t^2 + \sigma_{\text{data}}^2}}$$
+```math
+c_{\text{skip}}(t) = \frac{\sigma_{\text{data}}^2}{(t - \epsilon)^2 + \sigma_{\text{data}}^2}
+```
+```math
+c_{\text{out}}(t) = \frac{\sigma_{\text{data}} \cdot (t - \epsilon)}{\sqrt{t^2 + \sigma_{\text{data}}^2}}
+```
 
 ---
 
@@ -85,7 +97,9 @@ $$c_{\text{out}}(t) = \frac{\sigma_{\text{data}} \cdot (t - \epsilon)}{\sqrt{t^2
 
 在离散化 $`\epsilon = t_1 < t_2 < \dots < t_N = T`$ 上：
 
-$$\mathcal{L}_{\text{CD}}(\theta) = \mathbb{E}_{n, x_0, \epsilon}\left[d\bigl(f_\theta(x_{t_{n+1}}, t_{n+1}), f_{\theta_-}(\hat x_{t_n}, t_n)\bigr)\right]$$
+```math
+\mathcal{L}_{\text{CD}}(\theta) = \mathbb{E}_{n, x_0, \epsilon}\left[d\bigl(f_\theta(x_{t_{n+1}}, t_{n+1}), f_{\theta_-}(\hat x_{t_n}, t_n)\bigr)\right]
+```
 
 其中：
 - $`x_{t_{n+1}}`$ 由 forward process 加噪 $`x_0`$ 得到
@@ -148,8 +162,12 @@ CT 不需要 teacher。
 Teacher 走一步 ODE 是为了**沿 ODE 轨迹**移动。CT 用一个 trick 模拟：
 
 **同一个 noise**，加到不同的 $`t`$ 水平上：
-$$x_{t_n} = x_0 + t_n \cdot \epsilon$$
-$$x_{t_{n+1}} = x_0 + t_{n+1} \cdot \epsilon$$
+```math
+x_{t_n} = x_0 + t_n \cdot \epsilon
+```
+```math
+x_{t_{n+1}} = x_0 + t_{n+1} \cdot \epsilon
+```
 
 （注意：同一个 $`\epsilon`$！）
 
@@ -159,7 +177,9 @@ $$x_{t_{n+1}} = x_0 + t_{n+1} \cdot \epsilon$$
 
 ### 5.2 训练目标
 
-$$\mathcal{L}_{\text{CT}}(\theta) = \mathbb{E}_{n, x_0, \epsilon}\left[d\bigl(f_\theta(x_0 + t_{n+1} \epsilon, t_{n+1}), f_{\theta_-}(x_0 + t_n \epsilon, t_n)\bigr)\right]$$
+```math
+\mathcal{L}_{\text{CT}}(\theta) = \mathbb{E}_{n, x_0, \epsilon}\left[d\bigl(f_\theta(x_0 + t_{n+1} \epsilon, t_{n+1}), f_{\theta_-}(x_0 + t_n \epsilon, t_n)\bigr)\right]
+```
 
 ---
 
@@ -195,7 +215,9 @@ $`d(x, y) = \text{LPIPS}(x, y)`$（用 pretrained VGG 抽特征算余弦距离�
 
 ### 6.3 Pseudo-Huber (Improved CT, Song 2024)
 
-$$d(x, y) = \sqrt{\|x-y\|^2 + c^2} - c$$
+```math
+d(x, y) = \sqrt{\|x-y\|^2 + c^2} - c
+```
 
 - 小误差时近似 L2
 - 大误差时近似 L1

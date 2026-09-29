@@ -18,14 +18,18 @@
 ### 1.1 无条件生成（前 7 讲）
 
 到目前为止学的 DDPM 都是无条件的：
-$$p_\theta(x_0) \approx p_{\text{data}}(x_0)$$
+```math
+p_\theta(x_0) \approx p_{\text{data}}(x_0)
+```
 
 **问题**：随机生成，无法控制内容。
 
 ### 1.2 条件生成
 
 引入条件 $`y`$（标签、文本、图像、动作等）：
-$$p_\theta(x_0 | y) \approx p_{\text{data}}(x_0 | y)$$
+```math
+p_\theta(x_0 | y) \approx p_{\text{data}}(x_0 | y)
+```
 
 **应用**：
 - 文本 → 图像（SD, Imagen）
@@ -58,7 +62,9 @@ def p_losses_conditional(model, x0, y, t, schedule):
 ### 3.1 核心思想
 
 利用贝叶斯：
-$$\nabla_x \log p(x | y) = \nabla_x \log p(x) + \nabla_x \log p(y | x)$$
+```math
+\nabla_x \log p(x | y) = \nabla_x \log p(x) + \nabla_x \log p(y | x)
+```
 
 其中：
 - $`\nabla_x \log p(x)`$：无条件 score（普通 DDPM）
@@ -72,7 +78,9 @@ $$\nabla_x \log p(x | y) = \nabla_x \log p(x) + \nabla_x \log p(y | x)$$
 
 实际操作中，加一个 scaling factor $`w`$ 控制 guidance 强度：
 
-$$\hat\epsilon_\theta(x_t, t, y) = \epsilon_\theta(x_t, t) - w \cdot \sqrt{1-\bar\alpha_t} \cdot \nabla_x \log p_\phi(y | x_t)$$
+```math
+\hat\epsilon_\theta(x_t, t, y) = \epsilon_\theta(x_t, t) - w \cdot \sqrt{1-\bar\alpha_t} \cdot \nabla_x \log p_\phi(y | x_t)
+```
 
 - $`w = 0`$：无条件
 - $`w = 1`$：等价于条件分布
@@ -106,10 +114,14 @@ Ho & Salimans 的精妙发现：**用同一个网络兼任条件与无条件预�
 
 推理时，把两者**线性组合**（外推）：
 
-$$\boxed{\hat\epsilon_\theta(x_t, t, y) = (1 + w) \cdot \epsilon_\theta(x_t, t, y) - w \cdot \epsilon_\theta(x_t, t, \emptyset)}$$
+```math
+\boxed{\hat\epsilon_\theta(x_t, t, y) = (1 + w) \cdot \epsilon_\theta(x_t, t, y) - w \cdot \epsilon_\theta(x_t, t, \emptyset)}
+```
 
 或等价写法（$`s = w + 1`$）：
-$$\hat\epsilon = \epsilon_{\text{uncond}} + s \cdot (\epsilon_{\text{cond}} - \epsilon_{\text{uncond}})$$
+```math
+\hat\epsilon = \epsilon_{\text{uncond}} + s \cdot (\epsilon_{\text{cond}} - \epsilon_{\text{uncond}})
+```
 
 - $`s = 0`$：无条件
 - $`s = 1`$：条件
@@ -178,10 +190,14 @@ eps_cond, eps_uncond = out.chunk(2, dim=0)
 CFG 形式上看起来"凭空"，实际上有严格数学含义。
 
 由贝叶斯：
-$$\log p(y | x) = \log p(x | y) - \log p(x) + \text{const}$$
+```math
+\log p(y | x) = \log p(x | y) - \log p(x) + \text{const}
+```
 
 对 $`x`$ 求梯度：
-$$\nabla_x \log p(y | x) = \nabla_x \log p(x | y) - \nabla_x \log p(x)$$
+```math
+\nabla_x \log p(y | x) = \nabla_x \log p(x | y) - \nabla_x \log p(x)
+```
 
 —— **隐式分类器**！它的梯度就是"条件 score 减无条件 score"。
 
@@ -300,7 +316,9 @@ SD 用户都用过 negative prompt（"low quality, blurry"）。它的数学含�
 
 **Negative prompt 是把 $`\emptyset`$ 替换为 $`y_{\text{neg}}`$**：
 
-$$\hat\epsilon = \epsilon_\theta(x, t, y_{\text{neg}}) + s \cdot (\epsilon_\theta(x, t, y_{\text{pos}}) - \epsilon_\theta(x, t, y_{\text{neg}}))$$
+```math
+\hat\epsilon = \epsilon_\theta(x, t, y_{\text{neg}}) + s \cdot (\epsilon_\theta(x, t, y_{\text{pos}}) - \epsilon_\theta(x, t, y_{\text{neg}}))
+```
 
 不再是"放大条件方向"，而是"放大从 $`y_{\text{neg}}`$ 到 $`y_{\text{pos}}`$ 的方向"。
 

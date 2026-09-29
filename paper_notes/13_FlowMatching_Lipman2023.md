@@ -32,13 +32,19 @@
 ## 三、核心公式
 
 ### FM loss（不可计算）
-$$\mathcal{L}_{\text{FM}} = \mathbb{E}_{t, x \sim p_t}\left[\|v_\theta(x, t) - u_t(x)\|^2\right]$$
+```math
+\mathcal{L}_{\text{FM}} = \mathbb{E}_{t, x \sim p_t}\left[\|v_\theta(x, t) - u_t(x)\|^2\right]
+```
 
 ### CFM loss（可计算）
-$$\mathcal{L}_{\text{CFM}} = \mathbb{E}_{t, x_1, x \sim p_t(\cdot|x_1)}\left[\|v_\theta(x, t) - u_t(x|x_1)\|^2\right]$$
+```math
+\mathcal{L}_{\text{CFM}} = \mathbb{E}_{t, x_1, x \sim p_t(\cdot|x_1)}\left[\|v_\theta(x, t) - u_t(x|x_1)\|^2\right]
+```
 
 ### 等价性
-$$\nabla_\theta \mathcal{L}_{\text{CFM}} = \nabla_\theta \mathcal{L}_{\text{FM}}$$
+```math
+\nabla_\theta \mathcal{L}_{\text{CFM}} = \nabla_\theta \mathcal{L}_{\text{FM}}
+```
 
 详见 derive_07。
 
@@ -49,7 +55,9 @@ $$\nabla_\theta \mathcal{L}_{\text{CFM}} = \nabla_\theta \mathcal{L}_{\text{FM}}
 $`x_t = (1-t) x_0 + t x_1`$，对应 $`u_t(x_t | x_1) = x_1 - x_0`$。
 
 训练 loss：
-$$\mathcal{L} = \mathbb{E}\left[\|v_\theta(x_t, t) - (x_1 - x_0)\|^2\right]$$
+```math
+\mathcal{L} = \mathbb{E}\left[\|v_\theta(x_t, t) - (x_1 - x_0)\|^2\right]
+```
 
 —— 极简。
 

@@ -34,9 +34,9 @@ L03 我们建立了：
 
 DDPM 假设反向过程也是高斯：
 
-$$
+```math
 p_\theta(x_{t-1} | x_t) = \mathcal{N}\bigl(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t, t)\bigr)
-$$
+```
 
 **两种简化**：
 
@@ -49,17 +49,17 @@ $$
 
 ### 2.2 完整生成过程
 
-$$
+```math
 p_\theta(x_{0:T}) = p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} | x_t)
-$$
+```
 
 其中 $`p(x_T) = \mathcal{N}(0, I)`$（先验，纯噪声）。
 
 最终生成 $`x_0`$ 的分布：
 
-$$
+```math
 p_\theta(x_0) = \int p_\theta(x_{0:T}) \mathrm{d}x_{1:T}
-$$
+```
 
 —— 我们想最大化这个 likelihood。但和 VAE 一样，直接计算积分不现实。所以转向 ELBO。
 
@@ -71,15 +71,15 @@ $$
 
 仿照 VAE，引入"变分后验"$`q(x_{1:T}|x_0)`$（这里就是已知的前向过程！）：
 
-$$
+```math
 \log p_\theta(x_0) \geq \mathbb{E}_{q(x_{1:T}|x_0)}\left[\log \frac{p_\theta(x_{0:T})}{q(x_{1:T}|x_0)}\right] =: \mathcal{L}
-$$
+```
 
 把分子分母展开：
 
-$$
+```math
 \mathcal{L} = \mathbb{E}_q\left[\log p(x_T) + \sum_{t=1}^T \log \frac{p_\theta(x_{t-1}|x_t)}{q(x_t|x_{t-1})}\right]
-$$
+```
 
 —— 这一步对 ELBO 公式不熟可以参考推导手稿 derive_03。
 
@@ -89,17 +89,17 @@ $$
 
 直接处理上面的 sum 复杂。**核心 trick** 是把 $`q(x_t|x_{t-1})`$ 用 Bayes 改写：
 
-$$
+```math
 q(x_t | x_{t-1}) = q(x_t | x_{t-1}, x_0) = \frac{q(x_{t-1} | x_t, x_0) \cdot q(x_t | x_0)}{q(x_{t-1} | x_0)}
-$$
+```
 
 代入 ELBO 后，经过一些代数操作（详见 derive_03），可以化简成：
 
-$$
+```math
 \mathcal{L} = \mathbb{E}_q\Bigl[\underbrace{D_{\mathrm{KL}}(q(x_T|x_0) \| p(x_T))}_{L_T}\Bigr]
 + \sum_{t=2}^T \mathbb{E}_q\Bigl[\underbrace{D_{\mathrm{KL}}(q(x_{t-1}|x_t, x_0) \| p_\theta(x_{t-1}|x_t))}_{L_{t-1}}\Bigr]
 - \mathbb{E}_q\Bigl[\underbrace{\log p_\theta(x_0|x_1)}_{L_0}\Bigr]
-$$
+```
 
 每项的含义：
 
@@ -122,15 +122,15 @@ $$
 
 两个等方差高斯的 KL：
 
-$$
+```math
 D_{\mathrm{KL}}(\mathcal{N}(\mu_1, \sigma^2 I) \| \mathcal{N}(\mu_2, \sigma^2 I)) = \frac{\| \mu_1 - \mu_2 \|^2}{2\sigma^2}
-$$
+```
 
 故：
 
-$$
+```math
 L_{t-1} = \mathbb{E}_q \left[ \frac{\| \tilde\mu_t(x_t, x_0) - \mu_\theta(x_t, t) \|^2}{2\sigma_t^2} \right]
-$$
+```
 
 —— **训练目标变成了 MSE**！
 
@@ -142,17 +142,17 @@ $$
 
 并把 $`\mu_\theta`$ **设计为相同的形式**：
 
-$$
+```math
 \mu_\theta(x_t, t) := \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon_\theta(x_t, t) \right)
-$$
+```
 
 —— 让网络预测 $`\epsilon`$ 而不是均值。
 
 代入 KL：
 
-$$
+```math
 L_{t-1} = \mathbb{E}_{x_0, \epsilon} \left[ \frac{\beta_t^2}{2 \sigma_t^2 \alpha_t (1-\bar\alpha_t)} \| \epsilon - \epsilon_\theta(x_t, t) \|^2 \right]
-$$
+```
 
 —— **核心目标**：噪声的 MSE，加一个时间相关的权重。
 
@@ -164,9 +164,9 @@ DDPM 论文进一步发现：**去掉权重，在所有 $`t`$ 上等权重训练
 
 最终极简训练目标：
 
-$$
+```math
 \boxed{\mathcal{L}_{\text{simple}}(\theta) = \mathbb{E}_{t \sim U[1,T], \, x_0, \, \epsilon \sim \mathcal{N}(0,I)} \left[ \| \epsilon - \epsilon_\theta(\sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon, t) \|^2 \right]}
-$$
+```
 
 **这就是 DDPM 的全部训练算法**。看似简单，背后是 ELBO + 高斯 KL + 重参数化的全套机器。
 
@@ -279,9 +279,9 @@ Time embedding t (B,) → MLP → broadcast 到每个 ResBlock
 
 **Sinusoidal embedding**（Transformer 同款）：
 
-$$
+```math
 \text{PE}(t)_{2k} = \sin\left(\frac{t}{10000^{2k/d}}\right), \quad \text{PE}(t)_{2k+1} = \cos\left(\frac{t}{10000^{2k/d}}\right)
-$$
+```
 
 **代码**：
 

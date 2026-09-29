@@ -12,7 +12,9 @@
 
 概率密度函数：
 
-$$p(x) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)$$
+```math
+p(x) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\right)
+```
 
 记号：$`x \sim \mathcal{N}(\mu, \sigma^2)`$。
 
@@ -23,10 +25,14 @@ $$p(x) = \frac{1}{\sqrt{2\pi}\sigma} \exp\left(-\frac{(x-\mu)^2}{2\sigma^2}\righ
 ### 1.2 高斯的线性变换（极其重要）
 
 **事实 1**：若 $`X \sim \mathcal{N}(\mu, \sigma^2)`$，$`Y = aX + b`$，则
-$$Y \sim \mathcal{N}(a\mu + b, a^2 \sigma^2)$$
+```math
+Y \sim \mathcal{N}(a\mu + b, a^2 \sigma^2)
+```
 
 **事实 2**：若 $`X_1 \sim \mathcal{N}(\mu_1, \sigma_1^2)`$、$`X_2 \sim \mathcal{N}(\mu_2, \sigma_2^2)`$、$`X_1 \perp X_2`$，则
-$$X_1 + X_2 \sim \mathcal{N}(\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)$$
+```math
+X_1 + X_2 \sim \mathcal{N}(\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)
+```
 
 **事实 3**：高斯的高斯还是高斯。即条件分布、边缘分布、联合分布都保持高斯性。
 
@@ -42,12 +48,16 @@ $$X_1 + X_2 \sim \mathcal{N}(\mu_1 + \mu_2, \sigma_1^2 + \sigma_2^2)$$
 
 **解决**：把随机性"外包"给一个固定分布，参数仅做确定性映射：
 
-$$x = \mu + \sigma \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, 1)$$
+```math
+x = \mu + \sigma \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, 1)
+```
 
 现在 $`\mu`$ 和 $`\sigma`$ 与 $`x`$ 之间是**确定性**的链条，梯度可以正常流过。
 
 **多维情况**：若想从 $`\mathcal{N}(\mu, \Sigma)`$ 采样，可以写成
-$$x = \mu + L \epsilon, \quad \epsilon \sim \mathcal{N}(0, I), \quad L L^\top = \Sigma$$
+```math
+x = \mu + L \epsilon, \quad \epsilon \sim \mathcal{N}(0, I), \quad L L^\top = \Sigma
+```
 
 > **🔑 在扩散模型中**：DDPM 的训练 loss 中含有 $`x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon`$ —— 这正是重参数化的应用。这个等式让我们可以"一步到位"采样到任意时间步 $`t`$。
 
@@ -57,13 +67,17 @@ $$x = \mu + L \epsilon, \quad \epsilon \sim \mathcal{N}(0, I), \quad L L^\top = 
 
 对于 $`x \in \mathbb{R}^d`$，多维高斯：
 
-$$p(x) = \frac{1}{(2\pi)^{d/2} |\Sigma|^{1/2}} \exp\left(-\frac{1}{2} (x-\mu)^\top \Sigma^{-1} (x-\mu)\right)$$
+```math
+p(x) = \frac{1}{(2\pi)^{d/2} |\Sigma|^{1/2}} \exp\left(-\frac{1}{2} (x-\mu)^\top \Sigma^{-1} (x-\mu)\right)
+```
 
 记号：$`x \sim \mathcal{N}(\mu, \Sigma)`$。
 
 **特殊情况**：当 $`\Sigma = \sigma^2 I`$（各维独立同方差），密度退化为：
 
-$$p(x) = \frac{1}{(2\pi\sigma^2)^{d/2}} \exp\left(-\frac{\|x-\mu\|^2}{2\sigma^2}\right)$$
+```math
+p(x) = \frac{1}{(2\pi\sigma^2)^{d/2}} \exp\left(-\frac{\|x-\mu\|^2}{2\sigma^2}\right)
+```
 
 > **🔑 在扩散模型中**：图像每个像素被独立加入相同方差的噪声，这就是 $`\Sigma = \sigma^2 I`$ 的情况。这让所有计算都退化为逐像素操作。
 
@@ -75,7 +89,9 @@ $$p(x) = \frac{1}{(2\pi\sigma^2)^{d/2}} \exp\left(-\frac{\|x-\mu\|^2}{2\sigma^2}
 
 对于两个概率分布 $`p(x)`$ 和 $`q(x)`$：
 
-$$D_{\mathrm{KL}}(p \| q) = \int p(x) \log \frac{p(x)}{q(x)} \mathrm{d}x = \mathbb{E}_{x \sim p}\left[\log \frac{p(x)}{q(x)}\right]$$
+```math
+D_{\mathrm{KL}}(p \| q) = \int p(x) \log \frac{p(x)}{q(x)} \mathrm{d}x = \mathbb{E}_{x \sim p}\left[\log \frac{p(x)}{q(x)}\right]
+```
 
 **直觉解读**：当我们用 $`q`$ 来近似真实分布 $`p`$ 时所付出的"额外信息代价"。
 
@@ -97,10 +113,14 @@ $$D_{\mathrm{KL}}(p \| q) = \int p(x) \log \frac{p(x)}{q(x)} \mathrm{d}x = \math
 
 两个一维高斯 $`\mathcal{N}(\mu_1, \sigma_1^2)`$ 和 $`\mathcal{N}(\mu_2, \sigma_2^2)`$：
 
-$$D_{\mathrm{KL}}\bigl(\mathcal{N}(\mu_1, \sigma_1^2) \| \mathcal{N}(\mu_2, \sigma_2^2)\bigr) = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1 - \mu_2)^2}{2\sigma_2^2} - \frac{1}{2}$$
+```math
+D_{\mathrm{KL}}\bigl(\mathcal{N}(\mu_1, \sigma_1^2) \| \mathcal{N}(\mu_2, \sigma_2^2)\bigr) = \log\frac{\sigma_2}{\sigma_1} + \frac{\sigma_1^2 + (\mu_1 - \mu_2)^2}{2\sigma_2^2} - \frac{1}{2}
+```
 
 **特例**：当 $`\sigma_1 = \sigma_2 = \sigma`$，化简为
-$$D_{\mathrm{KL}} = \frac{(\mu_1 - \mu_2)^2}{2\sigma^2}$$
+```math
+D_{\mathrm{KL}} = \frac{(\mu_1 - \mu_2)^2}{2\sigma^2}
+```
 
 —— 这是一个**带权重的 MSE**！这是 DDPM 训练目标可以简化为 MSE 的根源。
 
@@ -112,7 +132,9 @@ $$D_{\mathrm{KL}} = \frac{(\mu_1 - \mu_2)^2}{2\sigma^2}$$
 
 ### 3.1 全期望公式
 
-$$\mathbb{E}_X[g(X)] = \mathbb{E}_Y\bigl[\mathbb{E}_X[g(X) | Y]\bigr]$$
+```math
+\mathbb{E}_X[g(X)] = \mathbb{E}_Y\bigl[\mathbb{E}_X[g(X) | Y]\bigr]
+```
 
 直觉：把任何期望都可以"按某个变量分层"再组合。
 
@@ -122,7 +144,9 @@ $$\mathbb{E}_X[g(X)] = \mathbb{E}_Y\bigl[\mathbb{E}_X[g(X) | Y]\bigr]$$
 
 ### 3.2 边缘化
 
-$$p(x) = \int p(x, z) \mathrm{d}z = \int p(x | z) p(z) \mathrm{d}z$$
+```math
+p(x) = \int p(x, z) \mathrm{d}z = \int p(x | z) p(z) \mathrm{d}z
+```
 
 —— 把不关心的随机变量"积分掉"。
 
@@ -134,7 +158,9 @@ $$p(x) = \int p(x, z) \mathrm{d}z = \int p(x | z) p(z) \mathrm{d}z$$
 
 期望 $`\mathbb{E}_{x \sim p}[f(x)]`$ 通过样本估计：
 
-$$\mathbb{E}_{x \sim p}[f(x)] \approx \frac{1}{N} \sum_{i=1}^N f(x_i), \quad x_i \sim p$$
+```math
+\mathbb{E}_{x \sim p}[f(x)] \approx \frac{1}{N} \sum_{i=1}^N f(x_i), \quad x_i \sim p
+```
 
 **误差**：标准差按 $`1/\sqrt{N}`$ 衰减，与维度无关（这是 MC 方法的优势）。
 
@@ -146,7 +172,9 @@ $$\mathbb{E}_{x \sim p}[f(x)] \approx \frac{1}{N} \sum_{i=1}^N f(x_i), \quad x_i
 
 ### 4.1 贝叶斯公式
 
-$$p(\theta | x) = \frac{p(x | \theta) \cdot p(\theta)}{p(x)}$$
+```math
+p(\theta | x) = \frac{p(x | \theta) \cdot p(\theta)}{p(x)}
+```
 
 - $`p(\theta)`$：先验
 - $`p(x | \theta)`$：似然
@@ -169,7 +197,9 @@ $$p(\theta | x) = \frac{p(x | \theta) \cdot p(\theta)}{p(x)}$$
 
 我们想最大化数据的对数似然 $`\log p_\theta(x)`$。但当存在隐变量 $`z`$ 时，
 
-$$\log p_\theta(x) = \log \int p_\theta(x, z) \mathrm{d}z$$
+```math
+\log p_\theta(x) = \log \int p_\theta(x, z) \mathrm{d}z
+```
 
 这个积分通常无法解析或高效近似。
 
@@ -179,7 +209,7 @@ $$\log p_\theta(x) = \log \int p_\theta(x, z) \mathrm{d}z$$
 
 引入任意分布 $`q(z | x)`$，做如下变换：
 
-$$
+```math
 \begin{aligned}
 \log p_\theta(x) &= \log \int p_\theta(x, z) \mathrm{d}z \\
 &= \log \int q(z|x) \cdot \frac{p_\theta(x, z)}{q(z|x)} \mathrm{d}z \\
@@ -187,11 +217,13 @@ $$
 &\geq \mathbb{E}_{q}\left[\log \frac{p_\theta(x, z)}{q(z|x)}\right] \quad (\text{Jensen 不等式}) \\
 &= \underbrace{\mathbb{E}_{q}[\log p_\theta(x, z)] - \mathbb{E}_{q}[\log q(z|x)]}_{\text{ELBO}}
 \end{aligned}
-$$
+```
 
 **ELBO 的等价形式**（更常见的"重构 + 正则"形式）：
 
-$$\mathrm{ELBO}(x) = \mathbb{E}_{q(z|x)}[\log p_\theta(x|z)] - D_{\mathrm{KL}}(q(z|x) \| p(z))$$
+```math
+\mathrm{ELBO}(x) = \mathbb{E}_{q(z|x)}[\log p_\theta(x|z)] - D_{\mathrm{KL}}(q(z|x) \| p(z))
+```
 
 - 第一项：重构项（让 $`q`$ 编码下能重构出 $`x`$）
 - 第二项：正则项（让后验 $`q`$ 接近先验 $`p(z)`$）
@@ -200,7 +232,9 @@ $$\mathrm{ELBO}(x) = \mathbb{E}_{q(z|x)}[\log p_\theta(x|z)] - D_{\mathrm{KL}}(q
 
 ### 5.3 ELBO 与真实对数似然的差距
 
-$$\log p_\theta(x) - \mathrm{ELBO}(x) = D_{\mathrm{KL}}(q(z|x) \| p_\theta(z|x)) \geq 0$$
+```math
+\log p_\theta(x) - \mathrm{ELBO}(x) = D_{\mathrm{KL}}(q(z|x) \| p_\theta(z|x)) \geq 0
+```
 
 — 差距正好是变分后验和真实后验的 KL 散度。
 
@@ -216,7 +250,9 @@ $$\log p_\theta(x) - \mathrm{ELBO}(x) = D_{\mathrm{KL}}(q(z|x) \| p_\theta(z|x))
 
 ### 6.1 定义
 
-$$s(x) = \nabla_x \log p(x)$$
+```math
+s(x) = \nabla_x \log p(x)
+```
 
 **几何直觉**：score 是"指向高密度方向"的向量场。
 
@@ -228,7 +264,9 @@ $$s(x) = \nabla_x \log p(x)$$
 
 对 $`p(x) = \mathcal{N}(\mu, \sigma^2 I)`$：
 
-$$\nabla_x \log p(x) = -\frac{x - \mu}{\sigma^2}$$
+```math
+\nabla_x \log p(x) = -\frac{x - \mu}{\sigma^2}
+```
 
 —— 指向均值方向，距离均值越远 score 越大。
 
@@ -239,7 +277,9 @@ $$\nabla_x \log p(x) = -\frac{x - \mu}{\sigma^2}$$
 DDPM 中，$`x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon`$。
 
 可以证明：
-$$\nabla_{x_t} \log q(x_t | x_0) = -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}$$
+```math
+\nabla_{x_t} \log q(x_t | x_0) = -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}
+```
 
 —— **预测 score 和预测 noise 等价**，差一个时间相关的系数。
 
@@ -253,7 +293,9 @@ $$\nabla_{x_t} \log q(x_t | x_0) = -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}$$
 
 ### 7.1 Log-derivative trick
 
-$$\nabla_\theta \log p_\theta(x) = \frac{\nabla_\theta p_\theta(x)}{p_\theta(x)}$$
+```math
+\nabla_\theta \log p_\theta(x) = \frac{\nabla_\theta p_\theta(x)}{p_\theta(x)}
+```
 
 —— 对数 + 分数 ≡ 梯度。这在 score matching、policy gradient 中反复出现。
 
@@ -262,7 +304,9 @@ $$\nabla_\theta \log p_\theta(x) = \frac{\nabla_\theta p_\theta(x)}{p_\theta(x)}
 ### 7.2 Stein's identity（看不懂可跳过）
 
 对任何足够好的函数 $`\phi`$：
-$$\mathbb{E}_{x \sim p}[\nabla_x \log p(x) \cdot \phi(x) + \nabla_x \phi(x)] = 0$$
+```math
+\mathbb{E}_{x \sim p}[\nabla_x \log p(x) \cdot \phi(x) + \nabla_x \phi(x)] = 0
+```
 
 这是 score matching 的核心理论基础（让 score 估计避开了求归一化常数 $`Z`$ 的问题）。
 

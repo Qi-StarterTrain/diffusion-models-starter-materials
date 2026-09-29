@@ -32,12 +32,16 @@
 ## 三、核心公式
 
 ### Non-Markovian Forward
-$$q_\sigma(x_{t-1} | x_t, x_0) = \mathcal{N}(\sqrt{\bar\alpha_{t-1}} x_0 + \sqrt{1-\bar\alpha_{t-1}-\sigma_t^2} \cdot \epsilon, \sigma_t^2 I)$$
+```math
+q_\sigma(x_{t-1} | x_t, x_0) = \mathcal{N}(\sqrt{\bar\alpha_{t-1}} x_0 + \sqrt{1-\bar\alpha_{t-1}-\sigma_t^2} \cdot \epsilon, \sigma_t^2 I)
+```
 
 其中 $`\epsilon`$ 由 $`x_t, x_0`$ 决定。
 
 ### DDIM Update（$`\sigma=0`$）
-$$x_{t-1} = \sqrt{\bar\alpha_{t-1}} \hat x_0(x_t) + \sqrt{1-\bar\alpha_{t-1}} \epsilon_\theta(x_t, t)$$
+```math
+x_{t-1} = \sqrt{\bar\alpha_{t-1}} \hat x_0(x_t) + \sqrt{1-\bar\alpha_{t-1}} \epsilon_\theta(x_t, t)
+```
 
 其中 $`\hat x_0(x_t) = (x_t - \sqrt{1-\bar\alpha_t} \epsilon_\theta) / \sqrt{\bar\alpha_t}`$。
 

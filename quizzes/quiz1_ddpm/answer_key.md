@@ -68,14 +68,20 @@ Linear schedule 下 $`\beta_t \in [10^{-4}, 0.02]`$。
 **Base case ($`t=1`$)**：$`x_1 = \sqrt{\alpha_1} x_0 + \sqrt{1-\alpha_1} \epsilon_1`$，由 $`\bar\alpha_1 = \alpha_1`$ 命题成立。
 
 **Inductive step**：设
-$$x_{t-1} = \sqrt{\bar\alpha_{t-1}} x_0 + \sqrt{1-\bar\alpha_{t-1}} \tilde\epsilon$$
+```math
+x_{t-1} = \sqrt{\bar\alpha_{t-1}} x_0 + \sqrt{1-\bar\alpha_{t-1}} \tilde\epsilon
+```
 
 代入 $`x_t = \sqrt{\alpha_t} x_{t-1} + \sqrt{1-\alpha_t} \epsilon_t`$：
 
-$$x_t = \sqrt{\alpha_t \bar\alpha_{t-1}} x_0 + \sqrt{\alpha_t(1-\bar\alpha_{t-1})} \tilde\epsilon + \sqrt{1-\alpha_t} \epsilon_t$$
+```math
+x_t = \sqrt{\alpha_t \bar\alpha_{t-1}} x_0 + \sqrt{\alpha_t(1-\bar\alpha_{t-1})} \tilde\epsilon + \sqrt{1-\alpha_t} \epsilon_t
+```
 
 注意 $`\alpha_t \bar\alpha_{t-1} = \bar\alpha_t`$。两个独立高斯之和：方差相加：
-$$\alpha_t(1-\bar\alpha_{t-1}) + (1-\alpha_t) = 1 - \bar\alpha_t$$
+```math
+\alpha_t(1-\bar\alpha_{t-1}) + (1-\alpha_t) = 1 - \bar\alpha_t
+```
 
 所以 $`x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon`$（$`\epsilon \sim \mathcal{N}(0, I)`$）。∎
 
@@ -85,17 +91,23 @@ $$\alpha_t(1-\bar\alpha_{t-1}) + (1-\alpha_t) = 1 - \bar\alpha_t$$
 
 ### Q8
 由贝叶斯：
-$$q(x_{t-1} | x_t, x_0) = \frac{q(x_t | x_{t-1}) q(x_{t-1} | x_0)}{q(x_t | x_0)}$$
+```math
+q(x_{t-1} | x_t, x_0) = \frac{q(x_t | x_{t-1}) q(x_{t-1} | x_0)}{q(x_t | x_0)}
+```
 
 三个分子分母都是高斯。在指数里把所有含 $`x_{t-1}`$ 的项取出：
 
 二次项系数：$`-\frac{1}{2}\left[\frac{\alpha_t}{\beta_t} + \frac{1}{1-\bar\alpha_{t-1}}\right] \|x_{t-1}\|^2`$
 
 化简该系数 = $`-\frac{1-\bar\alpha_t}{2\beta_t(1-\bar\alpha_{t-1})}`$，即逆方差：
-$$\tilde\beta_t = \frac{\beta_t(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}$$
+```math
+\tilde\beta_t = \frac{\beta_t(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}
+```
 
 一次项配方法给出：
-$$\tilde\mu_t = \frac{\sqrt{\bar\alpha_{t-1}}\beta_t}{1-\bar\alpha_t} x_0 + \frac{\sqrt{\alpha_t}(1-\bar\alpha_{t-1})}{1-\bar\alpha_t} x_t$$
+```math
+\tilde\mu_t = \frac{\sqrt{\bar\alpha_{t-1}}\beta_t}{1-\bar\alpha_t} x_0 + \frac{\sqrt{\alpha_t}(1-\bar\alpha_{t-1})}{1-\bar\alpha_t} x_t
+```
 
 （参考 derive_02 §3 完整推导）
 
@@ -103,13 +115,19 @@ $$\tilde\mu_t = \frac{\sqrt{\bar\alpha_{t-1}}\beta_t}{1-\bar\alpha_t} x_0 + \fra
 
 ### Q9
 由 derive_02 §3.3，$`\tilde\mu_t`$ 用 $`\epsilon`$ 写成：
-$$\tilde\mu_t = \frac{1}{\sqrt{\alpha_t}}\left(x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon\right)$$
+```math
+\tilde\mu_t = \frac{1}{\sqrt{\alpha_t}}\left(x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \epsilon\right)
+```
 
 $`\mu_\theta`$ 同样形式但 $`\epsilon \to \epsilon_\theta`$。所以：
-$$\tilde\mu_t - \mu_\theta = \frac{1}{\sqrt{\alpha_t}} \cdot \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \cdot (\epsilon_\theta - \epsilon)$$
+```math
+\tilde\mu_t - \mu_\theta = \frac{1}{\sqrt{\alpha_t}} \cdot \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \cdot (\epsilon_\theta - \epsilon)
+```
 
 模长平方：
-$$\|\tilde\mu_t - \mu_\theta\|^2 = \frac{\beta_t^2}{\alpha_t(1-\bar\alpha_t)} \cdot \|\epsilon - \epsilon_\theta\|^2$$
+```math
+\|\tilde\mu_t - \mu_\theta\|^2 = \frac{\beta_t^2}{\alpha_t(1-\bar\alpha_t)} \cdot \|\epsilon - \epsilon_\theta\|^2
+```
 
 **系数**：$`\dfrac{\beta_t^2}{\alpha_t(1-\bar\alpha_t)}`$，只依赖 $`t`$。
 
@@ -117,13 +135,19 @@ $$\|\tilde\mu_t - \mu_\theta\|^2 = \frac{\beta_t^2}{\alpha_t(1-\bar\alpha_t)} \c
 
 ### Q10
 (a) 由 $`q(x_t|x_0) = \mathcal{N}(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I)`$：
-$$\nabla_{x_t} \log q(x_t|x_0) = -\frac{x_t - \sqrt{\bar\alpha_t} x_0}{1-\bar\alpha_t}$$
+```math
+\nabla_{x_t} \log q(x_t|x_0) = -\frac{x_t - \sqrt{\bar\alpha_t} x_0}{1-\bar\alpha_t}
+```
 
 (b) 用 $`x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon`$ 反推：
-$$x_t - \sqrt{\bar\alpha_t} x_0 = \sqrt{1-\bar\alpha_t} \epsilon$$
+```math
+x_t - \sqrt{\bar\alpha_t} x_0 = \sqrt{1-\bar\alpha_t} \epsilon
+```
 
 代入：
-$$\nabla_{x_t} \log q(x_t|x_0) = -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}$$
+```math
+\nabla_{x_t} \log q(x_t|x_0) = -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}
+```
 
 所以 $`s_\theta = -\epsilon_\theta / \sqrt{1-\bar\alpha_t}`$，**两者训练目标只差一个时间相关常数**。
 

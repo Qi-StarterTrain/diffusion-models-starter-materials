@@ -71,7 +71,9 @@ Stable Diffusion 中"scaling factor = 0.18215"是怎么来的？为什么需要�
 **CFG 公式推导**：
 
 从贝叶斯分解 $`\nabla_x \log p(x|y) = \nabla_x \log p(y|x) + \nabla_x \log p(x)`$ 出发，推出 CFG 公式：
-$$\hat\epsilon = \epsilon_\theta(x, t, \emptyset) + s \cdot (\epsilon_\theta(x, t, y) - \epsilon_\theta(x, t, \emptyset))$$
+```math
+\hat\epsilon = \epsilon_\theta(x, t, \emptyset) + s \cdot (\epsilon_\theta(x, t, y) - \epsilon_\theta(x, t, \emptyset))
+```
 
 要求显式写出"用 $`\nabla \log p(x|y) - \nabla \log p(x)`$ 替代 $`\nabla \log p(y|x)`$"这一关键步骤。
 
@@ -81,7 +83,9 @@ $$\hat\epsilon = \epsilon_\theta(x, t, \emptyset) + s \cdot (\epsilon_\theta(x, 
 **Probability flow ODE 推导**：
 
 给定 SDE $`dx = f(x, t) dt + g(t) dW`$（对应密度 $`p_t`$），证明 ODE
-$$\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)$$
+```math
+\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)
+```
 的解在每个时间 $`t`$ 与原 SDE 的边缘分布相同。
 
 提示：用 FPE 形式，对比两个 transport equation。

@@ -14,7 +14,9 @@
 
 L04 我们已经看到 DDPM 训练目标极其简洁：
 
-$$\mathcal{L}_{\text{simple}} = \mathbb{E}_{t, x_0, \epsilon} \left[ \| \epsilon - \epsilon_\theta(x_t, t) \|^2 \right]$$
+```math
+\mathcal{L}_{\text{simple}} = \mathbb{E}_{t, x_0, \epsilon} \left[ \| \epsilon - \epsilon_\theta(x_t, t) \|^2 \right]
+```
 
 DDPM 在 FID 上已经追平甚至超过 GAN。但 Nichol & Dhariwal 指出了**两个未解决的问题**：
 
@@ -41,7 +43,9 @@ Improved DDPM 的整体哲学：**找到既能保证 FID、又能改进 NLL 的�
 ### 2.1 Linear Schedule 的问题
 
 回顾 L03：
-$$\beta_t = \beta_{\min} + \frac{t-1}{T-1}(\beta_{\max} - \beta_{\min})$$
+```math
+\beta_t = \beta_{\min} + \frac{t-1}{T-1}(\beta_{\max} - \beta_{\min})
+```
 
 可视化 $`\bar\alpha_t`$ 随 $`t`$ 的变化：
 
@@ -67,12 +71,16 @@ $$\beta_t = \beta_{\min} + \frac{t-1}{T-1}(\beta_{\max} - \beta_{\min})$$
 
 Nichol & Dhariwal 的想法：**让 $`\bar\alpha_t`$ 在中间区域下降得更平缓**。
 
-$$\bar\alpha_t = \frac{f(t)}{f(0)}, \quad f(t) = \cos^2\left(\frac{t/T + s}{1 + s} \cdot \frac{\pi}{2}\right)$$
+```math
+\bar\alpha_t = \frac{f(t)}{f(0)}, \quad f(t) = \cos^2\left(\frac{t/T + s}{1 + s} \cdot \frac{\pi}{2}\right)
+```
 
 其中 $`s = 0.008`$ 是小偏移量，防止 $`t=0`$ 处导数为零。
 
 由 $`\bar\alpha_t`$ 反推 $`\beta_t`$：
-$$\beta_t = 1 - \frac{\bar\alpha_t}{\bar\alpha_{t-1}}$$
+```math
+\beta_t = 1 - \frac{\bar\alpha_t}{\bar\alpha_{t-1}}
+```
 
 **实践**：把 $`\beta_t`$ clip 到 $`(10^{-5}, 0.999)`$，防止数值问题。
 
@@ -136,7 +144,9 @@ L04 中我们提到，DDPM 把反向方差固定为 $`\sigma_t^2 = \beta_t`$ 或
 
 直接让网络预测 $`\Sigma_\theta`$ 很难（要保证正定）。Nichol & Dhariwal 提出：**让网络预测一个标量 $`v`$，在 log 空间插值**：
 
-$$\Sigma_\theta(x_t, t) = \exp\left(v \cdot \log \beta_t + (1 - v) \cdot \log \tilde\beta_t\right)$$
+```math
+\Sigma_\theta(x_t, t) = \exp\left(v \cdot \log \beta_t + (1 - v) \cdot \log \tilde\beta_t\right)
+```
 
 其中 $`v = v_\theta(x_t, t) \in [0, 1]`$（通过 sigmoid 输出）。
 
@@ -167,7 +177,9 @@ class UNet(nn.Module):
 如果只用 simplified loss，方差预测网络拿不到梯度。
 
 **Hybrid loss**：
-$$\mathcal{L}_{\text{hybrid}} = \mathcal{L}_{\text{simple}} + \lambda \cdot \mathcal{L}_{\text{vlb}}$$
+```math
+\mathcal{L}_{\text{hybrid}} = \mathcal{L}_{\text{simple}} + \lambda \cdot \mathcal{L}_{\text{vlb}}
+```
 
 其中：
 - $`\mathcal{L}_{\text{simple}}`$：噪声预测 MSE（对应 $`\epsilon`$ 通道）
@@ -220,7 +232,9 @@ loss vs t (CIFAR-10):
 
 让"困难"时间步被更频繁采样：
 
-$$p(t) \propto \sqrt{\mathbb{E}[\mathcal{L}_t^2]}$$
+```math
+p(t) \propto \sqrt{\mathbb{E}[\mathcal{L}_t^2]}
+```
 
 实现：
 1. 维护每个 $`t`$ 的近期 loss 历史（如最近 10 次）
@@ -247,7 +261,9 @@ class LossAwareSampler:
 ```
 
 训练中使用 importance weights 校正 loss：
-$$\mathcal{L} = \frac{1}{B} \sum_i w_i \cdot \mathcal{L}_{t_i}$$
+```math
+\mathcal{L} = \frac{1}{B} \sum_i w_i \cdot \mathcal{L}_{t_i}
+```
 
 ---
 

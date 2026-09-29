@@ -89,14 +89,18 @@ CM 是"扩散稳定性 + GAN 单步"的折中。
 **(a) 推导 $`u_t(x_t | x_1)`$**：
 
 设 $`x_t = (1-t) x_0 + t x_1`$。对 $`t`$ 求全微分：
-$$\frac{d x_t}{dt} = -x_0 + x_1 = x_1 - x_0$$
+```math
+\frac{d x_t}{dt} = -x_0 + x_1 = x_1 - x_0
+```
 
 由 $`u_t(x_t|x_1) \equiv \frac{d x_t}{dt}`$（条件 ODE 的速度场），所以 $`u_t(x_t|x_1) = x_1 - x_0`$。
 
 ---
 
 **(b) CFM loss**：
-$$\mathcal{L}_{\text{CFM}}(\theta) = \mathbb{E}_{t \sim U[0,1], x_1 \sim p_{\text{data}}, x_0 \sim \mathcal{N}(0, I)}\left[\|v_\theta(x_t, t) - (x_1 - x_0)\|^2\right]$$
+```math
+\mathcal{L}_{\text{CFM}}(\theta) = \mathbb{E}_{t \sim U[0,1], x_1 \sim p_{\text{data}}, x_0 \sim \mathcal{N}(0, I)}\left[\|v_\theta(x_t, t) - (x_1 - x_0)\|^2\right]
+```
 
 其中 $`x_t = (1-t) x_0 + t x_1`$。
 
@@ -105,7 +109,9 @@ $$\mathcal{L}_{\text{CFM}}(\theta) = \mathbb{E}_{t \sim U[0,1], x_1 \sim p_{\tex
 **(c) 等价性直觉**：
 
 CFM loss 与 FM loss 数值上差一个常数（与 $`\theta`$ 无关）：
-$$\mathcal{L}_{\text{CFM}} - \mathcal{L}_{\text{FM}} = \mathbb{E}[\|u_t(x|x_1)\|^2 - \|u_t(x)\|^2]$$
+```math
+\mathcal{L}_{\text{CFM}} - \mathcal{L}_{\text{FM}} = \mathbb{E}[\|u_t(x|x_1)\|^2 - \|u_t(x)\|^2]
+```
 
 —— 这一项不依赖 $`\theta`$，所以对 $`\theta`$ 偏导为 0。两个 loss 的 gradient 相同。
 
@@ -124,7 +130,9 @@ $$\mathcal{L}_{\text{CFM}} - \mathcal{L}_{\text{FM}} = \mathbb{E}[\|u_t(x|x_1)\|
 
 **(b) CD loss**：
 
-$$\mathcal{L}_{\text{CD}} = \mathbb{E}_{n, x_0, \epsilon}\bigl[d(f_\theta(x_{t_{n+1}}, t_{n+1}), f_{\theta^-}(\hat x_{t_n}, t_n))\bigr]$$
+```math
+\mathcal{L}_{\text{CD}} = \mathbb{E}_{n, x_0, \epsilon}\bigl[d(f_\theta(x_{t_{n+1}}, t_{n+1}), f_{\theta^-}(\hat x_{t_n}, t_n))\bigr]
+```
 
 其中 $`\hat x_{t_n}`$ 是 teacher 走一步 ODE 得到。
 
@@ -135,7 +143,9 @@ $$\mathcal{L}_{\text{CD}} = \mathbb{E}_{n, x_0, \epsilon}\bigl[d(f_\theta(x_{t_{
 **(c) CT trick**：
 
 CT 用"同一个 noise $`\epsilon`$，加到不同的 $`t`$ 水平上"：
-$$x_{t_n} = x_0 + t_n \epsilon, \quad x_{t_{n+1}} = x_0 + t_{n+1} \epsilon$$
+```math
+x_{t_n} = x_0 + t_n \epsilon, \quad x_{t_{n+1}} = x_0 + t_{n+1} \epsilon
+```
 
 (同一 $`\epsilon`$！) 
 

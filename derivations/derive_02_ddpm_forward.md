@@ -10,11 +10,15 @@
 
 ### 1.1 Forward 单步定义
 
-$$q(x_t | x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t} \cdot x_{t-1}, \beta_t \cdot I)$$
+```math
+q(x_t | x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t} \cdot x_{t-1}, \beta_t \cdot I)
+```
 
 等价的重参数化形式：
 
-$$x_t = \sqrt{1-\beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t, \quad \epsilon_t \sim \mathcal{N}(0, I)$$
+```math
+x_t = \sqrt{1-\beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t, \quad \epsilon_t \sim \mathcal{N}(0, I)
+```
 
 ### 1.2 符号
 
@@ -27,11 +31,15 @@ $$x_t = \sqrt{1-\beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t, \quad 
 
 ### 2.1 命题
 
-$$q(x_t | x_0) = \mathcal{N}\bigl(x_t; \sqrt{\bar\alpha_t} \cdot x_0, (1 - \bar\alpha_t) \cdot I\bigr)$$
+```math
+q(x_t | x_0) = \mathcal{N}\bigl(x_t; \sqrt{\bar\alpha_t} \cdot x_0, (1 - \bar\alpha_t) \cdot I\bigr)
+```
 
 等价地，**重参数化形式**：
 
-$$x_t = \sqrt{\bar\alpha_t} \cdot x_0 + \sqrt{1-\bar\alpha_t} \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$$
+```math
+x_t = \sqrt{\bar\alpha_t} \cdot x_0 + \sqrt{1-\bar\alpha_t} \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)
+```
 
 ---
 
@@ -40,27 +48,33 @@ $$x_t = \sqrt{\bar\alpha_t} \cdot x_0 + \sqrt{1-\bar\alpha_t} \cdot \epsilon, \q
 **Base case ($`t=1`$)**：
 
 由定义，
-$$x_1 = \sqrt{\alpha_1} \cdot x_0 + \sqrt{1-\alpha_1} \cdot \epsilon_1, \quad \epsilon_1 \sim \mathcal{N}(0, I)$$
+```math
+x_1 = \sqrt{\alpha_1} \cdot x_0 + \sqrt{1-\alpha_1} \cdot \epsilon_1, \quad \epsilon_1 \sim \mathcal{N}(0, I)
+```
 
 由 $`\bar\alpha_1 = \alpha_1`$，所以
-$$x_1 = \sqrt{\bar\alpha_1} \cdot x_0 + \sqrt{1-\bar\alpha_1} \cdot \epsilon_1$$
+```math
+x_1 = \sqrt{\bar\alpha_1} \cdot x_0 + \sqrt{1-\bar\alpha_1} \cdot \epsilon_1
+```
 
 命题成立。✓
 
 ---
 
 **Inductive step**：假设对 $`t-1`$ 命题成立，即
-$$x_{t-1} = \sqrt{\bar\alpha_{t-1}} \cdot x_0 + \sqrt{1-\bar\alpha_{t-1}} \cdot \tilde\epsilon$$
+```math
+x_{t-1} = \sqrt{\bar\alpha_{t-1}} \cdot x_0 + \sqrt{1-\bar\alpha_{t-1}} \cdot \tilde\epsilon
+```
 其中 $`\tilde\epsilon \sim \mathcal{N}(0, I)`$（独立于历史噪声）。
 
 代入单步公式：
-$$
+```math
 \begin{aligned}
 x_t &= \sqrt{\alpha_t} \cdot x_{t-1} + \sqrt{1-\alpha_t} \cdot \epsilon_t \\
 &= \sqrt{\alpha_t} \cdot \left(\sqrt{\bar\alpha_{t-1}} x_0 + \sqrt{1-\bar\alpha_{t-1}} \tilde\epsilon\right) + \sqrt{1-\alpha_t} \cdot \epsilon_t \\
 &= \sqrt{\alpha_t \bar\alpha_{t-1}} \cdot x_0 + \underbrace{\sqrt{\alpha_t(1-\bar\alpha_{t-1})} \cdot \tilde\epsilon + \sqrt{1-\alpha_t} \cdot \epsilon_t}_{=: A}
 \end{aligned}
-$$
+```
 
 注意 $`\alpha_t \cdot \bar\alpha_{t-1} = \bar\alpha_t`$（定义）。
 
@@ -74,19 +88,27 @@ $`A`$ 是两个**独立**高斯的线性组合：
 
 由"独立高斯之和仍是高斯，方差相加"：
 
-$$A \sim \mathcal{N}(0, \sigma^2 I)$$
+```math
+A \sim \mathcal{N}(0, \sigma^2 I)
+```
 
 其中
-$$\sigma^2 = \alpha_t(1-\bar\alpha_{t-1}) + (1-\alpha_t) = \alpha_t - \alpha_t \bar\alpha_{t-1} + 1 - \alpha_t = 1 - \bar\alpha_t$$
+```math
+\sigma^2 = \alpha_t(1-\bar\alpha_{t-1}) + (1-\alpha_t) = \alpha_t - \alpha_t \bar\alpha_{t-1} + 1 - \alpha_t = 1 - \bar\alpha_t
+```
 
 所以可以写
-$$A = \sqrt{1 - \bar\alpha_t} \cdot \epsilon$$
+```math
+A = \sqrt{1 - \bar\alpha_t} \cdot \epsilon
+```
 其中 $`\epsilon \sim \mathcal{N}(0, I)`$（注意：这个 $`\epsilon`$ 已不再是单个 $`\epsilon_t`$ 或 $`\tilde\epsilon`$，而是它们的"等效合并"）。
 
 ---
 
 **结论**：
-$$x_t = \sqrt{\bar\alpha_t} \cdot x_0 + \sqrt{1-\bar\alpha_t} \cdot \epsilon$$
+```math
+x_t = \sqrt{\bar\alpha_t} \cdot x_0 + \sqrt{1-\bar\alpha_t} \cdot \epsilon
+```
 
 由 $`\epsilon \sim \mathcal{N}(0, I)`$，命题对 $`t`$ 成立。
 
@@ -107,69 +129,87 @@ $`x_t`$ 是 $`x_0`$ 与噪声的线性组合：
 
 ### 3.1 命题
 
-$$q(x_{t-1} | x_t, x_0) = \mathcal{N}\bigl(x_{t-1}; \tilde\mu_t(x_t, x_0), \tilde\beta_t \cdot I\bigr)$$
+```math
+q(x_{t-1} | x_t, x_0) = \mathcal{N}\bigl(x_{t-1}; \tilde\mu_t(x_t, x_0), \tilde\beta_t \cdot I\bigr)
+```
 
 其中
-$$\tilde\mu_t(x_t, x_0) = \frac{\sqrt{\bar\alpha_{t-1}} \beta_t}{1 - \bar\alpha_t} \cdot x_0 + \frac{\sqrt{\alpha_t}(1 - \bar\alpha_{t-1})}{1 - \bar\alpha_t} \cdot x_t$$
+```math
+\tilde\mu_t(x_t, x_0) = \frac{\sqrt{\bar\alpha_{t-1}} \beta_t}{1 - \bar\alpha_t} \cdot x_0 + \frac{\sqrt{\alpha_t}(1 - \bar\alpha_{t-1})}{1 - \bar\alpha_t} \cdot x_t
+```
 
-$$\tilde\beta_t = \frac{1 - \bar\alpha_{t-1}}{1 - \bar\alpha_t} \cdot \beta_t$$
+```math
+\tilde\beta_t = \frac{1 - \bar\alpha_{t-1}}{1 - \bar\alpha_t} \cdot \beta_t
+```
 
 ---
 
 ### 3.2 推导（贝叶斯定理 + 高斯运算）
 
 由贝叶斯：
-$$q(x_{t-1} | x_t, x_0) = \frac{q(x_t | x_{t-1}, x_0) \cdot q(x_{t-1} | x_0)}{q(x_t | x_0)}$$
+```math
+q(x_{t-1} | x_t, x_0) = \frac{q(x_t | x_{t-1}, x_0) \cdot q(x_{t-1} | x_0)}{q(x_t | x_0)}
+```
 
 由马尔可夫性，$`q(x_t | x_{t-1}, x_0) = q(x_t | x_{t-1})`$。
 
 把三个高斯密度写出来：
 
-$$q(x_t | x_{t-1}) \propto \exp\left(-\frac{\|x_t - \sqrt{\alpha_t} x_{t-1}\|^2}{2\beta_t}\right)$$
+```math
+q(x_t | x_{t-1}) \propto \exp\left(-\frac{\|x_t - \sqrt{\alpha_t} x_{t-1}\|^2}{2\beta_t}\right)
+```
 
-$$q(x_{t-1} | x_0) \propto \exp\left(-\frac{\|x_{t-1} - \sqrt{\bar\alpha_{t-1}} x_0\|^2}{2(1-\bar\alpha_{t-1})}\right)$$
+```math
+q(x_{t-1} | x_0) \propto \exp\left(-\frac{\|x_{t-1} - \sqrt{\bar\alpha_{t-1}} x_0\|^2}{2(1-\bar\alpha_{t-1})}\right)
+```
 
-$$q(x_t | x_0) \propto \exp\left(-\frac{\|x_t - \sqrt{\bar\alpha_t} x_0\|^2}{2(1-\bar\alpha_t)}\right)$$
+```math
+q(x_t | x_0) \propto \exp\left(-\frac{\|x_t - \sqrt{\bar\alpha_t} x_0\|^2}{2(1-\bar\alpha_t)}\right)
+```
 
 ---
 
 **指数中的项汇总**（把 $`x_{t-1}`$ 看作变量）：
 
-$$\text{exponent} = -\frac{\|x_t - \sqrt{\alpha_t} x_{t-1}\|^2}{2\beta_t} - \frac{\|x_{t-1} - \sqrt{\bar\alpha_{t-1}} x_0\|^2}{2(1-\bar\alpha_{t-1})} + \text{terms not involving } x_{t-1}$$
+```math
+\text{exponent} = -\frac{\|x_t - \sqrt{\alpha_t} x_{t-1}\|^2}{2\beta_t} - \frac{\|x_{t-1} - \sqrt{\bar\alpha_{t-1}} x_0\|^2}{2(1-\bar\alpha_{t-1})} + \text{terms not involving } x_{t-1}
+```
 
 把含 $`x_{t-1}`$ 的项展开：
 
-$$
+```math
 \begin{aligned}
 &-\frac{\|x_t - \sqrt{\alpha_t} x_{t-1}\|^2}{2\beta_t}
 = -\frac{1}{2\beta_t}\left[\alpha_t \|x_{t-1}\|^2 - 2\sqrt{\alpha_t} x_t^\top x_{t-1} + \|x_t\|^2\right] \\
 &-\frac{\|x_{t-1} - \sqrt{\bar\alpha_{t-1}} x_0\|^2}{2(1-\bar\alpha_{t-1})}
 = -\frac{1}{2(1-\bar\alpha_{t-1})}\left[\|x_{t-1}\|^2 - 2\sqrt{\bar\alpha_{t-1}} x_0^\top x_{t-1} + \|x_0\|^2 \bar\alpha_{t-1}\right]
 \end{aligned}
-$$
+```
 
 合并含 $`\|x_{t-1}\|^2`$ 的项：
 
-$$
+```math
 -\frac{1}{2}\left[\frac{\alpha_t}{\beta_t} + \frac{1}{1-\bar\alpha_{t-1}}\right] \|x_{t-1}\|^2
-$$
+```
 
 化简系数：
-$$
+```math
 \frac{\alpha_t}{\beta_t} + \frac{1}{1-\bar\alpha_{t-1}}
 = \frac{\alpha_t(1-\bar\alpha_{t-1}) + \beta_t}{\beta_t(1-\bar\alpha_{t-1})}
-$$
+```
 
 注意到 $`\alpha_t(1-\bar\alpha_{t-1}) + \beta_t = \alpha_t - \alpha_t \bar\alpha_{t-1} + 1 - \alpha_t = 1 - \bar\alpha_t`$。
 
 所以系数为：
-$$
+```math
 \frac{1 - \bar\alpha_t}{\beta_t(1-\bar\alpha_{t-1})}
-$$
+```
 
 —— 这是逆方差 $`1/\tilde\beta_t`$！得到：
 
-$$\tilde\beta_t = \frac{\beta_t(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}$$
+```math
+\tilde\beta_t = \frac{\beta_t(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}
+```
 
 ✓ 与命题一致。
 
@@ -177,24 +217,28 @@ $$\tilde\beta_t = \frac{\beta_t(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}$$
 
 **合并含 $`x_{t-1}`$ 的线性项**：
 
-$$
+```math
 \frac{\sqrt{\alpha_t}}{\beta_t} x_t^\top x_{t-1} + \frac{\sqrt{\bar\alpha_{t-1}}}{1-\bar\alpha_{t-1}} x_0^\top x_{t-1}
-$$
+```
 
 **配方法**：上式整体形式是 $`-\frac{1}{2\tilde\beta_t} \|x_{t-1} - \tilde\mu_t\|^2 + \text{const}`$，所以
-$$\frac{\tilde\mu_t}{\tilde\beta_t} = \frac{\sqrt{\alpha_t}}{\beta_t} x_t + \frac{\sqrt{\bar\alpha_{t-1}}}{1-\bar\alpha_{t-1}} x_0$$
+```math
+\frac{\tilde\mu_t}{\tilde\beta_t} = \frac{\sqrt{\alpha_t}}{\beta_t} x_t + \frac{\sqrt{\bar\alpha_{t-1}}}{1-\bar\alpha_{t-1}} x_0
+```
 
 即
-$$\tilde\mu_t = \tilde\beta_t \cdot \left[\frac{\sqrt{\alpha_t}}{\beta_t} x_t + \frac{\sqrt{\bar\alpha_{t-1}}}{1-\bar\alpha_{t-1}} x_0\right]$$
+```math
+\tilde\mu_t = \tilde\beta_t \cdot \left[\frac{\sqrt{\alpha_t}}{\beta_t} x_t + \frac{\sqrt{\bar\alpha_{t-1}}}{1-\bar\alpha_{t-1}} x_0\right]
+```
 
 代入 $`\tilde\beta_t = \frac{\beta_t(1-\bar\alpha_{t-1})}{1-\bar\alpha_t}`$：
 
-$$
+```math
 \begin{aligned}
 \tilde\mu_t &= \frac{\beta_t(1-\bar\alpha_{t-1})}{1-\bar\alpha_t} \cdot \frac{\sqrt{\alpha_t}}{\beta_t} \cdot x_t + \frac{\beta_t(1-\bar\alpha_{t-1})}{1-\bar\alpha_t} \cdot \frac{\sqrt{\bar\alpha_{t-1}}}{1-\bar\alpha_{t-1}} \cdot x_0 \\
 &= \frac{\sqrt{\alpha_t}(1-\bar\alpha_{t-1})}{1-\bar\alpha_t} \cdot x_t + \frac{\sqrt{\bar\alpha_{t-1}} \beta_t}{1-\bar\alpha_t} \cdot x_0
 \end{aligned}
-$$
+```
 
 ✓ 与命题一致。
 
@@ -203,17 +247,21 @@ $$
 ### 3.3 改写：用 $`\epsilon`$ 而非 $`x_0`$ 参数化
 
 由定理一：$`x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon`$，反解：
-$$x_0 = \frac{1}{\sqrt{\bar\alpha_t}}\left(x_t - \sqrt{1-\bar\alpha_t} \epsilon\right)$$
+```math
+x_0 = \frac{1}{\sqrt{\bar\alpha_t}}\left(x_t - \sqrt{1-\bar\alpha_t} \epsilon\right)
+```
 
 代入 $`\tilde\mu_t`$：
 
-$$
+```math
 \tilde\mu_t = \frac{\sqrt{\bar\alpha_{t-1}} \beta_t}{1-\bar\alpha_t} \cdot \frac{1}{\sqrt{\bar\alpha_t}}\left(x_t - \sqrt{1-\bar\alpha_t} \epsilon\right) + \frac{\sqrt{\alpha_t}(1-\bar\alpha_{t-1})}{1-\bar\alpha_t} x_t
-$$
+```
 
 注意 $`\sqrt{\bar\alpha_{t-1}} / \sqrt{\bar\alpha_t} = 1/\sqrt{\alpha_t}`$，化简后：
 
-$$\boxed{\tilde\mu_t(x_t, \epsilon) = \frac{1}{\sqrt{\alpha_t}}\left(x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \cdot \epsilon\right)}$$
+```math
+\boxed{\tilde\mu_t(x_t, \epsilon) = \frac{1}{\sqrt{\alpha_t}}\left(x_t - \frac{\beta_t}{\sqrt{1-\bar\alpha_t}} \cdot \epsilon\right)}
+```
 
 **化简过程**（中间步）：
 

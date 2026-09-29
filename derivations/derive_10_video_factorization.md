@@ -23,7 +23,9 @@ patch 后 tokens：$`z \in \mathbb{R}^{N \times d}`$，其中 $`N = T \cdot H \c
 
 ### 2.1 公式
 
-$$\text{Attn}(Q, K, V) = \text{softmax}(QK^T/\sqrt{d}) V$$
+```math
+\text{Attn}(Q, K, V) = \text{softmax}(QK^T/\sqrt{d}) V
+```
 
 ### 2.2 复杂度
 
@@ -85,7 +87,9 @@ windows: list of (4 * 8 * 8, d) blocks
 ### 4.2 复杂度
 
 设 window size $`w`$。每个 window 计算 $`O(w^2 d)`$。总 windows: $`N/w`$。
-$$O(N/w \cdot w^2 d) = O(N w d)$$
+```math
+O(N/w \cdot w^2 d) = O(N w d)
+```
 
 例：$`w = 256 \to O(N \cdot 256 \cdot d)`$，比 $`O(N^2 d)`$ 在大 N 下快得多。
 
@@ -148,7 +152,9 @@ Layer 3N/4 - N: sparse full attention (global)
 
 把 softmax 用 kernel 替代，让 attention 变成 $`O(N)`$。
 
-$$\text{softmax}(QK^T) V \approx \phi(Q) (\phi(K)^T V)$$
+```math
+\text{softmax}(QK^T) V \approx \phi(Q) (\phi(K)^T V)
+```
 
 其中 $`\phi`$ 是 kernel feature map（如 ELU+1）。
 
@@ -237,15 +243,21 @@ Full attn 最优但极贵；spatial+temporal 是性价比之王。
 
 ### 11.1 加法（DiT-like）
 
-$$z_n = z_n + \text{PE}(t_n, h_n, w_n)$$
+```math
+z_n = z_n + \text{PE}(t_n, h_n, w_n)
+```
 
 3D sinusoidal：
-$$\text{PE}(t, h, w) = \text{concat}[\text{PE}_t(t), \text{PE}_h(h), \text{PE}_w(w)]$$
+```math
+\text{PE}(t, h, w) = \text{concat}[\text{PE}_t(t), \text{PE}_h(h), \text{PE}_w(w)]
+```
 
 ### 11.2 RoPE 3D
 
 应用 rotary embedding 到 Q, K：
-$$Q_n \to \text{RoPE}(t_n, h_n, w_n) \cdot Q_n$$
+```math
+Q_n \to \text{RoPE}(t_n, h_n, w_n) \cdot Q_n
+```
 
 实证：RoPE 3D 在长视频上比 sinusoidal 好（外推性）。
 

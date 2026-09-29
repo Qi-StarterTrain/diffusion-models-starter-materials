@@ -77,7 +77,9 @@ SD 的 VAE 不是真正的"生成 VAE"，而是**轻微正则化的 autoencoder*
 
 ### Q7
 **反向 SDE**：
-$$dx = [f(x, t) - g(t)^2 \nabla_x \log p_t(x)] \, dt + g(t) \, d\bar W$$
+```math
+dx = [f(x, t) - g(t)^2 \nabla_x \log p_t(x)] \, dt + g(t) \, d\bar W
+```
 
 **推导思路**：
 1. 正向 FPE：$`\partial_t p_t = -\nabla \cdot (f p_t) + \frac{1}{2} g^2 \Delta p_t`$
@@ -90,17 +92,23 @@ $$dx = [f(x, t) - g(t)^2 \nabla_x \log p_t(x)] \, dt + g(t) \, d\bar W$$
 
 ### Q8
 **约束 1（均值）**：边际化恒等式 $`q(x_{t-1}|x_0) = \int q(x_{t-1}|x_t, x_0) q(x_t|x_0)`$ 在均值上给出：
-$$a_t + b_t \cdot \sqrt{\bar\alpha_t} = \sqrt{\bar\alpha_{t-1}}$$
+```math
+a_t + b_t \cdot \sqrt{\bar\alpha_t} = \sqrt{\bar\alpha_{t-1}}
+```
 
 即 $`a_t = \sqrt{\bar\alpha_{t-1}} - b_t \sqrt{\bar\alpha_t}`$。
 
 **约束 2（方差）**：在方差上：
-$$\sigma_t^2 + b_t^2 (1-\bar\alpha_t) = 1 - \bar\alpha_{t-1}$$
+```math
+\sigma_t^2 + b_t^2 (1-\bar\alpha_t) = 1 - \bar\alpha_{t-1}
+```
 
 即 $`b_t = \sqrt{\frac{1 - \bar\alpha_{t-1} - \sigma_t^2}{1 - \bar\alpha_t}}`$。
 
 代入 $`a_t`$ 得：
-$$a_t = \sqrt{\bar\alpha_{t-1}} - \sqrt{\bar\alpha_t \cdot \frac{1-\bar\alpha_{t-1}-\sigma_t^2}{1-\bar\alpha_t}}$$
+```math
+a_t = \sqrt{\bar\alpha_{t-1}} - \sqrt{\bar\alpha_t \cdot \frac{1-\bar\alpha_{t-1}-\sigma_t^2}{1-\bar\alpha_t}}
+```
 
 （参考 derive_05 §2）
 
@@ -108,21 +116,35 @@ $$a_t = \sqrt{\bar\alpha_{t-1}} - \sqrt{\bar\alpha_t \cdot \frac{1-\bar\alpha_{t
 
 ### Q9
 **Step 1**：从贝叶斯有：
-$$\nabla_x \log p(x|y) = \nabla_x \log p(y|x) + \nabla_x \log p(x)$$
+```math
+\nabla_x \log p(x|y) = \nabla_x \log p(y|x) + \nabla_x \log p(x)
+```
 
 反推：
-$$\nabla_x \log p(y|x) = \nabla_x \log p(x|y) - \nabla_x \log p(x)$$
+```math
+\nabla_x \log p(y|x) = \nabla_x \log p(x|y) - \nabla_x \log p(x)
+```
 
 **Step 2**：CG 公式（加权 score）：
-$$\hat s = \nabla_x \log p(x) + w \nabla_x \log p(y|x)$$
+```math
+\hat s = \nabla_x \log p(x) + w \nabla_x \log p(y|x)
+```
 
 **Step 3**：把 Step 1 代入：
-$$\hat s = \nabla_x \log p(x) + w [\nabla_x \log p(x|y) - \nabla_x \log p(x)]$$
-$$= (1-w) \nabla_x \log p(x) + w \nabla_x \log p(x|y)$$
+```math
+\hat s = \nabla_x \log p(x) + w [\nabla_x \log p(x|y) - \nabla_x \log p(x)]
+```
+```math
+= (1-w) \nabla_x \log p(x) + w \nabla_x \log p(x|y)
+```
 
 **Step 4**：用 noise-score 关系 $`s = -\epsilon / \sqrt{1-\bar\alpha_t}`$：
-$$\hat\epsilon = (1-w) \epsilon_{\text{uncond}} + w \epsilon_{\text{cond}}$$
-$$= \epsilon_{\text{uncond}} + w (\epsilon_{\text{cond}} - \epsilon_{\text{uncond}})$$
+```math
+\hat\epsilon = (1-w) \epsilon_{\text{uncond}} + w \epsilon_{\text{cond}}
+```
+```math
+= \epsilon_{\text{uncond}} + w (\epsilon_{\text{cond}} - \epsilon_{\text{uncond}})
+```
 
 设 $`s = w`$，即得 CFG 公式。
 
@@ -130,13 +152,19 @@ $$= \epsilon_{\text{uncond}} + w (\epsilon_{\text{cond}} - \epsilon_{\text{uncon
 
 ### Q10
 ODE 对应的 transport equation：
-$$\frac{\partial p_t}{\partial t} = -\nabla \cdot (h \cdot p_t), \quad h = f - \frac{1}{2}g^2 \nabla \log p_t$$
+```math
+\frac{\partial p_t}{\partial t} = -\nabla \cdot (h \cdot p_t), \quad h = f - \frac{1}{2}g^2 \nabla \log p_t
+```
 
 原 SDE 的 FPE：
-$$\frac{\partial p_t}{\partial t} = -\nabla \cdot (f p_t) + \frac{1}{2} g^2 \Delta p_t$$
+```math
+\frac{\partial p_t}{\partial t} = -\nabla \cdot (f p_t) + \frac{1}{2} g^2 \Delta p_t
+```
 
 用恒等式 $`\Delta p_t = \nabla \cdot (p_t \nabla \log p_t)`$：
-$$\frac{\partial p_t}{\partial t} = -\nabla \cdot \left[(f - \frac{1}{2} g^2 \nabla \log p_t) p_t\right] = -\nabla \cdot (h \cdot p_t)$$
+```math
+\frac{\partial p_t}{\partial t} = -\nabla \cdot \left[(f - \frac{1}{2} g^2 \nabla \log p_t) p_t\right] = -\nabla \cdot (h \cdot p_t)
+```
 
 —— 两个 transport equation 同形，初值 $`p_0`$ 相同，所以 $`p_t`$ 对所有 $`t`$ 相同。 ∎
 

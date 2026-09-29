@@ -62,10 +62,14 @@ $`p_{\text{data}}(x)`$ 通常是**高度多模态**的。一张猫图、一张�
 **核心思想**：训练一个生成器 $`G`$ 把噪声映射到图像，再训练一个判别器 $`D`$ 区分真假，让两者博弈。
 
 **采样**：
-$$z \sim \mathcal{N}(0, I), \quad x = G_\theta(z)$$
+```math
+z \sim \mathcal{N}(0, I), \quad x = G_\theta(z)
+```
 
 **训练目标**（minimax 博弈）：
-$$\min_G \max_D \mathbb{E}_{x \sim p_{\text{data}}}[\log D(x)] + \mathbb{E}_z[\log(1 - D(G(z)))]$$
+```math
+\min_G \max_D \mathbb{E}_{x \sim p_{\text{data}}}[\log D(x)] + \mathbb{E}_z[\log(1 - D(G(z)))]
+```
 
 **优点**：
 - 生成质量高（视觉效果好）
@@ -84,10 +88,14 @@ $$\min_G \max_D \mathbb{E}_{x \sim p_{\text{data}}}[\log D(x)] + \mathbb{E}_z[\l
 **核心思想**：用变分推断学习数据的隐变量表示，通过 ELBO 最大化对数似然下界。
 
 **采样**：
-$$z \sim p(z), \quad x \sim p_\theta(x | z)$$
+```math
+z \sim p(z), \quad x \sim p_\theta(x | z)
+```
 
 **训练目标**（ELBO）：
-$$\mathcal{L}_{\mathrm{ELBO}} = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] - D_{\mathrm{KL}}(q_\phi(z|x) \| p(z))$$
+```math
+\mathcal{L}_{\mathrm{ELBO}} = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] - D_{\mathrm{KL}}(q_\phi(z|x) \| p(z))
+```
 
 **优点**：
 - ✅ 训练稳定
@@ -105,10 +113,14 @@ $$\mathcal{L}_{\mathrm{ELBO}} = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] - D
 **核心思想**：构造一系列**可逆**变换 $`f_1, f_2, \dots, f_K`$，让 $`x = f_K \circ \cdots \circ f_1(z)`$。利用换元公式直接计算 likelihood。
 
 **采样**：
-$$z \sim p(z), \quad x = f_\theta(z)$$
+```math
+z \sim p(z), \quad x = f_\theta(z)
+```
 
 **Likelihood 计算**：
-$$\log p_\theta(x) = \log p(z) + \log |\det J_{f^{-1}}(x)|$$
+```math
+\log p_\theta(x) = \log p(z) + \log |\det J_{f^{-1}}(x)|
+```
 
 **优点**：
 - ✅ 可计算精确 likelihood
@@ -126,11 +138,15 @@ $$\log p_\theta(x) = \log p(z) + \log |\det J_{f^{-1}}(x)|$$
 **核心思想**：把生成过程拆成**很多步小的去噪**。先定义一个固定的"加噪过程"把数据变成噪声，再让网络学习"反过程"。
 
 **前向过程（固定，不学习）**：
-$$x_0 \to x_1 \to x_2 \to \cdots \to x_T$$
+```math
+x_0 \to x_1 \to x_2 \to \cdots \to x_T
+```
 每步加一点高斯噪声，最终 $`x_T`$ 接近纯噪声。
 
 **反向过程（学习）**：
-$$x_T \to x_{T-1} \to \cdots \to x_0$$
+```math
+x_T \to x_{T-1} \to \cdots \to x_0
+```
 学一个网络 $`\epsilon_\theta(x_t, t)`$ 预测每步加的噪声，再反向去掉。
 
 **采样**：从 $`x_T \sim \mathcal{N}(0, I)`$ 出发，迭代去噪 $`T`$ 步得到 $`x_0`$。

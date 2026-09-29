@@ -33,15 +33,15 @@
 
 所有扩散模型（无论叫 DDPM 还是 NCSN）本质上都在做同一件事：给数据加噪声，让它变成一条随机过程 $`x_t`$，然后学习每个时刻的 score
 
-$$
+```math
 \nabla_x \log p_t(x)
-$$
+```
 
 再用 Anderson 公式（见 `slides/L06_score_sde.md` §4，反向 SDE：
 
-$$
+```math
 dx = \left[ f(x, t) - g(t)^2 \nabla_x \log p_t(x) \right] dt + g(t)\, d\bar W
-$$
+```
 
 ）把噪声反着"score-guide"回数据。这是整张图里最抽象、最统一的一层，DDPM 和 NCSN 都只是它的特例。
 
@@ -49,9 +49,9 @@ $$
 
 Score SDE 只是一个通用模板
 
-$$
+```math
 dx = f(x,t)\,dt + g(t)\,dW
-$$
+```
 
 具体怎么加噪，取决于怎么选 $`f, g`$（对照 `slides/L06_score_sde.md` §3.3 的表格）：
 
@@ -80,9 +80,9 @@ $$
 
 不管从 VP-SDE 还是 VE-SDE 出发，都可以用 Anderson 公式的"去随机性版本"（§5.1，详见 [Probability Flow ODE 补充阅读](probability-flow-ode-marginals.md)）把 SDE 改写成一个确定性 ODE：
 
-$$
+```math
 \frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)
-$$
+```
 
 它在每个时间 $`t`$ 的边缘分布 $`p_t(x)`$ 与原 SDE 完全相同，但轨迹不再含随机噪声项。这个 probability flow ODE 才是后续所有"快速采样器"的共同祖先：
 

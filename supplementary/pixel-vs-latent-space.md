@@ -30,9 +30,9 @@ L09 把故事讲成了一条单行道：
 
 关键在于，这是一个**上限**，不是一个可以靠把 diffusion 模型训得更好来突破的问题。哪怕你的 U-Net 把 `z` 预测得完全正确，最终图像的质量也不可能超过 `Decoder(Encoder(x))`。换句话说：
 
-$$
+```math
 \text{生成质量} \le \text{VAE 的重构质量}
-$$
+```
 
 想提高这个上限，只能把 VAE 做大（SD 3 从 4 channels 加到 16 channels）或者降低压缩率——而这又会把 latent 的 token 数推回去，侵蚀掉最初省下来的计算量。
 
@@ -42,9 +42,9 @@ $$
 
 VAE decode 是一次**固定成本**：不管采样多少步，最后都要跑一遍 decoder。设总延迟为
 
-$$
+```math
 T_{\text{total}} = \text{NFE} \times T_{\text{denoise}} + T_{\text{decode}}
-$$
+```
 
 - **NFE = 50** 时，$`T_{\text{decode}}`$ 相对于 50 次 U-Net 前向可以忽略不计；
 - **NFE = 4** 时（W12 的蒸馏技术让这成为常态），分子里的第一项缩小了十几倍，而 $`T_{\text{decode}}`$ 一点没变。
@@ -163,15 +163,15 @@ $$
 
 论文没有重新设计整个 schedule，而是引入**一个**噪声缩放因子 $`\gamma`$：
 
-$$
+```math
 \mathbf{x}_t = t\mathbf{x}_0 + (1-t)\gamma\boldsymbol{\epsilon}, \qquad \boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})
-$$
+```
 
 **先看理论怎么说。** 设 $`r`$ 为 RGB 图像与其 latent 的空间尺寸之比，这里 $`r = 8`$。如果把 pixel 输入做因子为 $`r`$ 的平均池化，独立像素噪声的方差会降低 $`r^2`$ 倍，于是
 
-$$
+```math
 \mathrm{SNR}^{1/r}_{\text{pixel}}(t) \approx \frac{r^2}{\gamma^2}\,\mathrm{SNR}_{\text{latent}}(t)
-$$
+```
 
 令两边 SNR 匹配，解得 $`\gamma = r = 8`$。推导很干净。
 

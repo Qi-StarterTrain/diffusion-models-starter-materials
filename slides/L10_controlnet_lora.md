@@ -143,7 +143,9 @@ LoRA：用极小（几 MB）的 adapter 实现微调。
 
 对任意线性层 $`W \in \mathbb{R}^{d \times k}`$，LoRA 把更新参数化为低秩矩阵：
 
-$$W_{\text{new}} = W + \Delta W = W + B A$$
+```math
+W_{\text{new}} = W + \Delta W = W + B A
+```
 
 其中 $`B \in \mathbb{R}^{d \times r}`$，$`A \in \mathbb{R}^{r \times k}`$，**rank $`r`$ 远小于 $`\min(d, k)`$**。
 
@@ -153,7 +155,9 @@ $$W_{\text{new}} = W + \Delta W = W + B A$$
 
 ### 3.3 训练初始化
 
-$$A \sim \mathcal{N}(0, \sigma^2), \quad B = 0$$
+```math
+A \sim \mathcal{N}(0, \sigma^2), \quad B = 0
+```
 
 所以 $`\Delta W = BA = 0`$，初始等价于原模型（与 zero conv 同思路）。
 
@@ -163,10 +167,14 @@ $$A \sim \mathcal{N}(0, \sigma^2), \quad B = 0$$
 
 ### 3.4 推理时合并
 
-$$W_{\text{final}} = W + B A \quad \text{(融合，无额外计算)}$$
+```math
+W_{\text{final}} = W + B A \quad \text{(融合，无额外计算)}
+```
 
 或者保留为 adapter 形式（运行时可热切换）：
-$$y = Wx + BAx = Wx + B(Ax)$$
+```math
+y = Wx + BAx = Wx + B(Ax)
+```
 
 第二种允许动态混合多个 LoRA（如 `LoRA_animeStyle * 0.8 + LoRA_pose * 0.3`）。
 

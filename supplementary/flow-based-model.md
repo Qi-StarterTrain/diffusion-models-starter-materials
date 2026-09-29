@@ -6,21 +6,21 @@ Flow-based Model 可以理解为：**用一串“可逆的神经网络变换”�
 
 我们先从一个简单分布中采样：
 
-$$
+```math
 z \sim p(z), \quad p(z) \text{ 通常是标准高斯分布 } \mathcal{N}(0, I)
-$$
+```
 
 然后通过一系列可逆变换：
 
-$$
+```math
 x = f_K \circ f_{K-1} \circ \cdots \circ f_1(z)
-$$
+```
 
 也就是说：
 
-$$
+```math
 z \rightarrow h_1 \rightarrow h_2 \rightarrow \cdots \rightarrow x
-$$
+```
 
 其中每一步 $`f_i`$ 都是可逆的。
 可以直观理解为：
@@ -33,29 +33,29 @@ $$
 
 Flow 模型的关键要求是：
 
-$$
+```math
 x = f_\theta(z)
-$$
+```
 
 同时也必须能够反过来：
 
-$$
+```math
 z = f_\theta^{-1}(x)
-$$
+```
 
 这带来一个重要好处：
 给定一张真实图片 (x)，我们可以直接算出它对应的 latent code (z)。
 所以 Flow 同时支持：
 
-$$
+```math
 z \rightarrow x
-$$
+```
 
 用于生成；
 
-$$
+```math
 x \rightarrow z
-$$
+```
 
 用于编码和 likelihood 计算。
 这和 VAE 不一样。VAE 的 encoder 是近似后验 (q_\phi(z|x))，不是严格可逆映射。
@@ -67,30 +67,30 @@ $$
 Flow 模型使用的是**变量替换公式**。
 假设：
 
-$$
+```math
 x = f(z)
-$$
+```
 
 那么反过来：
 
-$$
+```math
 z = f^{-1}(x)
-$$
+```
 
 因为 (z) 的概率密度是已知的，比如标准高斯，所以我们可以根据 (z) 的概率密度推导 (x) 的概率密度：
 
-$$
+```math
 p_\theta(x) = p(z) \left|\det J_{f^{-1}}(x)\right|
-$$
+```
 
 取对数后得到：
 
-$$
+```math
 \log p_\theta(x)
 \log p(z)
 +
 \log \left|\det J_{f^{-1}}(x)\right|
-$$
+```
 
 这里的 $`J_{f^{-1}}`$ 是反向变换的雅可比矩阵。
 
@@ -104,9 +104,9 @@ $$
 如果一个区域被压缩了，那么概率密度就会变高。
 所以：
 
-$$
+```math
 \left|\det J\right|
-$$
+```
 
 就是用来修正概率密度变化的。
 ----------------------------
@@ -115,21 +115,21 @@ $$
 
 因为 Flow 可以精确计算：
 
-$$
+```math
 \log p_\theta(x)
-$$
+```
 
 所以训练时可以直接最大化数据的 log-likelihood：
 
-$$
+```math
 \max_\theta \log p_\theta(x)
-$$
+```
 
 或者等价地，最小化负对数似然：
 
-$$
+```math
 \min_\theta -\log p_\theta(x)
-$$
+```
 
 这和 GAN 不同。GAN 没有显式 likelihood；
 也和 VAE 不同。VAE 优化的是 likelihood 的下界 ELBO，而不是精确 likelihood。
@@ -139,15 +139,15 @@ $$
 
 采样非常直接：
 
-$$
+```math
 z \sim \mathcal{N}(0,I)
-$$
+```
 
 然后：
 
-$$
+```math
 x = f_\theta(z)
-$$
+```
 
 也就是从高斯噪声出发，经过可逆变换生成图像。
 --------------------------------------------
@@ -161,9 +161,9 @@ GAN 通常不能直接计算 likelihood；
 VAE 只能优化 likelihood 下界；
 Flow 可以直接计算精确的：
 
-$$
+```math
 \log p_\theta(x)
-$$
+```
 
 所以它在密度估计任务中很有优势。
 --------------------------------
@@ -172,13 +172,13 @@ $$
 
 因为模型是严格可逆的，所以：
 
-$$
+```math
 z = f_\theta^{-1}(x)
-$$
+```
 
-$$
+```math
 x = f_\theta(z)
-$$
+```
 
 这意味着它可以同时做：
 
@@ -251,12 +251,12 @@ maximum likelihood 训练倾向于覆盖整个数据分布，有时会生成比�
 
 Flow 模型的本质是：
 
-$$
+```math
 \text{simple noise distribution}
 \quad \xleftrightarrow[\text{inverse}]{\text{invertible transform}}
 \quad
 \text{complex data distribution}
-$$
+```
 
 更口语化地说：
 

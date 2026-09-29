@@ -41,7 +41,9 @@ DDPM 中"两次加噪可合并为一次"的推导基于此。
 
 ### 题 4 答案
 
-$$D_{\mathrm{KL}}(p \| q) = \int p(x) \log \frac{p(x)}{q(x)} \mathrm{d}x$$
+```math
+D_{\mathrm{KL}}(p \| q) = \int p(x) \log \frac{p(x)}{q(x)} \mathrm{d}x
+```
 
 性质：
 1. **非负性**：$`D_{\mathrm{KL}}(p \| q) \geq 0`$，等号当且仅当 $`p = q`$ 几乎处处成立
@@ -55,7 +57,9 @@ $$D_{\mathrm{KL}}(p \| q) = \int p(x) \log \frac{p(x)}{q(x)} \mathrm{d}x$$
 
 ### 题 5 答案
 
-$$p(\theta | x) = \frac{p(x | \theta) \cdot p(\theta)}{p(x)}$$
+```math
+p(\theta | x) = \frac{p(x | \theta) \cdot p(\theta)}{p(x)}
+```
 
 - $`p(\theta)`$：**先验**，参数本身的分布
 - $`p(x | \theta)`$：**似然**，给定参数下数据的概率
@@ -69,7 +73,9 @@ $$p(\theta | x) = \frac{p(x | \theta) \cdot p(\theta)}{p(x)}$$
 
 ### 题 6 答案
 
-$$\frac{\partial L}{\partial x} = f'(g(h(x))) \cdot g'(h(x)) \cdot h'(x)$$
+```math
+\frac{\partial L}{\partial x} = f'(g(h(x))) \cdot g'(h(x)) \cdot h'(x)
+```
 
 **关键点**：链式法则是反向传播的本质。所有深度学习框架都是基于这个简单公式构建的自动微分系统。
 
@@ -89,7 +95,9 @@ $`\nabla f = (2x + 3y, 3x + 2y)`$
 
 推导：设 $`f = x^\top A x = \sum_i \sum_j A_{ij} x_i x_j`$
 
-$$\frac{\partial f}{\partial x_k} = \sum_j A_{kj} x_j + \sum_i A_{ik} x_i = (Ax)_k + (A^\top x)_k$$
+```math
+\frac{\partial f}{\partial x_k} = \sum_j A_{kj} x_j + \sum_i A_{ik} x_i = (Ax)_k + (A^\top x)_k
+```
 
 故 $`\frac{\partial f}{\partial x} = (A + A^\top) x`$。
 
@@ -133,7 +141,9 @@ y.is_contiguous() = False
 
 **MSE Loss（均方误差）**
 
-$$L = \frac{1}{N} \sum_{i=1}^{N} (\hat{y}_i - y_i)^2$$
+```math
+L = \frac{1}{N} \sum_{i=1}^{N} (\hat{y}_i - y_i)^2
+```
 
 **关键点**：DDPM 的简化训练目标本质上就是噪声的 MSE。理解这一点后会发现 DDPM 的训练 loss 极其简单。
 

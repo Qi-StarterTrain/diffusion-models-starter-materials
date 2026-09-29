@@ -11,7 +11,9 @@
 
 设 $`L = f(g(h(x)))`$，$`x \in \mathbb{R}`$，则：
 
-$$\frac{\partial L}{\partial x} = f'(g(h(x))) \cdot g'(h(x)) \cdot h'(x)$$
+```math
+\frac{\partial L}{\partial x} = f'(g(h(x))) \cdot g'(h(x)) \cdot h'(x)
+```
 
 —— 沿计算路径依次求导，再连乘。
 
@@ -21,7 +23,9 @@ $$\frac{\partial L}{\partial x} = f'(g(h(x))) \cdot g'(h(x)) \cdot h'(x)$$
 
 设 $`L = f(y_1, y_2, \dots, y_n)`$，每个 $`y_i = g_i(x)`$，则：
 
-$$\frac{\partial L}{\partial x} = \sum_{i=1}^n \frac{\partial L}{\partial y_i} \cdot \frac{\partial y_i}{\partial x}$$
+```math
+\frac{\partial L}{\partial x} = \sum_{i=1}^n \frac{\partial L}{\partial y_i} \cdot \frac{\partial y_i}{\partial x}
+```
 
 —— 多条路径上的梯度**求和**。
 
@@ -36,7 +40,9 @@ $$\frac{\partial L}{\partial x} = \sum_{i=1}^n \frac{\partial L}{\partial y_i} \
 雅可比矩阵 $`J \in \mathbb{R}^{m \times n}`$：$`J_{ij} = \frac{\partial y_i}{\partial x_j}`$。
 
 链式法则向量形式：
-$$\frac{\partial L}{\partial x} = J^\top \cdot \frac{\partial L}{\partial y}$$
+```math
+\frac{\partial L}{\partial x} = J^\top \cdot \frac{\partial L}{\partial y}
+```
 
 —— PyTorch 反向传播的本质就是反复做这个 vector-Jacobian 乘积。
 
@@ -48,7 +54,9 @@ $$\frac{\partial L}{\partial x} = J^\top \cdot \frac{\partial L}{\partial y}$$
 
 对 $`f : \mathbb{R}^n \to \mathbb{R}`$：
 
-$$\nabla f(x) = \left( \frac{\partial f}{\partial x_1}, \frac{\partial f}{\partial x_2}, \dots, \frac{\partial f}{\partial x_n} \right)$$
+```math
+\nabla f(x) = \left( \frac{\partial f}{\partial x_1}, \frac{\partial f}{\partial x_2}, \dots, \frac{\partial f}{\partial x_n} \right)
+```
 
 **几何意义**：$`\nabla f(x)`$ 指向 $`f`$ 在 $`x`$ 处增长最快的方向；模长是该方向的变化率。
 
@@ -57,7 +65,9 @@ $$\nabla f(x) = \left( \frac{\partial f}{\partial x_1}, \frac{\partial f}{\parti
 ### 2.2 梯度下降
 
 最小化 $`f`$ 的迭代：
-$$x_{t+1} = x_t - \eta \nabla f(x_t)$$
+```math
+x_{t+1} = x_t - \eta \nabla f(x_t)
+```
 
 其中 $`\eta`$ 是学习率。
 
@@ -82,10 +92,14 @@ $$x_{t+1} = x_t - \eta \nabla f(x_t)$$
 
 ### 3.1 高斯积分（**必记**）
 
-$$\int_{-\infty}^{+\infty} e^{-x^2/2} \mathrm{d}x = \sqrt{2\pi}$$
+```math
+\int_{-\infty}^{+\infty} e^{-x^2/2} \mathrm{d}x = \sqrt{2\pi}
+```
 
 更一般地：
-$$\int_{-\infty}^{+\infty} \frac{1}{\sqrt{2\pi}\sigma} e^{-(x-\mu)^2/(2\sigma^2)} \mathrm{d}x = 1$$
+```math
+\int_{-\infty}^{+\infty} \frac{1}{\sqrt{2\pi}\sigma} e^{-(x-\mu)^2/(2\sigma^2)} \mathrm{d}x = 1
+```
 
 —— 高斯密度的归一化条件。
 
@@ -93,11 +107,15 @@ $$\int_{-\infty}^{+\infty} \frac{1}{\sqrt{2\pi}\sigma} e^{-(x-\mu)^2/(2\sigma^2)
 
 ### 3.2 换元积分
 
-$$\int f(g(x)) g'(x) \mathrm{d}x = \int f(u) \mathrm{d}u, \quad u = g(x)$$
+```math
+\int f(g(x)) g'(x) \mathrm{d}x = \int f(u) \mathrm{d}u, \quad u = g(x)
+```
 
 **雅可比版（多维）**：若 $`u = T(x)`$ 是可逆变换，$`x \in \mathbb{R}^n`$：
 
-$$\int f(u) \mathrm{d}u = \int f(T(x)) \cdot |\det J_T(x)| \mathrm{d}x$$
+```math
+\int f(u) \mathrm{d}u = \int f(T(x)) \cdot |\det J_T(x)| \mathrm{d}x
+```
 
 > **🔑 在 normalizing flow 和 diffusion 的 ODE 视角中**：变换前后的密度通过雅可比行列式联系起来——这是连续时间生成模型的核心数学。
 
@@ -136,7 +154,9 @@ $$\int f(u) \mathrm{d}u = \int f(T(x)) \cdot |\det J_T(x)| \mathrm{d}x$$
 每个 SDE 都有一个对应的"概率流 ODE"，它在每个时刻 $`t`$ 的边缘分布与原 SDE 完全相同，但**轨迹是确定性的**。
 
 形式：
-$$\frac{\mathrm{d} x}{\mathrm{d} t} = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)$$
+```math
+\frac{\mathrm{d} x}{\mathrm{d} t} = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)
+```
 
 **意义**：去随机性的扩散等价物。这让我们可以用 ODE 高阶求解器进行确定性、可逆的采样。
 
@@ -177,7 +197,9 @@ $`Av = \lambda v`$（$`v \neq 0`$）
 
 设 $`X = (X_1, \dots, X_n)^\top`$ 是随机向量，协方差：
 
-$$\Sigma_{ij} = \mathrm{Cov}(X_i, X_j) = \mathbb{E}[(X_i - \mu_i)(X_j - \mu_j)]$$
+```math
+\Sigma_{ij} = \mathrm{Cov}(X_i, X_j) = \mathbb{E}[(X_i - \mu_i)(X_j - \mu_j)]
+```
 
 **性质**：
 - 对称：$`\Sigma = \Sigma^\top`$
@@ -205,7 +227,9 @@ $$\Sigma_{ij} = \mathrm{Cov}(X_i, X_j) = \mathbb{E}[(X_i - \mu_i)(X_j - \mu_j)]$
 直接计算 $`\log \sum_i e^{x_i}`$ 在 $`x_i`$ 很大时会上溢，很小时会损失精度。
 
 正确做法：
-$$\log \sum_i e^{x_i} = m + \log \sum_i e^{x_i - m}, \quad m = \max_i x_i$$
+```math
+\log \sum_i e^{x_i} = m + \log \sum_i e^{x_i - m}, \quad m = \max_i x_i
+```
 
 > **🔑 在扩散模型中**：variational lower bound 计算、softmax loss 都隐含使用了这个技巧。
 
@@ -213,7 +237,9 @@ $$\log \sum_i e^{x_i} = m + \log \sum_i e^{x_i - m}, \quad m = \max_i x_i$$
 
 ### 6.2 数值化的 reparameterization
 
-$$\log \sigma \to \text{predict in log space, then exp}$$
+```math
+\log \sigma \to \text{predict in log space, then exp}
+```
 
 让模型预测 $`\log \sigma`$ 而非 $`\sigma`$，避免 $`\sigma \leq 0`$ 的非法值。
 

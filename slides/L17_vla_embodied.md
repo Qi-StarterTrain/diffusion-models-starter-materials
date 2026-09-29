@@ -144,7 +144,9 @@ Action representation: 50-step trajectory (50 × 7 floats)
 - 后期联合训练 (image, action_traj) pairs
 
 Loss：
-$$\mathcal{L} = \mathbb{E}_{t, \text{traj}, \epsilon}\left[\|v_\theta(x_t, t, \text{vision}, \text{language}) - (\text{traj} - \epsilon)\|^2\right]$$
+```math
+\mathcal{L} = \mathbb{E}_{t, \text{traj}, \epsilon}\left[\|v_\theta(x_t, t, \text{vision}, \text{language}) - (\text{traj} - \epsilon)\|^2\right]
+```
 
 —— **Flow Matching loss**（参考 L12）。
 

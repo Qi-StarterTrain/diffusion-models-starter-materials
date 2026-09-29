@@ -46,7 +46,9 @@ x → [Encoder] → z → [LDM (UNet)] → z' → [Decoder] → x'
 ## 四、§3.1 VAE 设计（必看）
 
 ### 损失
-$$\mathcal{L}_{\text{VAE}} = \mathcal{L}_{\text{recon}} + \mathcal{L}_{\text{LPIPS}} + \lambda_{\text{adv}} \mathcal{L}_{\text{GAN}} + \lambda_{\text{KL}} D_{\text{KL}}$$
+```math
+\mathcal{L}_{\text{VAE}} = \mathcal{L}_{\text{recon}} + \mathcal{L}_{\text{LPIPS}} + \lambda_{\text{adv}} \mathcal{L}_{\text{GAN}} + \lambda_{\text{KL}} D_{\text{KL}}
+```
 
 - **Recon**: L1 pixel loss
 - **LPIPS** (Zhang 2018): VGG perceptual loss

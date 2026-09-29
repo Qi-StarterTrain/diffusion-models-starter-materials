@@ -102,7 +102,9 @@ Diffusion Policy 通过 stochastic noise 自然给出"要么 vertical 要么 hor
 
 **(a) Loss**：
 
-$$\mathcal{L} = \mathbb{E}_{t, a_{1:H}, \epsilon, v, l}\left[\|v_\theta(a_t, t, v, l) - (a_{1:H} - \epsilon)\|^2\right]$$
+```math
+\mathcal{L} = \mathbb{E}_{t, a_{1:H}, \epsilon, v, l}\left[\|v_\theta(a_t, t, v, l) - (a_{1:H} - \epsilon)\|^2\right]
+```
 
 其中 $`a_t = (1-t) \epsilon + t \cdot a_{1:H}`$，$`v`$ 是 vision feature，$`l`$ 是 language。
 
@@ -138,7 +140,9 @@ def sample_action(model, obs, n_steps=4):
 
 **(a) 独立错误假设下 100 步全对的概率**：
 
-$$P(\text{all correct}) = 0.99^{100} \approx 0.366$$
+```math
+P(\text{all correct}) = 0.99^{100} \approx 0.366
+```
 
 —— 约 37%。已经不太行。
 
@@ -147,7 +151,9 @@ $$P(\text{all correct}) = 0.99^{100} \approx 0.366$$
 **(b) 累积错误模型**：
 
 设第 $`k`$ 步的错误率 $`\epsilon_k`$ 满足 $`\epsilon_k = \epsilon_{k-1} \cdot 1.1`$（指数累积）：
-$$\epsilon_k = \epsilon_0 \cdot 1.1^k = 0.01 \cdot 1.1^k$$
+```math
+\epsilon_k = \epsilon_0 \cdot 1.1^k = 0.01 \cdot 1.1^k
+```
 
 第 50 步：$`\epsilon_{50} = 0.01 \cdot 1.1^{50} \approx 0.01 \cdot 117.4 = 1.174`$ → 严重错误（饱和到 1）
 

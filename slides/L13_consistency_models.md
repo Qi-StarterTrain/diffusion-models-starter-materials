@@ -55,7 +55,9 @@ ODE 是确定性的——给定 $`x_T`$，存在唯一 $`x_0`$。
 
 设 $`\{x_t\}`$ 是 probability flow ODE 在 $`[\epsilon, T]`$ 上的解轨迹。**Consistency function** $`f`$ 满足：
 
-$$f(x_t, t) = f(x_{t'}, t'), \quad \forall t, t' \in [\epsilon, T]$$
+```math
+f(x_t, t) = f(x_{t'}, t'), \quad \forall t, t' \in [\epsilon, T]
+```
 
 —— **同一条 ODE 轨迹上的所有点都映射到同一目标**。
 
@@ -65,7 +67,9 @@ $$f(x_t, t) = f(x_{t'}, t'), \quad \forall t, t' \in [\epsilon, T]$$
 
 ### 3.2 边界条件
 
-$$f(x_\epsilon, \epsilon) = x_\epsilon$$
+```math
+f(x_\epsilon, \epsilon) = x_\epsilon
+```
 
 （在 $`t = \epsilon`$ 处是 identity）
 
@@ -77,7 +81,9 @@ $$f(x_\epsilon, \epsilon) = x_\epsilon$$
 
 直接学 $`f_\theta(x, t) \approx x_\epsilon`$ 会忽略 $`t = \epsilon`$ 的边界条件。Song et al. 提出：
 
-$$f_\theta(x, t) = c_{\text{skip}}(t) \cdot x + c_{\text{out}}(t) \cdot F_\theta(x, t)$$
+```math
+f_\theta(x, t) = c_{\text{skip}}(t) \cdot x + c_{\text{out}}(t) \cdot F_\theta(x, t)
+```
 
 其中 $`c_{\text{skip}}(\epsilon) = 1, c_{\text{out}}(\epsilon) = 0`$，保证 $`f_\theta(x, \epsilon) = x`$。
 
@@ -205,7 +211,9 @@ Song et al. 2024 后续（**Improved Techniques for CT**）提出：
 - 自定义 $`\sigma`$ schedule（不再用 EDM 默认）
 
 ### 7.2 Pseudo-Huber Loss
-$$d(x, y) = \sqrt{\|x-y\|^2 + c^2} - c$$
+```math
+d(x, y) = \sqrt{\|x-y\|^2 + c^2} - c
+```
 比 L2 更稳定，比 LPIPS 更便宜。
 
 ### 7.3 EMA Teacher Trick

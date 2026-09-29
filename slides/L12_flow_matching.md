@@ -34,7 +34,9 @@ Flow Matching (FM) 是 2023 年开始爆火、2024 年成为主流的新范式�
 ### 2.2 用 ODE 表示
 
 时间 $`t \in [0, 1]`$，定义路径 $`x_t`$ 满足 ODE：
-$$\frac{dx}{dt} = v_\theta(x, t)$$
+```math
+\frac{dx}{dt} = v_\theta(x, t)
+```
 
 初值 $`x_0 \sim p_0`$，目标 $`x_1 \sim p_1`$。
 
@@ -47,7 +49,9 @@ $$\frac{dx}{dt} = v_\theta(x, t)$$
 ### 2.3 与扩散的关系
 
 回顾 probability flow ODE：
-$$\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \nabla \log p_t(x)$$
+```math
+\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \nabla \log p_t(x)
+```
 
 这是一个**特殊的**向量场——为了匹配 VP-SDE 的边缘分布而精心设计。
 
@@ -70,7 +74,9 @@ Flow Matching 说：**为什么要绑定到 SDE？直接选一个简洁的向量
 给定路径 $`\{p_t\}`$，能"生成"它的 ODE 向量场是什么？
 
 满足 **continuity equation**：
-$$\frac{\partial p_t}{\partial t} + \nabla \cdot (p_t \cdot v_t) = 0$$
+```math
+\frac{\partial p_t}{\partial t} + \nabla \cdot (p_t \cdot v_t) = 0
+```
 
 如果 $`v_t`$ 满足这方程，ODE $`dx/dt = v_t(x)`$ 的解 $`x_t`$ 服从 $`p_t`$。
 
@@ -79,7 +85,9 @@ $$\frac{\partial p_t}{\partial t} + \nabla \cdot (p_t \cdot v_t) = 0$$
 ### 3.3 直接学 $`v`$？
 
 最朴素的损失：
-$$\mathcal{L}_{\text{FM}} = \mathbb{E}_{t, x \sim p_t}\left[\|v_\theta(x, t) - v_t(x)\|^2\right]$$
+```math
+\mathcal{L}_{\text{FM}} = \mathbb{E}_{t, x \sim p_t}\left[\|v_\theta(x, t) - v_t(x)\|^2\right]
+```
 
 **但**：$`v_t(x)`$ 我们不知道（continuity equation 给的是约束，不是闭合形式）。
 
@@ -100,7 +108,9 @@ $$\mathcal{L}_{\text{FM}} = \mathbb{E}_{t, x \sim p_t}\left[\|v_\theta(x, t) - v
 
 ### 4.2 关键定理
 
-$$\mathcal{L}_{\text{CFM}} = \mathbb{E}_{t, x_1 \sim p_{\text{data}}, x \sim p_t(\cdot | x_1)} \left[\|v_\theta(x, t) - u_t(x | x_1)\|^2\right]$$
+```math
+\mathcal{L}_{\text{CFM}} = \mathbb{E}_{t, x_1 \sim p_{\text{data}}, x \sim p_t(\cdot | x_1)} \left[\|v_\theta(x, t) - u_t(x | x_1)\|^2\right]
+```
 
 **梯度上等价于** $`\mathcal{L}_{\text{FM}}`$（关于 $`\theta`$）。
 
@@ -116,10 +126,14 @@ $$\mathcal{L}_{\text{CFM}} = \mathbb{E}_{t, x_1 \sim p_{\text{data}}, x \sim p_t
 ### 5.1 直线路径
 
 定义条件路径为 $`x_0`$ 到 $`x_1`$ 的**直线**：
-$$x_t = (1-t) x_0 + t x_1, \quad x_0 \sim \mathcal{N}(0, I), \quad x_1 \sim p_{\text{data}}$$
+```math
+x_t = (1-t) x_0 + t x_1, \quad x_0 \sim \mathcal{N}(0, I), \quad x_1 \sim p_{\text{data}}
+```
 
 **对应的条件向量场**：
-$$u_t(x_t | x_1) = \frac{d x_t}{dt} = x_1 - x_0$$
+```math
+u_t(x_t | x_1) = \frac{d x_t}{dt} = x_1 - x_0
+```
 
 —— **就是简单的差向量**！
 
@@ -127,7 +141,9 @@ $$u_t(x_t | x_1) = \frac{d x_t}{dt} = x_1 - x_0$$
 
 ### 5.2 训练 Loss
 
-$$\mathcal{L}_{\text{Rect}} = \mathbb{E}_{t, x_0, x_1}\left[\|v_\theta(x_t, t) - (x_1 - x_0)\|^2\right]$$
+```math
+\mathcal{L}_{\text{Rect}} = \mathbb{E}_{t, x_0, x_1}\left[\|v_\theta(x_t, t) - (x_1 - x_0)\|^2\right]
+```
 
 **这就是 SD 3 用的训练目标**。
 

@@ -48,7 +48,9 @@
 ## 四、§4 Classifier Guidance（必读）
 
 ### 4.1 核心公式
-$$\hat\epsilon = \epsilon_\theta(x_t, t) - w \sqrt{1-\bar\alpha_t} \cdot \nabla_{x_t} \log p_\phi(y | x_t, t)$$
+```math
+\hat\epsilon = \epsilon_\theta(x_t, t) - w \sqrt{1-\bar\alpha_t} \cdot \nabla_{x_t} \log p_\phi(y | x_t, t)
+```
 
 ### 4.2 工程关键
 

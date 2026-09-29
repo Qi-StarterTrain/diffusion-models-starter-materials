@@ -10,7 +10,9 @@
 我们有数据 $`\{x_i\}_{i=1}^N`$，希望学习生成模型 $`p_\theta(x)`$。
 
 引入隐变量 $`z`$：
-$$p_\theta(x) = \int p_\theta(x, z) \, dz = \int p_\theta(x | z) \cdot p(z) \, dz$$
+```math
+p_\theta(x) = \int p_\theta(x, z) \, dz = \int p_\theta(x | z) \cdot p(z) \, dz
+```
 
 其中：
 - $`p(z) = \mathcal{N}(0, I)`$ 是先验，固定
@@ -20,7 +22,9 @@ $$p_\theta(x) = \int p_\theta(x, z) \, dz = \int p_\theta(x | z) \cdot p(z) \, d
 
 ## §2 直接最大化对数似然的困难
 
-$$\log p_\theta(x) = \log \int p_\theta(x | z) \, p(z) \, dz$$
+```math
+\log p_\theta(x) = \log \int p_\theta(x | z) \, p(z) \, dz
+```
 
 **问题**：
 1. 积分一般无解析解
@@ -34,7 +38,7 @@ $$\log p_\theta(x) = \log \int p_\theta(x | z) \, p(z) \, dz$$
 
 引入任意分布 $`q_\phi(z | x)`$：
 
-$$
+```math
 \begin{aligned}
 \log p_\theta(x)
 &= \log \int p_\theta(x, z) \, dz \\
@@ -43,7 +47,7 @@ $$
 &\geq \mathbb{E}_{z \sim q_\phi(z|x)} \left[ \log \frac{p_\theta(x, z)}{q_\phi(z|x)} \right] \quad \text{(Jensen, } \log \text{ 是凹函数)} \\
 &=: \mathrm{ELBO}(x; \theta, \phi)
 \end{aligned}
-$$
+```
 
 **Jensen 不等式**：对凹函数 $`\phi`$，$`\phi(\mathbb{E}[X]) \geq \mathbb{E}[\phi(X)]`$。这里 $`\phi = \log`$。
 
@@ -53,7 +57,9 @@ $$
 
 ### 4.1 联合分布形式（path A 直接结果）
 
-$$\mathrm{ELBO} = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x, z) - \log q_\phi(z|x)]$$
+```math
+\mathrm{ELBO} = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x, z) - \log q_\phi(z|x)]
+```
 
 ---
 
@@ -61,18 +67,20 @@ $$\mathrm{ELBO} = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x, z) - \log q_\phi(z|x
 
 把 $`p_\theta(x, z) = p_\theta(x | z) \cdot p(z)`$ 代入：
 
-$$
+```math
 \begin{aligned}
 \mathrm{ELBO}
 &= \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x | z) + \log p(z) - \log q_\phi(z|x)] \\
 &= \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x | z)] + \mathbb{E}_{q_\phi(z|x)}\left[\log \frac{p(z)}{q_\phi(z|x)}\right] \\
 &= \underbrace{\mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x | z)]}_{\text{重构项}} - \underbrace{D_{\mathrm{KL}}(q_\phi(z|x) \| p(z))}_{\text{正则项}}
 \end{aligned}
-$$
+```
 
 最终形式：
 
-$$\boxed{\mathrm{ELBO}(x; \theta, \phi) = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x | z)] - D_{\mathrm{KL}}(q_\phi(z|x) \| p(z))}$$
+```math
+\boxed{\mathrm{ELBO}(x; \theta, \phi) = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x | z)] - D_{\mathrm{KL}}(q_\phi(z|x) \| p(z))}
+```
 
 ---
 
@@ -80,7 +88,7 @@ $$\boxed{\mathrm{ELBO}(x; \theta, \phi) = \mathbb{E}_{q_\phi(z|x)}[\log p_\theta
 
 ### 5.1 推导（路径 B：直接展开）
 
-$$
+```math
 \begin{aligned}
 \log p_\theta(x)
 &= \log p_\theta(x) \cdot \int q_\phi(z|x) \, dz \quad \text{(乘以 1)} \\
@@ -91,11 +99,13 @@ $$
 \quad + \quad
 \underbrace{\int q_\phi(z|x) \log \frac{q_\phi(z|x)}{p_\theta(z|x)} \, dz}_{D_{\mathrm{KL}}(q_\phi \| p_\theta^{\text{post}})}
 \end{aligned}
-$$
+```
 
 最终：
 
-$$\boxed{\log p_\theta(x) = \mathrm{ELBO}(x; \theta, \phi) + D_{\mathrm{KL}}(q_\phi(z|x) \| p_\theta(z|x))}$$
+```math
+\boxed{\log p_\theta(x) = \mathrm{ELBO}(x; \theta, \phi) + D_{\mathrm{KL}}(q_\phi(z|x) \| p_\theta(z|x))}
+```
 
 由于 KL 非负，自动得到 $`\log p_\theta(x) \geq \mathrm{ELBO}`$。
 
@@ -126,10 +136,14 @@ VAE 假设：
 
 由于 $`p_\theta(x | z) = \mathcal{N}(\mu_\theta(z), I)`$：
 
-$$\log p_\theta(x | z) = -\frac{1}{2} \| x - \mu_\theta(z) \|^2 + \text{const}$$
+```math
+\log p_\theta(x | z) = -\frac{1}{2} \| x - \mu_\theta(z) \|^2 + \text{const}
+```
 
 所以：
-$$\mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] = -\frac{1}{2} \mathbb{E}_{q_\phi}[\| x - \mu_\theta(z) \|^2] + \text{const}$$
+```math
+\mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] = -\frac{1}{2} \mathbb{E}_{q_\phi}[\| x - \mu_\theta(z) \|^2] + \text{const}
+```
 
 —— **MSE 重构损失**！
 
@@ -140,11 +154,13 @@ $$\mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] = -\frac{1}{2} \mathbb{E}_{q_\phi
 对 $`q_\phi(z|x) = \mathcal{N}(\mu, \mathrm{diag}(\sigma^2))`$ 和 $`p(z) = \mathcal{N}(0, I)`$：
 
 **一维形式**：
-$$D_{\mathrm{KL}}(\mathcal{N}(\mu, \sigma^2) \| \mathcal{N}(0, 1)) = \frac{1}{2}(\mu^2 + \sigma^2 - \log \sigma^2 - 1)$$
+```math
+D_{\mathrm{KL}}(\mathcal{N}(\mu, \sigma^2) \| \mathcal{N}(0, 1)) = \frac{1}{2}(\mu^2 + \sigma^2 - \log \sigma^2 - 1)
+```
 
 **完整推导**：
 
-$$
+```math
 \begin{aligned}
 D_{\mathrm{KL}}
 &= \int q(z) \log \frac{q(z)}{p(z)} dz \\
@@ -154,13 +170,17 @@ D_{\mathrm{KL}}
 &= -\frac{1}{2} \cdot \underbrace{\frac{\mathbb{E}[(z-\mu)^2]}{\sigma^2}}_{=1} - \log\sigma + \frac{1}{2}\mathbb{E}[z^2] \\
 &= -\frac{1}{2} - \log\sigma + \frac{1}{2}(\mu^2 + \sigma^2)
 \end{aligned}
-$$
+```
 
 整理：
-$$D_{\mathrm{KL}} = \frac{1}{2}(\mu^2 + \sigma^2 - 2\log\sigma - 1) = \frac{1}{2}(\mu^2 + \sigma^2 - \log\sigma^2 - 1)$$
+```math
+D_{\mathrm{KL}} = \frac{1}{2}(\mu^2 + \sigma^2 - 2\log\sigma - 1) = \frac{1}{2}(\mu^2 + \sigma^2 - \log\sigma^2 - 1)
+```
 
 **$`d`$ 维形式**（独立各维）：
-$$D_{\mathrm{KL}}(\mathcal{N}(\mu, \mathrm{diag}(\sigma^2)) \| \mathcal{N}(0, I)) = \frac{1}{2} \sum_{i=1}^d (\mu_i^2 + \sigma_i^2 - \log\sigma_i^2 - 1)$$
+```math
+D_{\mathrm{KL}}(\mathcal{N}(\mu, \mathrm{diag}(\sigma^2)) \| \mathcal{N}(0, I)) = \frac{1}{2} \sum_{i=1}^d (\mu_i^2 + \sigma_i^2 - \log\sigma_i^2 - 1)
+```
 
 ---
 
@@ -168,7 +188,9 @@ $$D_{\mathrm{KL}}(\mathcal{N}(\mu, \mathrm{diag}(\sigma^2)) \| \mathcal{N}(0, I)
 
 把两项合起来：
 
-$$\boxed{\mathcal{L}_{\mathrm{VAE}}(\theta, \phi; x) = \underbrace{\| x - \mu_\theta(z) \|^2}_{\text{recon (MSE)}} + \underbrace{\sum_i (\mu_i^2 + \sigma_i^2 - \log\sigma_i^2 - 1)}_{\text{KL，闭合}}}$$
+```math
+\boxed{\mathcal{L}_{\mathrm{VAE}}(\theta, \phi; x) = \underbrace{\| x - \mu_\theta(z) \|^2}_{\text{recon (MSE)}} + \underbrace{\sum_i (\mu_i^2 + \sigma_i^2 - \log\sigma_i^2 - 1)}_{\text{KL，闭合}}}
+```
 
 去掉了无关常数（$`\frac{1}{2}`$ 等可吸收到 learning rate）。
 
@@ -181,7 +203,9 @@ $$\boxed{\mathcal{L}_{\mathrm{VAE}}(\theta, \phi; x) = \underbrace{\| x - \mu_\t
 直接 $`z \sim q_\phi(z|x)`$ 是采样操作，不可导（采样过程梯度不能传过去）。
 
 **重参数化**：
-$$z = \mu_\phi(x) + \sigma_\phi(x) \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$$
+```math
+z = \mu_\phi(x) + \sigma_\phi(x) \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)
+```
 
 把随机性"外包"给 $`\epsilon`$，$`\mu, \sigma`$ 与 $`z`$ 是确定性映射。
 

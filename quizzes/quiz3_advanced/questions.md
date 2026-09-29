@@ -28,7 +28,9 @@
 ### 7（10 分）Linear-path Flow Matching loss 推导
 
 设 $`x_0 \sim \mathcal{N}(0, I)`$，$`x_1 \sim p_{\text{data}}`$。定义 linear path：
-$$x_t = (1-t) x_0 + t x_1, \quad t \in [0, 1]$$
+```math
+x_t = (1-t) x_0 + t x_1, \quad t \in [0, 1]
+```
 
 (a)（3 分）证明 $`u_t(x_t | x_1) = x_1 - x_0`$。
 
@@ -41,7 +43,9 @@ $$x_t = (1-t) x_0 + t x_1, \quad t \in [0, 1]$$
 ### 8（10 分）Consistency Model 的 EDM-style 参数化
 
 Consistency function 形如：
-$$f_\theta(x, t) = c_{\text{skip}}(t) \cdot x + c_{\text{out}}(t) \cdot F_\theta\bigl(c_{\text{in}}(t) \cdot x, c_{\text{noise}}(t)\bigr)$$
+```math
+f_\theta(x, t) = c_{\text{skip}}(t) \cdot x + c_{\text{out}}(t) \cdot F_\theta\bigl(c_{\text{in}}(t) \cdot x, c_{\text{noise}}(t)\bigr)
+```
 
 (a)（4 分）说明每个 $`c`$ 函数的作用，特别是 $`c_{\text{skip}}, c_{\text{out}}`$ 在 $`t = \epsilon`$ 处必须满足什么条件？
 

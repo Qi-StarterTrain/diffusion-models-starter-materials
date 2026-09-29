@@ -12,15 +12,15 @@
 
 给定一个 forward SDE：
 
-$$
+```math
 dx = f(x,t)\,dt + g(t)\,dW
-$$
+```
 
 从同一个初始分布采样：
 
-$$
+```math
 x_0 \sim p_0(x)
-$$
+```
 
 然后让很多样本点沿这个 SDE 演化。因为有 $`dW`$，每个样本都会受到随机扰动，所以单个样本轨迹是随机的。
 
@@ -30,13 +30,13 @@ $$
 
 probability flow ODE 写作：
 
-$$
+```math
 \frac{dx}{dt}
 =
 f(x,t)
 -
 \frac{1}{2}g(t)^2\nabla_x\log p_t(x)
-$$
+```
 
 这里没有 $`dW`$，所以给定初始点 $`x_0`$ 后，轨迹就是确定的。
 
@@ -46,17 +46,17 @@ $$
 
 考虑整个随机过程：
 
-$$
+```math
 (x_0, x_{t_1}, x_{t_2}, \dots, x_T)
-$$
+```
 
 这描述的是一整条路径的联合分布。
 
 而“边缘分布”只关心某一个时间点，例如：
 
-$$
+```math
 p_t(x)
-$$
+```
 
 它回答的是：
 
@@ -64,29 +64,29 @@ $$
 
 所以 probability flow ODE 与原 SDE 的关系是：
 
-$$
+```math
 x_t^{\mathrm{SDE}} \sim p_t(x)
-$$
+```
 
 并且：
 
-$$
+```math
 x_t^{\mathrm{ODE}} \sim p_t(x)
-$$
+```
 
 对每个固定的 $`t`$ 都成立。
 
 但是，这不代表：
 
-$$
+```math
 (x_0^{\mathrm{SDE}}, x_t^{\mathrm{SDE}}, x_T^{\mathrm{SDE}})
-$$
+```
 
 和
 
-$$
+```math
 (x_0^{\mathrm{ODE}}, x_t^{\mathrm{ODE}}, x_T^{\mathrm{ODE}})
-$$
+```
 
 这两条路径的联合分布相同。
 
@@ -113,49 +113,49 @@ probability flow ODE 的“神奇”之处是：
 
 原 SDE：
 
-$$
+```math
 dx = f(x,t)\,dt + g(t)\,dW
-$$
+```
 
 对应 Fokker-Planck 方程：
 
-$$
+```math
 \frac{\partial p_t}{\partial t}
 =
 -\nabla_x\cdot(f p_t)
 +
 \frac{1}{2}g(t)^2\nabla_x^2 p_t
-$$
+```
 
 其中第一项是 drift 对概率密度的搬运，第二项是噪声对概率密度的扩散。
 
 利用恒等式：
 
-$$
+```math
 \nabla_x^2 p_t
 =
 \nabla_x\cdot(\nabla_x p_t)
-$$
+```
 
 以及：
 
-$$
+```math
 \nabla_x p_t
 =
 p_t \nabla_x \log p_t
-$$
+```
 
 所以：
 
-$$
+```math
 \nabla_x^2 p_t
 =
 \nabla_x\cdot(p_t\nabla_x\log p_t)
-$$
+```
 
 代回 Fokker-Planck 方程：
 
-$$
+```math
 \frac{\partial p_t}{\partial t}
 =
 -\nabla_x\cdot(f p_t)
@@ -163,11 +163,11 @@ $$
 \nabla_x\cdot\left(
 \frac{1}{2}g(t)^2 p_t\nabla_x\log p_t
 \right)
-$$
+```
 
 合并成：
 
-$$
+```math
 \frac{\partial p_t}{\partial t}
 =
 -\nabla_x\cdot
@@ -178,35 +178,35 @@ f
 \frac{1}{2}g(t)^2\nabla_x\log p_t
 \right)p_t
 \right]
-$$
+```
 
 这正好是一个 ODE：
 
-$$
+```math
 \frac{dx}{dt}=h(x,t)
-$$
+```
 
 对应的密度演化方程：
 
-$$
+```math
 \frac{\partial p_t}{\partial t}
 =
 -\nabla_x\cdot(hp_t)
-$$
+```
 
 因此只要令：
 
-$$
+```math
 h(x,t)
 =
 f(x,t)
 -
 \frac{1}{2}g(t)^2\nabla_x\log p_t(x)
-$$
+```
 
 就得到：
 
-$$
+```math
 \boxed{
 \frac{dx}{dt}
 =
@@ -214,7 +214,7 @@ f(x,t)
 -
 \frac{1}{2}g(t)^2\nabla_x\log p_t(x)
 }
-$$
+```
 
 这就是 probability flow ODE。
 
@@ -222,25 +222,25 @@ $$
 
 score 是：
 
-$$
+```math
 \nabla_x \log p_t(x)
-$$
+```
 
 它指向当前分布密度上升最快的方向，也就是高密度区域。
 
 因此：
 
-$$
+```math
 -\nabla_x \log p_t(x)
-$$
+```
 
 会指向低密度方向。
 
 在 probability flow ODE 中：
 
-$$
+```math
 -\frac{1}{2}g(t)^2\nabla_x\log p_t(x)
-$$
+```
 
 这项可以理解为：用一个确定性速度场，把样本从高密度区域向外推，从而制造出和随机噪声相同的密度扩散效果。
 
@@ -252,13 +252,13 @@ $$
 
 扩散模型本质上关心的是分布演化：
 
-$$
+```math
 p_0(x)
 \rightarrow
 p_t(x)
 \rightarrow
 p_T(x)
-$$
+```
 
 SDE 给出一种随机采样路径，ODE 给出一种确定性采样路径。
 
@@ -278,31 +278,31 @@ SDE 给出一种随机采样路径，ODE 给出一种确定性采样路径。
 
 ODE 是确定性动力系统：
 
-$$
+```math
 \frac{dx}{dt}=h(x,t)
-$$
+```
 
 给定某个初始点 $`x_T`$，它会对应唯一一条轨迹。
 
 所以理论上，如果先从 $`x_T`$ 倒着积分到 $`x_0`$：
 
-$$
+```math
 x_T \rightarrow x_0
-$$
+```
 
 再沿同一个 ODE 正着积分回去：
 
-$$
+```math
 x_0 \rightarrow x_T
-$$
+```
 
 就应该回到同一个点。
 
 SDE 则不同。SDE 每一步都有随机噪声：
 
-$$
+```math
 dx=fdt+gdW
-$$
+```
 
 即使从同一个 $`x_T`$ 出发，只要重新采样噪声，路径就会变化。因此 SDE 不能简单地按同一条轨迹“倒回去”。
 
@@ -312,39 +312,39 @@ $$
 
 生成模型有时不只想采样，还想知道某个样本的概率密度：
 
-$$
+```math
 \log p(x)
-$$
+```
 
 ODE 有一个很重要的公式，叫 instantaneous change of variables：
 
-$$
+```math
 \frac{d\log p_t(x_t)}{dt}
 =
 -\nabla_x\cdot h(x_t,t)
-$$
+```
 
 其中：
 
-$$
+```math
 h(x,t)
 =
 f(x,t)
 -
 \frac{1}{2}g(t)^2\nabla_x\log p_t(x)
-$$
+```
 
 这个公式的意思是：沿着 ODE 轨迹走时，样本密度的变化率由速度场的散度决定。
 
 因此，如果把数据点 $`x_0`$ 正向积分到简单分布 $`x_T`$，就可以用：
 
-$$
+```math
 \log p_0(x_0)
 =
 \log p_T(x_T)
 +
 \int_0^T \nabla_x\cdot h(x_t,t)\,dt
-$$
+```
 
 来计算它的 likelihood。这里 $`p_T`$ 通常是标准高斯或近似标准高斯，所以 $`\log p_T(x_T)`$ 可以直接计算。
 
@@ -356,7 +356,7 @@ $$
 
 如果用 SDE 采样，常见离散化是 Euler-Maruyama：
 
-$$
+```math
 x_{t-\Delta t}
 =
 x_t
@@ -364,15 +364,15 @@ x_t
 \text{drift}\cdot\Delta t
 +
 \text{noise}\cdot\sqrt{\Delta t}
-$$
+```
 
 随机项会引入额外方差，通常需要很多步才能稳定。
 
 但 probability flow ODE 没有随机项：
 
-$$
+```math
 \frac{dx}{dt}=h(x,t)
-$$
+```
 
 所以可以使用成熟的 ODE 数值求解器，例如：
 
@@ -391,17 +391,17 @@ probability flow ODE 没有随机噪声项。
 
 所以只要初始噪声 $`x_T`$ 固定，生成结果就是固定的：
 
-$$
+```math
 x_T \mapsto x_0
-$$
+```
 
 这对调试、复现实验、图像编辑很有用。
 
 多样性并没有消失，因为仍然可以通过换不同的初始噪声 $`x_T`$ 得到不同样本。去随机性只表示：
 
-$$
+```math
 \text{同一个初始噪声} \rightarrow \text{同一个输出}
-$$
+```
 
 ### 8.5 为什么说这是 DDIM 的数学基础
 
@@ -409,15 +409,15 @@ DDPM 的 ancestral sampling 是随机的，形式上更像反向 SDE 的离散�
 
 DDIM 引入了一个确定性采样版本。当 DDIM 中随机噪声参数设为：
 
-$$
+```math
 \eta = 0
-$$
+```
 
 采样过程就没有额外随机噪声，变成确定性更新：
 
-$$
+```math
 x_T \rightarrow x_{T-1} \rightarrow \cdots \rightarrow x_0
-$$
+```
 
 这和 probability flow ODE 的思想一致：
 
@@ -425,11 +425,11 @@ $$
 
 更准确地说：
 
-$$
+```math
 \text{DDIM}
 \approx
 \text{probability flow ODE 的一阶离散化}
-$$
+```
 
 这里的“一阶离散化”可以理解为：不用连续求解 ODE，而是用有限步长一步一步近似它，类似 Euler 法。
 

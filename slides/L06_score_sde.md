@@ -37,14 +37,18 @@ L03-L05 我们用的是离散时间扩散：$`x_0, x_1, \dots, x_T`$，$`T=1000`
 **ODE**（常微分方程）：$`\frac{dx}{dt} = f(x, t)`$ — 确定性轨迹
 
 **SDE**（随机微分方程）：
-$$dx = f(x, t) \, dt + g(t) \, dW$$
+```math
+dx = f(x, t) \, dt + g(t) \, dW
+```
 
 - $`f(x, t)`$：**drift**（确定性"漂移"方向）
 - $`g(t)`$：**diffusion coefficient**（噪声强度）
 - $`dW`$：Wiener 过程的"无穷小增量"
 
 **数值近似**（Euler-Maruyama）：
-$$x_{t+\Delta t} = x_t + f(x_t, t) \cdot \Delta t + g(t) \cdot \sqrt{\Delta t} \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$$
+```math
+x_{t+\Delta t} = x_t + f(x_t, t) \cdot \Delta t + g(t) \cdot \sqrt{\Delta t} \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)
+```
 
 ---
 
@@ -52,7 +56,9 @@ $$x_{t+\Delta t} = x_t + f(x_t, t) \cdot \Delta t + g(t) \cdot \sqrt{\Delta t} \
 
 给定 SDE $`dx = f \, dt + g \, dW`$，对应的密度 $`p_t(x)`$ 演化遵循 Fokker-Planck 方程：
 
-$$\frac{\partial p_t}{\partial t} = -\nabla_x \cdot (f \cdot p_t) + \frac{1}{2} g^2 \nabla_x^2 p_t$$
+```math
+\frac{\partial p_t}{\partial t} = -\nabla_x \cdot (f \cdot p_t) + \frac{1}{2} g^2 \nabla_x^2 p_t
+```
 
 **意义**：SDE 描述粒子轨迹，Fokker-Planck 描述粒子密度的演化。两者等价。
 
@@ -65,17 +71,23 @@ $$\frac{\partial p_t}{\partial t} = -\nabla_x \cdot (f \cdot p_t) + \frac{1}{2} 
 ### 3.1 离散过程的极限
 
 DDPM 单步：
-$$x_{t} = \sqrt{1 - \beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon$$
+```math
+x_{t} = \sqrt{1 - \beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon
+```
 
 设 $`\beta_t = \beta(t) \Delta t`$（密度型参数化），$`\Delta t = 1/T`$，取极限 $`T \to \infty`$：
 
 **Taylor 展开** $`\sqrt{1 - \beta(t)\Delta t} \approx 1 - \frac{1}{2} \beta(t) \Delta t`$：
 
-$$x_{t} \approx x_{t-1} - \frac{1}{2} \beta(t) \Delta t \cdot x_{t-1} + \sqrt{\beta(t) \Delta t} \cdot \epsilon$$
+```math
+x_{t} \approx x_{t-1} - \frac{1}{2} \beta(t) \Delta t \cdot x_{t-1} + \sqrt{\beta(t) \Delta t} \cdot \epsilon
+```
 
 对应的 SDE：
 
-$$\boxed{dx = -\frac{1}{2} \beta(t) x \, dt + \sqrt{\beta(t)} \, dW}$$
+```math
+\boxed{dx = -\frac{1}{2} \beta(t) x \, dt + \sqrt{\beta(t)} \, dW}
+```
 
 这叫 **Variance Preserving SDE (VP-SDE)**。
 
@@ -86,11 +98,15 @@ $$\boxed{dx = -\frac{1}{2} \beta(t) x \, dt + \sqrt{\beta(t)} \, dW}$$
 回忆 NCSN（W1）：用一系列噪声尺度 $`\sigma_1 > \sigma_2 > \dots`$ 训练 score 网络。
 
 把噪声尺度也连续化：$`\sigma(t)`$。则加噪过程是：
-$$x_t = x_0 + \sigma(t) \cdot \epsilon$$
+```math
+x_t = x_0 + \sigma(t) \cdot \epsilon
+```
 
 对应的 SDE：
 
-$$\boxed{dx = \sqrt{\frac{d[\sigma^2(t)]}{dt}} \, dW}$$
+```math
+\boxed{dx = \sqrt{\frac{d[\sigma^2(t)]}{dt}} \, dW}
+```
 
 这叫 **Variance Exploding SDE (VE-SDE)**——方差随时间无界增长。
 
@@ -115,7 +131,9 @@ $$\boxed{dx = \sqrt{\frac{d[\sigma^2(t)]}{dt}} \, dW}$$
 
 **定理（Anderson 1982）**：对任意 forward SDE $`dx = f \, dt + g \, dW`$，存在一个对应的**反向 SDE**，描述如何从终态采样回初态：
 
-$$\boxed{dx = \left[ f(x, t) - g(t)^2 \cdot \nabla_x \log p_t(x) \right] dt + g(t) \, d\bar W}$$
+```math
+\boxed{dx = \left[ f(x, t) - g(t)^2 \cdot \nabla_x \log p_t(x) \right] dt + g(t) \, d\bar W}
+```
 
 其中 $`d\bar W`$ 是从 $`T`$ 到 $`0`$ 反向的 Wiener 过程，$`\nabla_x \log p_t(x)`$ 是 $`t`$ 时刻边缘密度的 score。
 
@@ -137,15 +155,21 @@ $$\boxed{dx = \left[ f(x, t) - g(t)^2 \cdot \nabla_x \log p_t(x) \right] dt + g(
 
 用 score matching 训练神经网络 $`s_\theta(x, t)`$ 逼近真实 score：
 
-$$\mathcal{L} = \mathbb{E}_t \left\{ \lambda(t) \mathbb{E}_{x_0} \mathbb{E}_{x_t | x_0} \left[ \| s_\theta(x_t, t) - \nabla_{x_t} \log p(x_t | x_0) \|^2 \right] \right\}$$
+```math
+\mathcal{L} = \mathbb{E}_t \left\{ \lambda(t) \mathbb{E}_{x_0} \mathbb{E}_{x_t | x_0} \left[ \| s_\theta(x_t, t) - \nabla_{x_t} \log p(x_t | x_0) \|^2 \right] \right\}
+```
 
 由于 $`p(x_t | x_0)`$ 是闭合高斯（VP-SDE 中等价于 DDPM 的 $`q(x_t|x_0)`$），$`\nabla_{x_t} \log p(x_t|x_0)`$ 可解析：
 
-$$\nabla_{x_t} \log p(x_t | x_0) = -\frac{x_t - \mu_t}{\sigma_t^2}$$
+```math
+\nabla_{x_t} \log p(x_t | x_0) = -\frac{x_t - \mu_t}{\sigma_t^2}
+```
 
 代入 VP-SDE 中 $`x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t}\epsilon`$：
 
-$$\nabla_{x_t} \log p(x_t | x_0) = -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}$$
+```math
+\nabla_{x_t} \log p(x_t | x_0) = -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}
+```
 
 —— **预测 score 与预测 $`\epsilon`$ 差一个时间相关系数**！这是 DDPM 与 score-based 完全等价的严格证明。
 
@@ -157,7 +181,9 @@ $$\nabla_{x_t} \log p(x_t | x_0) = -\frac{\epsilon}{\sqrt{1-\bar\alpha_t}}$$
 
 对任意 SDE $`dx = f \, dt + g \, dW`$，存在一个**确定性 ODE**：
 
-$$\boxed{\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \cdot \nabla_x \log p_t(x)}$$
+```math
+\boxed{\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \cdot \nabla_x \log p_t(x)}
+```
 
 它在每个时间点 $`t`$ 的**边缘分布 $`p_t(x)`$ 与原 SDE 完全相同**，但轨迹是**确定性的**。
 

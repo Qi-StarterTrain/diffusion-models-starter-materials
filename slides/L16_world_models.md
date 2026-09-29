@@ -26,12 +26,16 @@
 ### 2.1 数学接口
 
 World model = 一个函数 $`W`$：
-$$W: (o_{<t}, a_{<t}) \to p(o_t | o_{<t}, a_{<t})$$
+```math
+W: (o_{<t}, a_{<t}) \to p(o_t | o_{<t}, a_{<t})
+```
 
 含义：给定历史 observation $`o`$ 和 action $`a`$，预测当前 observation 的**分布**。
 
 或更紧凑：
-$$W: (s_{t-1}, a_{t-1}) \to s_t$$
+```math
+W: (s_{t-1}, a_{t-1}) \to s_t
+```
 
 其中 $`s`$ 是**latent state**。
 

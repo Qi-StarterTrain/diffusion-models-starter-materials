@@ -126,7 +126,9 @@ class Decoder(nn.Module):
 ```
 
 **训练 loss**：
-$$\mathcal{L}_{\text{VAE}} = \underbrace{\| x - D(E(x)) \|^2}_{\text{recon}} + \underbrace{\mathcal{L}_{\text{LPIPS}}}_{\text{perceptual}} + \lambda_{\text{adv}} \cdot \underbrace{\mathcal{L}_{\text{GAN}}}_{\text{adversarial}} + \lambda_{\text{KL}} \cdot \underbrace{D_{\text{KL}}}_{\text{regularization}}$$
+```math
+\mathcal{L}_{\text{VAE}} = \underbrace{\| x - D(E(x)) \|^2}_{\text{recon}} + \underbrace{\mathcal{L}_{\text{LPIPS}}}_{\text{perceptual}} + \lambda_{\text{adv}} \cdot \underbrace{\mathcal{L}_{\text{GAN}}}_{\text{adversarial}} + \lambda_{\text{KL}} \cdot \underbrace{D_{\text{KL}}}_{\text{regularization}}
+```
 
 四个部分：
 - **Recon**：像素 MSE/L1，保证基本重构
@@ -379,9 +381,9 @@ VAE 和 U-Net 分开训练，可能存在数据流不匹配。SD 3 探索了 end
 
 VAE decode 是一次**固定成本**：不管采样多少步，最后都要跑一遍 decoder。
 
-$$
+```math
 T_{\text{total}} = \text{NFE} \times T_{\text{denoise}} + T_{\text{decode}}
-$$
+```
 
 - **50 步采样**时，这一次 decode 相对于 50 次 U-Net 前向可以忽略；
 - **蒸馏到 4 步**之后（W12 会讲），第一项缩小十几倍而 $`T_{\text{decode}}`$ 一点没变，于是 **decode 开始占据可观的延迟比例**。

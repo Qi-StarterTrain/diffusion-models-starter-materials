@@ -40,16 +40,24 @@
 ## 三、核心公式
 
 ### VP-SDE（对应 DDPM）
-$$dx = -\frac{1}{2}\beta(t) x \, dt + \sqrt{\beta(t)} \, dW$$
+```math
+dx = -\frac{1}{2}\beta(t) x \, dt + \sqrt{\beta(t)} \, dW
+```
 
 ### VE-SDE（对应 NCSN）
-$$dx = \sqrt{\frac{d[\sigma^2(t)]}{dt}} \, dW$$
+```math
+dx = \sqrt{\frac{d[\sigma^2(t)]}{dt}} \, dW
+```
 
 ### Reverse SDE
-$$dx = \left[f(x, t) - g(t)^2 \nabla_x \log p_t(x)\right] dt + g(t) \, d\bar W$$
+```math
+dx = \left[f(x, t) - g(t)^2 \nabla_x \log p_t(x)\right] dt + g(t) \, d\bar W
+```
 
 ### Probability Flow ODE
-$$\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)$$
+```math
+\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)
+```
 
 ---
 

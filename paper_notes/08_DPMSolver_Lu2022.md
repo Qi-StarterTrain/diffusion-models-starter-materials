@@ -40,13 +40,17 @@ DDIM 是一阶 Euler 离散化的 probability flow ODE。如果用**高阶 ODE �
 ### 半解析积分
 
 把 ODE 写成：
-$$\frac{dx}{dt} = f(t) \cdot x + g(t) \cdot \epsilon_\theta(x, t)$$
+```math
+\frac{dx}{dt} = f(t) \cdot x + g(t) \cdot \epsilon_\theta(x, t)
+```
 
 **线性部分** $`f(t) \cdot x`$ **解析可积**。只对非线性部分做数值积分。
 
 最终得到（在参数变换 $`\lambda = \log(\alpha/\sigma)`$ 下）：
 
-$$x_{\lambda_{i+1}} = \frac{\alpha_{\lambda_{i+1}}}{\alpha_{\lambda_i}} x_{\lambda_i} - \alpha_{\lambda_{i+1}} \int_{\lambda_i}^{\lambda_{i+1}} e^{-\lambda} \epsilon_\theta(\hat x_\lambda, t_\lambda) \, d\lambda$$
+```math
+x_{\lambda_{i+1}} = \frac{\alpha_{\lambda_{i+1}}}{\alpha_{\lambda_i}} x_{\lambda_i} - \alpha_{\lambda_{i+1}} \int_{\lambda_i}^{\lambda_{i+1}} e^{-\lambda} \epsilon_\theta(\hat x_\lambda, t_\lambda) \, d\lambda
+```
 
 只需要数值积分这个右侧积分。
 

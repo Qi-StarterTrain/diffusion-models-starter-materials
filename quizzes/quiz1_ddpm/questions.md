@@ -48,7 +48,9 @@ DDPM 中 $`\beta_t`$ 的取值范围（在 linear schedule 下）。如果把 $`
 
 ### Q7
 从 $`q(x_t | x_{t-1}) = \mathcal{N}(\sqrt{1-\beta_t} x_{t-1}, \beta_t I)`$ 出发，**用归纳法**证明：
-$$q(x_t | x_0) = \mathcal{N}(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I)$$
+```math
+q(x_t | x_0) = \mathcal{N}(\sqrt{\bar\alpha_t} x_0, (1-\bar\alpha_t) I)
+```
 
 要求：写出归纳假设、归纳步骤、关键技巧（独立高斯之和）。
 

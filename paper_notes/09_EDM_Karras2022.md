@@ -37,7 +37,9 @@
 ## 三、统一框架（§2.1 必看）
 
 EDM 写法：
-$$x_t = D_\theta(c_{\text{noise}}(t) \cdot \epsilon \cdot c_{\text{in}}(t) + c_{\text{skip}}(t) \cdot c_{\text{out}}(t) \cdot x_t, t)$$
+```math
+x_t = D_\theta(c_{\text{noise}}(t) \cdot \epsilon \cdot c_{\text{in}}(t) + c_{\text{skip}}(t) \cdot c_{\text{out}}(t) \cdot x_t, t)
+```
 
 通过选不同的 $`c_{\text{in}}, c_{\text{out}}, c_{\text{skip}}, c_{\text{noise}}`$ 函数，可以**重现** DDPM、Score SDE 等所有变体。
 
@@ -47,7 +49,9 @@ $$x_t = D_\theta(c_{\text{noise}}(t) \cdot \epsilon \cdot c_{\text{in}}(t) + c_{
 
 ## 四、Karras Sigma Schedule（§2.2）
 
-$$\sigma_i = \left(\sigma_{\max}^{1/\rho} + \frac{i}{N-1}(\sigma_{\min}^{1/\rho} - \sigma_{\max}^{1/\rho})\right)^\rho$$
+```math
+\sigma_i = \left(\sigma_{\max}^{1/\rho} + \frac{i}{N-1}(\sigma_{\min}^{1/\rho} - \sigma_{\max}^{1/\rho})\right)^\rho
+```
 
 参数：
 - $`\sigma_{\min} = 0.002`$
@@ -85,7 +89,9 @@ def heun_step(x, sigma_i, sigma_next, denoise_fn):
 
 让网络预测 $`D_\theta`$（"denoised image"）而非 $`\epsilon`$。具体：
 
-$$D_\theta(x, \sigma) = c_{\text{skip}}(\sigma) \cdot x + c_{\text{out}}(\sigma) \cdot F_\theta(c_{\text{in}}(\sigma) \cdot x, c_{\text{noise}}(\sigma))$$
+```math
+D_\theta(x, \sigma) = c_{\text{skip}}(\sigma) \cdot x + c_{\text{out}}(\sigma) \cdot F_\theta(c_{\text{in}}(\sigma) \cdot x, c_{\text{noise}}(\sigma))
+```
 
 其中：
 - $`c_{\text{in}} = 1/\sqrt{\sigma^2 + \sigma_{\text{data}}^2}`$：让输入方差 ≈ 1

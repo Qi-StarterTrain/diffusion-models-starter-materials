@@ -24,14 +24,18 @@ VAE 与 DDPM 在数学结构上**几乎一致**：
 ### 1.2 隐变量模型设置
 
 引入隐变量 $`z`$，定义联合分布：
-$$p_\theta(x, z) = p_\theta(x | z) \cdot p(z)$$
+```math
+p_\theta(x, z) = p_\theta(x | z) \cdot p(z)
+```
 
 其中：
 - $`p(z) = \mathcal{N}(0, I)`$：先验，固定
 - $`p_\theta(x | z)`$：解码器（decoder），由神经网络参数化
 
 我们关心的边际似然：
-$$p_\theta(x) = \int p_\theta(x | z) p(z) \mathrm{d}z$$
+```math
+p_\theta(x) = \int p_\theta(x | z) p(z) \mathrm{d}z
+```
 
 **问题**：这个积分一般无法解析、也无法高效采样估计（高维 $`z`$ 上 MC 估计效率极低）。
 
@@ -41,7 +45,9 @@ $$p_\theta(x) = \int p_\theta(x | z) p(z) \mathrm{d}z$$
 
 引入近似后验 $`q_\phi(z | x)`$（编码器，encoder），用神经网络参数化为高斯：
 
-$$q_\phi(z | x) = \mathcal{N}\bigl(z; \mu_\phi(x), \sigma_\phi^2(x) \cdot I\bigr)$$
+```math
+q_\phi(z | x) = \mathcal{N}\bigl(z; \mu_\phi(x), \sigma_\phi^2(x) \cdot I\bigr)
+```
 
 **关键观察**：用 $`q_\phi(z | x)`$ 我们可以从 $`z`$ 的"有意义区域"采样，而不是盲目从 $`p(z)`$ 采样。
 
@@ -51,7 +57,7 @@ $$q_\phi(z | x) = \mathcal{N}\bigl(z; \mu_\phi(x), \sigma_\phi^2(x) \cdot I\bigr
 
 我们的目标是最大化 $`\log p_\theta(x)`$。引入 $`q_\phi(z|x)`$：
 
-$$
+```math
 \begin{aligned}
 \log p_\theta(x) &= \log \int p_\theta(x, z) \mathrm{d}z \\
 &= \log \int q_\phi(z|x) \cdot \frac{p_\theta(x, z)}{q_\phi(z|x)} \mathrm{d}z \\
@@ -59,13 +65,13 @@ $$
 &\geq \mathbb{E}_{q_\phi(z|x)}\left[\log \frac{p_\theta(x, z)}{q_\phi(z|x)}\right] \quad (\text{Jensen 不等式}) \\
 &= \mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x | z)] - D_{\mathrm{KL}}(q_\phi(z|x) \| p(z))
 \end{aligned}
-$$
+```
 
 最终形式：
 
-$$
+```math
 \boxed{\log p_\theta(x) \geq \underbrace{\mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x | z)]}_{\text{重构项}} - \underbrace{D_{\mathrm{KL}}(q_\phi(z|x) \| p(z))}_{\text{正则项}}}
-$$
+```
 
 **两项的物理含义**：
 - **重构项**：$`x`$ 经编码—解码后能否重构得好？（让 $`q_\phi`$ 编码出的 $`z`$ 能被解码器还原 $`x`$）
@@ -76,7 +82,9 @@ $$
 ### 1.5 ELBO 与真实对数似然的差距
 
 可以严格证明：
-$$\log p_\theta(x) - \mathrm{ELBO}(x) = D_{\mathrm{KL}}(q_\phi(z|x) \| p_\theta(z|x)) \geq 0$$
+```math
+\log p_\theta(x) - \mathrm{ELBO}(x) = D_{\mathrm{KL}}(q_\phi(z|x) \| p_\theta(z|x)) \geq 0
+```
 
 **意义**：
 - 差距 = 变分后验和真实后验的 KL
@@ -90,7 +98,9 @@ $$\log p_\theta(x) - \mathrm{ELBO}(x) = D_{\mathrm{KL}}(q_\phi(z|x) \| p_\theta(
 ELBO 中含 $`\mathbb{E}_{q_\phi(z|x)}[\cdot]`$，要计算梯度需对 $`\phi`$ 求导。但 $`z \sim q_\phi`$ 是采样操作，不可导。
 
 **重参数化技巧**：
-$$z = \mu_\phi(x) + \sigma_\phi(x) \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$$
+```math
+z = \mu_\phi(x) + \sigma_\phi(x) \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)
+```
 
 把随机性外包给 $`\epsilon`$，则 $`z`$ 与 $`\phi`$ 之间是确定性映射，梯度可以正常流动。
 
@@ -101,15 +111,21 @@ $$z = \mu_\phi(x) + \sigma_\phi(x) \cdot \epsilon, \quad \epsilon \sim \mathcal{
 设解码器为高斯：$`p_\theta(x | z) = \mathcal{N}(\mu_\theta(z), I)`$（固定单位方差）。
 
 则重构项化简为：
-$$\mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] = -\frac{1}{2} \mathbb{E}_{q_\phi}[\| x - \mu_\theta(z) \|^2] + \text{const}$$
+```math
+\mathbb{E}_{q_\phi(z|x)}[\log p_\theta(x|z)] = -\frac{1}{2} \mathbb{E}_{q_\phi}[\| x - \mu_\theta(z) \|^2] + \text{const}
+```
 
 —— **MSE 重构损失**！
 
 正则项（两个高斯之间的 KL）有闭合公式：
-$$D_{\mathrm{KL}}(\mathcal{N}(\mu, \sigma^2 I) \| \mathcal{N}(0, I)) = \frac{1}{2} \sum_i (\mu_i^2 + \sigma_i^2 - \log \sigma_i^2 - 1)$$
+```math
+D_{\mathrm{KL}}(\mathcal{N}(\mu, \sigma^2 I) \| \mathcal{N}(0, I)) = \frac{1}{2} \sum_i (\mu_i^2 + \sigma_i^2 - \log \sigma_i^2 - 1)
+```
 
 最终训练目标：
-$$\mathcal{L}_{\mathrm{VAE}} = \frac{1}{2} \| x - \mu_\theta(z) \|^2 + \frac{1}{2} \sum_i (\mu_i^2 + \sigma_i^2 - \log \sigma_i^2 - 1)$$
+```math
+\mathcal{L}_{\mathrm{VAE}} = \frac{1}{2} \| x - \mu_\theta(z) \|^2 + \frac{1}{2} \sum_i (\mu_i^2 + \sigma_i^2 - \log \sigma_i^2 - 1)
+```
 
 —— 一个 MSE + 一个解析正则项，**普通监督学习的训练方式**就能训。
 
@@ -136,7 +152,9 @@ $$\mathcal{L}_{\mathrm{VAE}} = \frac{1}{2} \| x - \mu_\theta(z) \|^2 + \frac{1}{
 ### 2.1 Score function 的定义
 
 对密度 $`p(x)`$，**得分函数**（score function）定义为：
-$$s(x) = \nabla_x \log p(x)$$
+```math
+s(x) = \nabla_x \log p(x)
+```
 
 注意：是对 $`x`$ 求导，不是对参数求导。
 
@@ -155,7 +173,9 @@ $`\nabla_x \log p(x)`$ 指向**密度更高的方向**，模长是 log-density �
 如果你**有了真实分布的 score**，能否生成样本？
 
 **可以**。Langevin 动力学迭代：
-$$x_{t+1} = x_t + \frac{\eta}{2} s(x_t) + \sqrt{\eta} \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$$
+```math
+x_{t+1} = x_t + \frac{\eta}{2} s(x_t) + \sqrt{\eta} \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)
+```
 
 - $`\eta`$ 足够小、迭代足够多，$`x_t`$ 收敛到 $`p`$ 的样本
 - 第一项：朝高密度方向走（drift）
@@ -172,7 +192,9 @@ $$x_{t+1} = x_t + \frac{\eta}{2} s(x_t) + \sqrt{\eta} \cdot \epsilon, \quad \eps
 **目标**：训练一个网络 $`s_\theta(x)`$ 使其逼近真实的 $`\nabla_x \log p_{\text{data}}(x)`$。
 
 **朴素想法**：最小化
-$$\mathbb{E}_{x \sim p_{\text{data}}} \| s_\theta(x) - \nabla_x \log p_{\text{data}}(x) \|^2$$
+```math
+\mathbb{E}_{x \sim p_{\text{data}}} \| s_\theta(x) - \nabla_x \log p_{\text{data}}(x) \|^2
+```
 
 —— 但我们**不知道**右边的真实 score！
 
@@ -181,7 +203,9 @@ $$\mathbb{E}_{x \sim p_{\text{data}}} \| s_\theta(x) - \nabla_x \log p_{\text{da
 ### 2.5 Hyvärinen Score Matching（2005）
 
 **重要结果**：可以证明上述目标等价于
-$$\mathbb{E}_{x \sim p_{\text{data}}} \left[ \text{tr}(\nabla_x s_\theta(x)) + \frac{1}{2} \| s_\theta(x) \|^2 \right]$$
+```math
+\mathbb{E}_{x \sim p_{\text{data}}} \left[ \text{tr}(\nabla_x s_\theta(x)) + \frac{1}{2} \| s_\theta(x) \|^2 \right]
+```
 
 这个目标**不需要真实 score**，只需要数据样本！
 
@@ -197,12 +221,16 @@ $$\mathbb{E}_{x \sim p_{\text{data}}} \left[ \text{tr}(\nabla_x s_\theta(x)) + \
 
 设加噪 $`\tilde x = x + \sigma \epsilon`$，$`\epsilon \sim \mathcal{N}(0, I)`$，则：
 
-$$\nabla_{\tilde x} \log p_\sigma(\tilde x | x) = -\frac{\tilde x - x}{\sigma^2}$$
+```math
+\nabla_{\tilde x} \log p_\sigma(\tilde x | x) = -\frac{\tilde x - x}{\sigma^2}
+```
 
 —— 已知 $`x`$ 时，加噪后样本的 score 有解析解！
 
 DSM 训练目标：
-$$\mathcal{L}_{\mathrm{DSM}} = \mathbb{E}_{x, \tilde x} \left[ \left\| s_\theta(\tilde x) - \nabla_{\tilde x} \log p_\sigma(\tilde x | x) \right\|^2 \right] = \mathbb{E}_{x, \epsilon} \left[ \left\| s_\theta(\tilde x) + \frac{\epsilon}{\sigma} \right\|^2 \right]$$
+```math
+\mathcal{L}_{\mathrm{DSM}} = \mathbb{E}_{x, \tilde x} \left[ \left\| s_\theta(\tilde x) - \nabla_{\tilde x} \log p_\sigma(\tilde x | x) \right\|^2 \right] = \mathbb{E}_{x, \epsilon} \left[ \left\| s_\theta(\tilde x) + \frac{\epsilon}{\sigma} \right\|^2 \right]
+```
 
 —— **本质是预测加进去的噪声**（差一个系数）。
 

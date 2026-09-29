@@ -10,24 +10,24 @@
 
 前面已经说过，score 是：
 
-$$
+```math
 s(x)=\nabla_x \log p(x)
-$$
+```
 
 它表示：**在当前位置 (x)，往哪个方向走，数据概率密度会上升最快。**
 如果我们知道真实 score，就可以用 Langevin Dynamics 从噪声中采样：
 
-$$
+```math
 x_{t+1}=x_t+\frac{\eta}{2}s(x_t)+\sqrt{\eta}\epsilon
-$$
+```
 
 所以生成模型的一个思路就是：
 
 > 不直接学 $`p_{\text{data}}(x)`$，而是学它的梯度场
 
-$$
+```math
 \nabla_x \log p_{\text{data}}(x)
-$$
+```
 
 这就是 score-based generative model 的出发点。
 
@@ -37,44 +37,44 @@ $$
 
 理想情况下，我们希望训练网络：
 
-$$
+```math
 s_\theta(x) \approx \nabla_x \log p_{\text{data}}(x)
-$$
+```
 
 于是自然想到最小化：
 
-$$
+```math
 \mathbb{E}_{x \sim p_{\text{data}}}
 \left||
 s_\theta(x)-\nabla_x \log p_{\text{data}}(x)
 \right||^2
-$$
+```
 
 这看起来像普通监督学习：
 
-$$
+```math
 \text{预测值} - \text{真实标签}
-$$
+```
 
 其中：
 
-$$
+```math
 s_\theta(x)
-$$
+```
 
 是网络预测值，而
 
-$$
+```math
 \nabla_x \log p_{\text{data}}(x)
-$$
+```
 
 是真实标签。
 问题是：**我们没有这个真实标签。**
 因为我们只有样本：
 
-$$
+```math
 x_1,x_2,\dots,x_N \sim p_{\text{data}}
-$$
+```
 
 但不知道真实密度函数 $`p_{\text{data}}(x)`$，更不知道它的梯度。
 所以朴素目标不可直接计算。
@@ -89,65 +89,65 @@ Hyvärinen Score Matching 的关键贡献是：
 
 原目标是：
 
-$$
+```math
 \mathbb{E}_{p_{\text{data}}}
 \left|
 s_\theta(x)-\nabla_x \log p_{\text{data}}(x)
 \right|^2
-$$
+```
 
 展开平方：
 
-$$
+```math
 \mathbb{E}
 \left[
 |s_\theta(x)|^2
 -2s_\theta(x)^\top \nabla_x \log p_{\text{data}}(x)
 +|\nabla_x \log p_{\text{data}}(x)|^2
 \right]
-$$
+```
 
 最后一项：
 
-$$
+```math
 |\nabla_x \log p_{\text{data}}(x)|^2
-$$
+```
 
 和模型参数 $`\theta`$ 无关，可以看作常数。
 麻烦的是中间项：
 
-$$
+```math
 \mathbb{E}{p_{\text{data}}}
 \left[
 s_\theta(x)^\top \nabla_x \log p_{\text{data}}(x)
 \right]
-$$
+```
 
 Hyvärinen 的推导通过分部积分，把这个项变成了：
 
-$$
+```math
 -\mathbb{E}{p_{\text{data}}}
 \left[
 \text{tr}(\nabla_x s_\theta(x))
 \right]
-$$
+```
 
 于是目标就变成：
 
-$$
+```math
 \mathbb{E}_{x \sim p_{\text{data}}}
 \left[
 \text{tr}(\nabla_x s_\theta(x))
 +
 \frac{1}{2}|s_\theta(x)|^2
 \right]
-$$
+```
 
 这个目标里已经没有：
 
-$$
+```math
 \nabla_x \log p_{\text{data}}(x)
-$$
+```
 
 所以它可以只用数据样本训练。
 
@@ -157,23 +157,23 @@ $$
 
 问题在这一项：
 
-$$
+```math
 \text{tr}(\nabla_x s_\theta(x))
-$$
+```
 
 这里的 $`\nabla_x s_\theta(x)`$ 是网络输出对输入的雅可比矩阵。
 假设图像维度是：
 
-$$
+```math
 x \in \mathbb{R}^{H \times W \times C}
-$$
+```
 
 比如 $`256 \times 256 \times 3`$，维度接近 20 万。
 那么 $`s_\theta(x)`$ 也是同样维度的向量。它对 $`x`$ 求导会产生一个巨大雅可比矩阵：
 
-$$
+```math
 \frac{\partial s_\theta(x)}{\partial x}
-$$
+```
 
 而 trace 是这个矩阵对角线元素之和。
 高维图像里，直接计算这个 trace 很慢，所以原始 score matching 理论漂亮，但实际训练大模型时不方便。
@@ -188,22 +188,22 @@ DSM 的想法很聪明：
 
 给干净样本 $`x`$ 加噪：
 
-$$
+```math
 \tilde{x}=x+\sigma \epsilon,\quad \epsilon \sim \mathcal{N}(0,I)
-$$
+```
 
 于是 $`\tilde{x}`$ 是一个带噪样本。
 现在我们不直接估计：
 
-$$
+```math
 \nabla_x \log p_{\text{data}}(x)
-$$
+```
 
 而是估计：
 
-$$
+```math
 \nabla_{\tilde{x}} \log p_\sigma(\tilde{x})
-$$
+```
 
 也就是加噪分布的 score。
 
@@ -213,48 +213,48 @@ $$
 
 关键在于：虽然整体的加噪分布 $`p_\sigma(\tilde{x})`$ 仍然不知道，但给定干净样本 $`x`$ 后，条件分布是已知的：
 
-$$
+```math
 p_\sigma(\tilde{x}|x)=\mathcal{N}(x,\sigma^2 I)
-$$
+```
 
 也就是说：
 
-$$
+```math
 \tilde{x}
-$$
+```
 
 是以 $`x`$ 为均值、$`\sigma^2 I`$ 为方差的高斯分布。
 它的 log density 是：
 
-$$
+```math
 \log p_\sigma(\tilde{x}|x) =
 -\frac{1}{2\sigma^2}|\tilde{x}-x|^2+\text{const}
-$$
+```
 
 对 $`\tilde{x}`$ 求导：
 
-$$
+```math
 \nabla_{\tilde{x}} \log p_\sigma(\tilde{x}|x) =
 -\frac{\tilde{x}-x}{\sigma^2}
-$$
+```
 
 因为：
 
-$$
+```math
 \tilde{x}-x=\sigma \epsilon
-$$
+```
 
 所以：
 
-$$
+```math
 -\frac{\tilde{x}-x}{\sigma^2} =
 -\frac{\sigma \epsilon}{\sigma^2} =
 -\frac{\epsilon}{\sigma}
-$$
+```
 
 因此 DSM 的训练目标是：
 
-$$
+```math
 \mathcal{L}_{\mathrm{DSM}}=
 \mathbb{E}_{x,\epsilon}
 \left[
@@ -264,13 +264,13 @@ s_\theta(\tilde{x})
 \frac{\epsilon}{\sigma}
 \right|^2
 \right]
-$$
+```
 
 也就是说，网络要学习：
 
-$$
+```math
 s_\theta(\tilde{x}) \approx -\frac{\epsilon}{\sigma}
-$$
+```
 
 这就是加噪样本的 score。
 
@@ -280,15 +280,15 @@ $$
 
 因为：
 
-$$
+```math
 s_\theta(\tilde{x}) \approx -\frac{\tilde{x}-x}{\sigma^2}
-$$
+```
 
 所以可以反过来得到：
 
-$$
+```math
 x \approx \tilde{x}+\sigma^2 s_\theta(\tilde{x})
-$$
+```
 
 这说明：
 
@@ -311,25 +311,25 @@ $$
 
 在 DSM 中：
 
-$$
+```math
 s_\theta(\tilde{x}) \approx -\frac{\epsilon}{\sigma}
-$$
+```
 
 所以如果网络预测的是噪声 $`\epsilon_\theta(\tilde{x})`$，则有：
 
-$$
+```math
 s_\theta(\tilde{x})
 \approx
 -\frac{1}{\sigma}\epsilon_\theta(\tilde{x})
-$$
+```
 
 也就是说：
 
-$$
+```math
 \epsilon_\theta(\tilde{x})
 \approx
 -\sigma s_\theta(\tilde{x})
-$$
+```
 
 这就是为什么说：
 
@@ -337,15 +337,15 @@ $$
 
 在 DDPM 里，常见写法是：
 
-$$
+```math
 x_t=\sqrt{\bar{\alpha}_t}x_0+\sqrt{1-\bar{\alpha}_t}\epsilon
-$$
+```
 
 这里的噪声标准差相当于：
 
-$$
+```math
 \sigma_t = \sqrt{1-\bar{\alpha}_t}
-$$
+```
 
 所以 DDPM 训练 $`\epsilon_\theta(x_t,t)`$，本质上就是在不同噪声尺度下训练 score 网络。
 
@@ -378,15 +378,15 @@ $$
 
 NCSN 使用多个噪声尺度：
 
-$$
+```math
 \sigma_1 > \sigma_2 > \cdots > \sigma_L
-$$
+```
 
 训练条件 score 网络：
 
-$$
+```math
 s_\theta(x,\sigma)
-$$
+```
 
 让它在不同噪声尺度下都能预测 score。
 直观理解：
@@ -399,15 +399,15 @@ $$
 
 采样时，从大噪声开始：
 
-$$
+```math
 x_L \sim \mathcal{N}(0,\sigma_L^2I)
-$$
+```
 
 然后逐步降低噪声尺度：
 
-$$
+```math
 \sigma_1 \rightarrow \sigma_2 \rightarrow \cdots \rightarrow \sigma_L
-$$
+```
 
 每个尺度下做若干步 Langevin Dynamics。
 直觉上就是：
@@ -420,21 +420,21 @@ $$
 
 NCSN 的流程是：
 
-$$
+```math
 \text{大噪声} \rightarrow \text{中噪声} \rightarrow \text{小噪声} \rightarrow \text{干净数据}
-$$
+```
 
 DDPM 的反向过程也是：
 
-$$
+```math
 x_T \rightarrow x_{T-1} \rightarrow \cdots \rightarrow x_0
-$$
+```
 
 也就是：
 
-$$
+```math
 \text{纯噪声} \rightarrow \text{逐步去噪} \rightarrow \text{干净图像}
-$$
+```
 
 所以两者本质非常接近。
 区别在于：
@@ -453,16 +453,16 @@ $$
 这一节可以压缩成三句话：
 **第一，score-based 生成模型想学的是：**
 
-$$
+```math
 \nabla_x \log p_{\text{data}}(x)
-$$
+```
 
 也就是数据分布的梯度场。
 **第二，真实 score 不可见，所以 Hyvärinen Score Matching 通过数学等价变换，绕开真实 score；DSM 则通过人为加噪，让监督信号变成已知的高斯噪声。**
 **第三，DDPM 预测噪声 (\epsilon)，本质上就是在不同噪声尺度下预测 score，因此 DDPM、DSM、NCSN 都可以看作同一条思想线的不同形式。**
 最终关系是：
 
-$$
+```math
 \boxed{
 \text{预测噪声}
 \Longleftrightarrow
@@ -470,6 +470,6 @@ $$
 \Longleftrightarrow
 \text{逐步去噪生成}
 }
-$$
+```
 
 这就是从 score matching 到 diffusion model 的关键桥梁。

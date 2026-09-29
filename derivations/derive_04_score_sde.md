@@ -12,10 +12,14 @@
 ### 1.1 离散过程参数化
 
 DDPM 单步：
-$$x_t = \sqrt{1-\beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t$$
+```math
+x_t = \sqrt{1-\beta_t} \cdot x_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t
+```
 
 设 $`T`$ 步对应时间区间 $`[0, 1]`$（即 $`\Delta t = 1/T`$）。把 $`\beta_t`$ 写成密度形式：
-$$\beta_t = \beta(t/T) \cdot \frac{1}{T} = \beta(s) \Delta t, \quad s = t/T$$
+```math
+\beta_t = \beta(t/T) \cdot \frac{1}{T} = \beta(s) \Delta t, \quad s = t/T
+```
 
 其中 $`\beta(s)`$ 是连续函数（如 linear schedule 对应线性函数）。
 
@@ -26,13 +30,19 @@ $$\beta_t = \beta(t/T) \cdot \frac{1}{T} = \beta(s) \Delta t, \quad s = t/T$$
 ### 1.2 一阶 Taylor 展开
 
 当 $`\Delta t`$ 小时：
-$$\sqrt{1 - \beta(s) \Delta t} \approx 1 - \frac{1}{2} \beta(s) \Delta t$$
+```math
+\sqrt{1 - \beta(s) \Delta t} \approx 1 - \frac{1}{2} \beta(s) \Delta t
+```
 
 代入单步公式：
-$$x(s + \Delta t) \approx \left(1 - \frac{1}{2}\beta(s)\Delta t\right) x(s) + \sqrt{\beta(s) \Delta t} \cdot \epsilon$$
+```math
+x(s + \Delta t) \approx \left(1 - \frac{1}{2}\beta(s)\Delta t\right) x(s) + \sqrt{\beta(s) \Delta t} \cdot \epsilon
+```
 
 即：
-$$x(s + \Delta t) - x(s) \approx -\frac{1}{2}\beta(s)\Delta t \cdot x(s) + \sqrt{\beta(s)\Delta t} \cdot \epsilon$$
+```math
+x(s + \Delta t) - x(s) \approx -\frac{1}{2}\beta(s)\Delta t \cdot x(s) + \sqrt{\beta(s)\Delta t} \cdot \epsilon
+```
 
 ---
 
@@ -40,56 +50,58 @@ $$x(s + \Delta t) - x(s) \approx -\frac{1}{2}\beta(s)\Delta t \cdot x(s) + \sqrt
 
 形式上写成 SDE（用 $`dW = \sqrt{dt} \cdot \epsilon`$）：
 
-$$\boxed{dx = -\frac{1}{2}\beta(t) x \, dt + \sqrt{\beta(t)} \, dW}$$
+```math
+\boxed{dx = -\frac{1}{2}\beta(t) x \, dt + \sqrt{\beta(t)} \, dW}
+```
 
 这就是 **VP-SDE**（Variance Preserving SDE），对应 DDPM。
 
 它可以拆成两部分来看：
 
 - drift 项
-  $$
+  ```math
   -\frac{1}{2}\beta(t)x\,dt
-  $$
+  ```
   表示样本会被逐渐往 0 拉回去，也就是原始信号幅度持续衰减；
 - diffusion 项
-  $$
+  ```math
   \sqrt{\beta(t)}\,dW
-  $$
+  ```
   表示系统同时不断注入高斯噪声。
 
 所以 VP-SDE 的物理图像是：
 
-$$
+```math
 \text{信号逐渐缩小} + \text{噪声持续注入}
-$$
+```
 
 这和离散 DDPM 完全一致：每一步先把旧样本乘上一个略小于 1 的系数，再加一点高斯噪声。
 
 如果从边缘分布角度看，VP-SDE 对应的连续解满足
 
-$$
+```math
 x(t)\mid x_0 \sim \mathcal N\big(\alpha(t)x_0,\; [1-\alpha^2(t)]I\big)
-$$
+```
 
 其中
 
-$$
+```math
 \alpha(t)=\exp\left(-\frac12\int_0^t \beta(\tau)\,d\tau\right)
-$$
+```
 
 这正是离散 DDPM 中
 
-$$
+```math
 x_t = \sqrt{\bar\alpha_t}x_0 + \sqrt{1-\bar\alpha_t}\epsilon
-$$
+```
 
 的连续版本，因为
 
-$$
+```math
 \bar\alpha(t)=\exp\left(-\int_0^t \beta(\tau)\,d\tau\right)
 \quad\Longrightarrow\quad
 \sqrt{\bar\alpha(t)}=\alpha(t)
-$$
+```
 
 于是可以读出两件事：
 
@@ -99,9 +111,9 @@ $$
 这也就是它为什么叫 **variance preserving**：  
 虽然单个样本的“信号部分”在变小，但整个过程的噪声尺度被设计得恰到好处，使得总方差保持在一个有界范围内；当 $`t`$ 足够大时，终态逼近
 
-$$
+```math
 \mathcal N(0, I)
-$$
+```
 
 这正是 DDPM 采样时的起点。
 
@@ -116,17 +128,17 @@ $$
 
 要理解 VE-SDE，先回忆 NCSN / DSM 的加噪方式：它不是像 DDPM 那样每一步把旧样本缩小一点再加噪，而是直接在不同噪声尺度下构造边缘分布
 
-$$
+```math
 x(t) = x_0 + \sigma(t)\epsilon,
 \qquad
 \epsilon \sim \mathcal N(0, I)
-$$
+```
 
 因此在任意时刻 $`t`$，条件分布满足
 
-$$
+```math
 x(t)\mid x_0 \sim \mathcal N(x_0, \sigma^2(t)I)
-$$
+```
 
 也就是说：
 
@@ -135,63 +147,63 @@ $$
 
 现在我们想找一个连续时间 SDE，使它的边缘分布正好就是上面的高斯。最自然的选择是只保留扩散项、不加 drift：
 
-$$
+```math
 dx = g(t)\,dW
-$$
+```
 
 因为这个 SDE 的解是
 
-$$
+```math
 x(t) = x_0 + \int_0^t g(\tau)\,dW_\tau
-$$
+```
 
 而 Itô 积分的均值为 0、协方差为
 
-$$
+```math
 \mathrm{Var}\left[\int_0^t g(\tau)\,dW_\tau\right]
 =
 \int_0^t g^2(\tau)\,d\tau \cdot I
-$$
+```
 
 所以
 
-$$
+```math
 x(t)\mid x_0
 \sim
 \mathcal N\left(x_0,\left[\int_0^t g^2(\tau)\,d\tau\right]I\right)
-$$
+```
 
 要让它与目标边缘分布
 
-$$
+```math
 \mathcal N(x_0, \sigma^2(t)I)
-$$
+```
 
 一致，就必须满足
 
-$$
+```math
 \int_0^t g^2(\tau)\,d\tau = \sigma^2(t)
-$$
+```
 
 两边对 $`t`$ 求导，得到
 
-$$
+```math
 g^2(t) = \frac{d[\sigma^2(t)]}{dt}
-$$
+```
 
 因此
 
-$$
+```math
 \boxed{dx = \sqrt{\frac{d[\sigma^2(t)]}{dt}} \, dW}
-$$
+```
 
 这就是 **VE-SDE**（Variance Exploding SDE）。
 
 之所以叫 *variance exploding*，是因为
 
-$$
+```math
 \mathrm{Var}[x(t)\mid x_0] = \sigma^2(t)I
-$$
+```
 
 会随着时间不断增大；若 $`\sigma(t)`$ 取得很大，终态就是一个方差很大的高斯噪声分布。
 
@@ -208,7 +220,9 @@ $$
 
 ### 2.1 一般 SDE 形式
 
-$$dx = f(x, t) \, dt + g(t) \, dW$$
+```math
+dx = f(x, t) \, dt + g(t) \, dW
+```
 
 设 $`x`$ 的边缘密度为 $`p_t(x)`$。
 
@@ -216,10 +230,14 @@ $$dx = f(x, t) \, dt + g(t) \, dW$$
 
 ### 2.2 Fokker-Planck 方程（无证明，标准结果）
 
-$$\frac{\partial p_t(x)}{\partial t} = -\sum_i \frac{\partial}{\partial x_i}\left[f_i(x, t) p_t(x)\right] + \frac{1}{2} g(t)^2 \sum_i \frac{\partial^2 p_t(x)}{\partial x_i^2}$$
+```math
+\frac{\partial p_t(x)}{\partial t} = -\sum_i \frac{\partial}{\partial x_i}\left[f_i(x, t) p_t(x)\right] + \frac{1}{2} g(t)^2 \sum_i \frac{\partial^2 p_t(x)}{\partial x_i^2}
+```
 
 向量形式：
-$$\frac{\partial p_t}{\partial t} = -\nabla \cdot (f \cdot p_t) + \frac{1}{2} g(t)^2 \Delta p_t$$
+```math
+\frac{\partial p_t}{\partial t} = -\nabla \cdot (f \cdot p_t) + \frac{1}{2} g(t)^2 \Delta p_t
+```
 
 （$`\Delta`$ 是 Laplacian，对角的二阶导）
 
@@ -242,7 +260,9 @@ $$\frac{\partial p_t}{\partial t} = -\nabla \cdot (f \cdot p_t) + \frac{1}{2} g(
 ### 3.2 Anderson 定理（1982）
 
 **结论**：反向 SDE 形式为
-$$\boxed{dx = \left[f(x, t) - g(t)^2 \cdot \nabla_x \log p_t(x)\right] dt + g(t) \, d\bar W}$$
+```math
+\boxed{dx = \left[f(x, t) - g(t)^2 \cdot \nabla_x \log p_t(x)\right] dt + g(t) \, d\bar W}
+```
 
 其中 $`d\bar W`$ 是反向 Wiener 过程的微元。
 
@@ -253,34 +273,48 @@ $$\boxed{dx = \left[f(x, t) - g(t)^2 \cdot \nabla_x \log p_t(x)\right] dt + g(t)
 设反向过程是 $`dx = \tilde f(x, t) \, dt + \tilde g(t) \, d\bar W`$，密度 $`\tilde p_t = p_t`$（同一密度，只是时间方向相反）。
 
 由于在反向时间下，"反向 FPE" 形式为：
-$$-\frac{\partial \tilde p_t}{\partial t} = -\nabla \cdot (\tilde f \cdot \tilde p_t) + \frac{1}{2} \tilde g^2 \Delta \tilde p_t$$
+```math
+-\frac{\partial \tilde p_t}{\partial t} = -\nabla \cdot (\tilde f \cdot \tilde p_t) + \frac{1}{2} \tilde g^2 \Delta \tilde p_t
+```
 
 **要求与正向 FPE 一致**：
 
-$$
+```math
 \begin{aligned}
 \frac{\partial p_t}{\partial t} &= -\nabla \cdot (f p_t) + \frac{1}{2} g^2 \Delta p_t \quad \text{(forward)}\\
 -\frac{\partial p_t}{\partial t} &= -\nabla \cdot (\tilde f p_t) + \frac{1}{2} \tilde g^2 \Delta p_t \quad \text{(reverse)}
 \end{aligned}
-$$
+```
 
 两式相加：
-$$0 = -\nabla \cdot ((f + \tilde f) p_t) + \frac{1}{2}(g^2 + \tilde g^2) \Delta p_t$$
+```math
+0 = -\nabla \cdot ((f + \tilde f) p_t) + \frac{1}{2}(g^2 + \tilde g^2) \Delta p_t
+```
 
 要让这恒为零，可以利用恒等式：
-$$\Delta p_t = \nabla \cdot \nabla p_t = \nabla \cdot \left(p_t \cdot \nabla \log p_t\right)$$
+```math
+\Delta p_t = \nabla \cdot \nabla p_t = \nabla \cdot \left(p_t \cdot \nabla \log p_t\right)
+```
 
 代入：
-$$0 = -\nabla \cdot ((f + \tilde f) p_t) + \frac{1}{2}(g^2 + \tilde g^2) \nabla \cdot (p_t \nabla \log p_t)$$
+```math
+0 = -\nabla \cdot ((f + \tilde f) p_t) + \frac{1}{2}(g^2 + \tilde g^2) \nabla \cdot (p_t \nabla \log p_t)
+```
 
 要恒成立，**括号内项应当抵消**：
-$$f + \tilde f = \frac{1}{2}(g^2 + \tilde g^2) \nabla \log p_t$$
+```math
+f + \tilde f = \frac{1}{2}(g^2 + \tilde g^2) \nabla \log p_t
+```
 
 选 $`\tilde g = g`$（保持同样的"噪声强度"），得：
-$$\tilde f = -f + g^2 \nabla \log p_t$$
+```math
+\tilde f = -f + g^2 \nabla \log p_t
+```
 
 所以反向 SDE 的 drift 是：
-$$\tilde f(x, t) = f(x, t) - g(t)^2 \nabla_x \log p_t(x)$$
+```math
+\tilde f(x, t) = f(x, t) - g(t)^2 \nabla_x \log p_t(x)
+```
 
 （这里 sign 看似有差异，但实际是时间方向反转的代数处理；详见 Song 2021 论文附录 A）
 
@@ -302,7 +336,9 @@ $$\tilde f(x, t) = f(x, t) - g(t)^2 \nabla_x \log p_t(x)$$
 
 对任意 SDE $`dx = f \, dt + g \, dW`$，存在**确定性 ODE**：
 
-$$\boxed{\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \cdot \nabla_x \log p_t(x)}$$
+```math
+\boxed{\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \cdot \nabla_x \log p_t(x)}
+```
 
 它**在每个时间 $`t`$ 的边缘分布 $`p_t(x)`$ 与原 SDE 完全相同**，但轨迹是确定性的。
 
@@ -313,16 +349,24 @@ $$\boxed{\frac{dx}{dt} = f(x, t) - \frac{1}{2} g(t)^2 \cdot \nabla_x \log p_t(x)
 ### 4.2 证明（FPE 视角）
 
 ODE $`dx/dt = h(x, t)`$ 对应的"FPE"（实际是 transport equation）是：
-$$\frac{\partial p_t}{\partial t} = -\nabla \cdot (h \cdot p_t)$$
+```math
+\frac{\partial p_t}{\partial t} = -\nabla \cdot (h \cdot p_t)
+```
 
 要使其等于 SDE 的 FPE：
-$$-\nabla \cdot (h \cdot p_t) = -\nabla \cdot (f \cdot p_t) + \frac{1}{2} g^2 \Delta p_t$$
+```math
+-\nabla \cdot (h \cdot p_t) = -\nabla \cdot (f \cdot p_t) + \frac{1}{2} g^2 \Delta p_t
+```
 
 利用 $`\Delta p_t = \nabla \cdot (p_t \nabla \log p_t)`$：
-$$-\nabla \cdot (h \cdot p_t) = -\nabla \cdot \left[\left(f - \frac{1}{2} g^2 \nabla \log p_t\right) p_t\right]$$
+```math
+-\nabla \cdot (h \cdot p_t) = -\nabla \cdot \left[\left(f - \frac{1}{2} g^2 \nabla \log p_t\right) p_t\right]
+```
 
 所以
-$$h(x, t) = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)$$
+```math
+h(x, t) = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)
+```
 
 ∎
 
@@ -344,10 +388,14 @@ $$h(x, t) = f(x, t) - \frac{1}{2} g(t)^2 \nabla_x \log p_t(x)$$
 代入 $`f(x, t) = -\frac{1}{2}\beta(t) x`$，$`g(t) = \sqrt{\beta(t)}`$：
 
 **反向 SDE**：
-$$dx = \left[-\frac{1}{2}\beta(t) x - \beta(t) \nabla_x \log p_t(x)\right] dt + \sqrt{\beta(t)} \, d\bar W$$
+```math
+dx = \left[-\frac{1}{2}\beta(t) x - \beta(t) \nabla_x \log p_t(x)\right] dt + \sqrt{\beta(t)} \, d\bar W
+```
 
 **Probability flow ODE**：
-$$\frac{dx}{dt} = -\frac{1}{2}\beta(t) x - \frac{1}{2}\beta(t) \nabla_x \log p_t(x)$$
+```math
+\frac{dx}{dt} = -\frac{1}{2}\beta(t) x - \frac{1}{2}\beta(t) \nabla_x \log p_t(x)
+```
 
 ---
 
@@ -366,7 +414,9 @@ $$\frac{dx}{dt} = -\frac{1}{2}\beta(t) x - \frac{1}{2}\beta(t) \nabla_x \log p_t
 ### 6.2 Score 的解析形式
 
 由 derive_02 的工具：
-$$\nabla_x \log p_t(x | x_0) = -\frac{x - \sqrt{\bar\alpha(t)} x_0}{1 - \bar\alpha(t)} = -\frac{\sqrt{1-\bar\alpha(t)} \epsilon}{1-\bar\alpha(t)} = -\frac{\epsilon}{\sqrt{1-\bar\alpha(t)}}$$
+```math
+\nabla_x \log p_t(x | x_0) = -\frac{x - \sqrt{\bar\alpha(t)} x_0}{1 - \bar\alpha(t)} = -\frac{\sqrt{1-\bar\alpha(t)} \epsilon}{1-\bar\alpha(t)} = -\frac{\epsilon}{\sqrt{1-\bar\alpha(t)}}
+```
 
 —— **预测 $`\epsilon`$ ≡ 预测 score**（差时间相关系数）。
 
@@ -377,7 +427,9 @@ $$\nabla_x \log p_t(x | x_0) = -\frac{x - \sqrt{\bar\alpha(t)} x_0}{1 - \bar\alp
 ## §7 DDIM 是 ODE 的离散化
 
 回顾 DDIM 公式：
-$$x_{t-1} = \sqrt{\bar\alpha_{t-1}} \hat x_0(x_t) + \sqrt{1-\bar\alpha_{t-1}} \epsilon_\theta$$
+```math
+x_{t-1} = \sqrt{\bar\alpha_{t-1}} \hat x_0(x_t) + \sqrt{1-\bar\alpha_{t-1}} \epsilon_\theta
+```
 
 其中 $`\hat x_0 = (x_t - \sqrt{1-\bar\alpha_t} \epsilon_\theta) / \sqrt{\bar\alpha_t}`$。
 
@@ -397,12 +449,16 @@ $$x_{t-1} = \sqrt{\bar\alpha_{t-1}} \hat x_0(x_t) + \sqrt{1-\bar\alpha_{t-1}} \e
 Karras 2022 EDM 进一步推广：
 
 把扩散过程写成：
-$$x_t = x_0 + \sigma(t) \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)$$
+```math
+x_t = x_0 + \sigma(t) \cdot \epsilon, \quad \epsilon \sim \mathcal{N}(0, I)
+```
 
 （这是 VE-style 形式，$`\sigma(t)`$ 是单调增的 noise schedule）
 
 对应 ODE（不带任何系数变换）：
-$$\frac{dx}{dt} = -\dot\sigma(t) \cdot \sigma(t) \cdot \nabla_x \log p_t(x)$$
+```math
+\frac{dx}{dt} = -\dot\sigma(t) \cdot \sigma(t) \cdot \nabla_x \log p_t(x)
+```
 
 **好处**：
 - 形式极简

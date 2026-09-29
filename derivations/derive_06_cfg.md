@@ -23,14 +23,20 @@
 ### 2.1 贝叶斯分解
 
 由贝叶斯：
-$$p(x | y) = \frac{p(x, y)}{p(y)} = \frac{p(y | x) p(x)}{p(y)}$$
+```math
+p(x | y) = \frac{p(x, y)}{p(y)} = \frac{p(y | x) p(x)}{p(y)}
+```
 
 两边取对数：
-$$\log p(x | y) = \log p(y | x) + \log p(x) - \log p(y)$$
+```math
+\log p(x | y) = \log p(y | x) + \log p(x) - \log p(y)
+```
 
 对 $`x`$ 求梯度（$`\log p(y)`$ 不含 $`x`$）：
 
-$$\boxed{\nabla_x \log p(x | y) = \nabla_x \log p(x) + \nabla_x \log p(y | x)}$$
+```math
+\boxed{\nabla_x \log p(x | y) = \nabla_x \log p(x) + \nabla_x \log p(y | x)}
+```
 
 —— **条件 score = 无条件 score + 分类器的对数梯度**。
 
@@ -41,7 +47,9 @@ $$\boxed{\nabla_x \log p(x | y) = \nabla_x \log p(x) + \nabla_x \log p(y | x)}$$
 扩散过程中每个时间步 $`t`$ 有边缘 $`p_t(x_t)`$，对应的条件版本是 $`p_t(x_t | y)`$。
 
 类似分解：
-$$\nabla_{x_t} \log p_t(x_t | y) = \nabla_{x_t} \log p_t(x_t) + \nabla_{x_t} \log p_t(y | x_t)$$
+```math
+\nabla_{x_t} \log p_t(x_t | y) = \nabla_{x_t} \log p_t(x_t) + \nabla_{x_t} \log p_t(y | x_t)
+```
 
 含义：
 - $`\nabla_{x_t} \log p_t(x_t)`$：无条件扩散模型的 score（普通 DDPM 训练）
@@ -52,7 +60,9 @@ $$\nabla_{x_t} \log p_t(x_t | y) = \nabla_{x_t} \log p_t(x_t) + \nabla_{x_t} \lo
 ### 2.3 分类器要"带噪声水平"
 
 注意 $`p_t(y | x_t)`$ 中的 $`x_t`$ 是**带噪**的：
-$$x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon$$
+```math
+x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon
+```
 
 所以**普通的 ImageNet 预训练分类器不能直接用**（它们在干净图像上训练）。
 
@@ -64,7 +74,9 @@ $$x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t} \epsilon$$
 
 实际操作中，引入 scaling factor $`w`$ 增强 guidance：
 
-$$\hat s(x_t, t, y) = \nabla_{x_t} \log p_t(x_t) + w \cdot \nabla_{x_t} \log p_\phi(y | x_t, t)$$
+```math
+\hat s(x_t, t, y) = \nabla_{x_t} \log p_t(x_t) + w \cdot \nabla_{x_t} \log p_\phi(y | x_t, t)
+```
 
 - $`w = 0`$：无 guidance（无条件）
 - $`w = 1`$：精确的条件 score（等价于从 $`p(x | y)`$ 采样）
@@ -77,7 +89,9 @@ $$\hat s(x_t, t, y) = \nabla_{x_t} \log p_t(x_t) + w \cdot \nabla_{x_t} \log p_\
 由 derive_04 §6：$`\nabla_{x_t} \log p_t = -\epsilon/\sqrt{1-\bar\alpha_t}`$。
 
 所以 CG 写成噪声形式：
-$$\hat\epsilon(x_t, t, y) = \epsilon_\theta(x_t, t) - w \sqrt{1-\bar\alpha_t} \cdot \nabla_{x_t} \log p_\phi(y | x_t, t)$$
+```math
+\hat\epsilon(x_t, t, y) = \epsilon_\theta(x_t, t) - w \sqrt{1-\bar\alpha_t} \cdot \nabla_{x_t} \log p_\phi(y | x_t, t)
+```
 
 （注意符号：$`\hat\epsilon`$ 是"修正后"的预测噪声）
 
@@ -90,7 +104,9 @@ $$\hat\epsilon(x_t, t, y) = \epsilon_\theta(x_t, t) - w \sqrt{1-\bar\alpha_t} \c
 **$`p(y | x)`$ 不一定要显式建模**，只要能间接得到它的梯度就行。
 
 由 §2.1 的等式反过来：
-$$\nabla_x \log p(y | x) = \nabla_x \log p(x | y) - \nabla_x \log p(x)$$
+```math
+\nabla_x \log p(y | x) = \nabla_x \log p(x | y) - \nabla_x \log p(x)
+```
 
 —— **隐式分类器**！其梯度就是"条件 score 减无条件 score"。
 
@@ -99,12 +115,18 @@ $$\nabla_x \log p(y | x) = \nabla_x \log p(x | y) - \nabla_x \log p(x)$$
 ### 3.2 替换 CG 公式
 
 把 §3.1 代入 CG：
-$$\hat s(x_t, t, y) = \nabla_{x_t} \log p_t(x_t) + w \cdot \left[\nabla_{x_t} \log p_t(x_t | y) - \nabla_{x_t} \log p_t(x_t)\right]$$
+```math
+\hat s(x_t, t, y) = \nabla_{x_t} \log p_t(x_t) + w \cdot \left[\nabla_{x_t} \log p_t(x_t | y) - \nabla_{x_t} \log p_t(x_t)\right]
+```
 
-$$= (1 - w) \nabla_{x_t} \log p_t(x_t) + w \cdot \nabla_{x_t} \log p_t(x_t | y)$$
+```math
+= (1 - w) \nabla_{x_t} \log p_t(x_t) + w \cdot \nabla_{x_t} \log p_t(x_t | y)
+```
 
 或等价地：
-$$\hat s(x_t, t, y) = \nabla_{x_t} \log p_t(x_t) + w \cdot \left[\nabla_{x_t} \log p_t(x_t | y) - \nabla_{x_t} \log p_t(x_t)\right]$$
+```math
+\hat s(x_t, t, y) = \nabla_{x_t} \log p_t(x_t) + w \cdot \left[\nabla_{x_t} \log p_t(x_t | y) - \nabla_{x_t} \log p_t(x_t)\right]
+```
 
 ---
 
@@ -113,14 +135,20 @@ $$\hat s(x_t, t, y) = \nabla_{x_t} \log p_t(x_t) + w \cdot \left[\nabla_{x_t} \l
 设 $`\epsilon_{\text{cond}} = \epsilon_\theta(x_t, t, y)`$，$`\epsilon_{\text{uncond}} = \epsilon_\theta(x_t, t, \emptyset)`$。
 
 由 noise-score 对应：
-$$\hat\epsilon = (1-w) \epsilon_{\text{uncond}} + w \epsilon_{\text{cond}}$$
+```math
+\hat\epsilon = (1-w) \epsilon_{\text{uncond}} + w \epsilon_{\text{cond}}
+```
 
 或者引入 $`s = w`$（guidance scale）：
 
-$$\boxed{\hat\epsilon = \epsilon_{\text{uncond}} + s \cdot (\epsilon_{\text{cond}} - \epsilon_{\text{uncond}})}$$
+```math
+\boxed{\hat\epsilon = \epsilon_{\text{uncond}} + s \cdot (\epsilon_{\text{cond}} - \epsilon_{\text{uncond}})}
+```
 
 **等价写法**：
-$$\hat\epsilon = (1+s') \epsilon_{\text{cond}} - s' \epsilon_{\text{uncond}}, \quad s' = s - 1$$
+```math
+\hat\epsilon = (1+s') \epsilon_{\text{cond}} - s' \epsilon_{\text{uncond}}, \quad s' = s - 1
+```
 
 —— 这就是 CFG 公式。
 
@@ -269,7 +297,9 @@ x_hat_0 = x_hat_0.clamp(-threshold, threshold) / threshold
 ## §7 Negative Prompt 的本质
 
 SD 用户常用 negative prompt：
-$$\hat\epsilon = \epsilon_\theta(x, t, y_{\text{neg}}) + s \cdot \left[\epsilon_\theta(x, t, y_{\text{pos}}) - \epsilon_\theta(x, t, y_{\text{neg}})\right]$$
+```math
+\hat\epsilon = \epsilon_\theta(x, t, y_{\text{neg}}) + s \cdot \left[\epsilon_\theta(x, t, y_{\text{pos}}) - \epsilon_\theta(x, t, y_{\text{neg}})\right]
+```
 
 —— **把 $`\emptyset`$ 换成 $`y_{\text{neg}}`$**。
 
@@ -306,7 +336,9 @@ $$\hat\epsilon = \epsilon_\theta(x, t, y_{\text{neg}}) + s \cdot \left[\epsilon_
 ### 9.1 隐式分布偏差
 
 CFG 在 $`s > 1`$ 时**不是**从 $`p(x | y)`$ 采样，而是从一个偏差分布：
-$$\tilde p(x | y) \propto p(x | y) \cdot \left(\frac{p(x | y)}{p(x)}\right)^{s-1}$$
+```math
+\tilde p(x | y) \propto p(x | y) \cdot \left(\frac{p(x | y)}{p(x)}\right)^{s-1}
+```
 
 这个分布"更窄"——更多 typical $`y`$ 样本，更少 atypical 样本。
 
