@@ -121,7 +121,7 @@ LDM 降低了反复去噪的空间分辨率，代价是引入了一个自编码�
 以 Stable Diffusion 的 KL 正则化自编码器（常称 KL-VAE）为例，编码器输出均值与方差，定义条件分布：
 
 ```math
-q_\phi(z\mid x)=\mathcal N\!\left(\mu_\phi(x),\operatorname{diag}(\sigma_\phi^2(x))\right)
+q_\phi(z\mid x)=\mathcal N\!\left(\mu_\phi(x),\mathrm{diag}(\sigma_\phi^2(x))\right)
 ```
 
 通过重参数化采样得到 latent：
@@ -227,7 +227,7 @@ class Decoder(nn.Module):
 弱 KL 正则化并不保证编码后的 latent 方差为 1。LDM 的 KL 路线会从数据估计 latent 的标准差，并引入 **scaling factor** 调整其幅度：
 
 ```math
-s\approx\frac{1}{\operatorname{Std}(z_{\mathrm{raw}})},\qquad
+s\approx\frac{1}{\mathrm{Std}(z_{\mathrm{raw}})},\qquad
 z_0=s\,z_{\mathrm{raw}}
 ```
 
